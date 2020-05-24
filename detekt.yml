@@ -1,0 +1,23 @@
+complexity:
+  active: true
+  LongMethod:
+    active: true
+    threshold: 60
+    excludes: ["**/test/**","**/functionalTest/**"]
+
+formatting:
+  active: true
+  android: false
+  autoCorrect: true
+  MaximumLineLength:
+    active: false
+
+naming:
+  active: true
+  FunctionMaxLength:
+    active: false
+
+style:
+  active: true
+  MaxLineLength:
+    active: false

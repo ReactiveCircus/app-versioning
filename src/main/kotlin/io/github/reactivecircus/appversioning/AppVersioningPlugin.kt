@@ -1,0 +1,81 @@
+package io.github.reactivecircus.appversioning
+
+import android.databinding.tool.ext.capitalizeUS
+import com.android.build.api.variant.VariantOutputConfiguration
+import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.api.tasks.TaskProvider
+import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.hasPlugin
+import org.gradle.kotlin.dsl.withType
+import org.gradle.language.nativeplatform.internal.BuildType
+
+/**
+ * A plugin that generates and sets the version name and version code for an Android app using the latest git tag.
+ */
+@Suppress("UnstableApiUsage")
+class AppVersioningPlugin : Plugin<Project> {
+    override fun apply(project: Project) {
+        val appVersioningExtension = project.extensions.create("appVersioning", AppVersioningExtension::class.java)
+
+        project.plugins.withType<AppPlugin> {
+            project.extensions.getByType<BaseAppModuleExtension>().onVariantProperties {
+                if (!appVersioningExtension.releaseBuildOnly.get() || buildType == BuildType.RELEASE.name) {
+                    val generateAppVersionInfo = project.registerGenerateAppVersionInfoTask(
+                        variantName = name,
+                        extension = appVersioningExtension
+                    )
+
+                    val generatedVersionName = generateAppVersionInfo.flatMap { it.versionName() }
+                    val generatedVersionCode = generateAppVersionInfo.flatMap { it.versionCode() }
+
+                    val mainOutput = outputs.single { it.outputType == VariantOutputConfiguration.OutputType.SINGLE }
+                    mainOutput.versionName.set(generatedVersionName)
+                    mainOutput.versionCode.set(generatedVersionCode)
+                }
+            }
+        }
+
+        project.afterEvaluate {
+            require(plugins.hasPlugin(AppPlugin::class)) {
+                "The Android App Versioning plugin should only be applied to an Android Application project but ${project.displayName} doesn't have the 'com.android.application' plugin applied."
+            }
+            validateExtensions(appVersioningExtension)
+        }
+    }
+
+    private fun validateExtensions(extension: AppVersioningExtension) {
+        val maxDigits = extension.maxDigits.get()
+        require(maxDigits >= AppVersioningExtension.MAX_DIGITS_RANGE_MIN && maxDigits <= AppVersioningExtension.MAX_DIGITS_RANGE_MAX) {
+            "`maxDigits` must be at least `${AppVersioningExtension.MAX_DIGITS_RANGE_MIN}` and at most `${AppVersioningExtension.MAX_DIGITS_RANGE_MAX}`."
+        }
+    }
+
+    private fun Project.registerGenerateAppVersionInfoTask(
+        variantName: String,
+        extension: AppVersioningExtension
+    ): TaskProvider<GenerateAppVersionInfo> =
+        tasks.register(
+            "${GenerateAppVersionInfo.TASK_NAME}For${variantName.capitalizeUS()}",
+            GenerateAppVersionInfo::class.java
+        ) {
+            group = APP_VERSIONING_TASK_GROUP
+            description = GenerateAppVersionInfo.TASK_DESCRIPTION
+
+            gitRefsDirectory.set(rootProject.file(GIT_REFS_DIRECTORY))
+            maxDigits.set(extension.maxDigits)
+            requireValidTag.set(extension.requireValidGitTag)
+            fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
+
+            versionNameFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/$variantName/$VERSION_NAME_RESULT_FILE"))
+            versionCodeFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/$variantName/$VERSION_CODE_RESULT_FILE"))
+        }
+}
+
+internal const val APP_VERSIONING_TASK_GROUP = "versioning"
+internal const val APP_VERSIONING_TASK_OUTPUT_DIR = "outputs/app_versioning"
+internal const val GIT_REFS_DIRECTORY = ".git/refs"
+internal const val VERSION_NAME_RESULT_FILE = "version_name.txt"
+internal const val VERSION_CODE_RESULT_FILE = "version_code.txt"
