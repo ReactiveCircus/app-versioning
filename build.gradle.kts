@@ -1,6 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
-val agpVersion = "4.1.0-alpha09"
+val agpVersion = "4.1.0-alpha10"
 
 plugins {
     `java-gradle-plugin`
@@ -73,10 +73,11 @@ tasks.withType<Test> {
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("com.android.tools.build:gradle:$agpVersion")
+    compileOnly("com.android.tools.build:gradle:$agpVersion")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    testImplementation("com.android.tools.build:gradle:$agpVersion")
 }
 
 detekt {
