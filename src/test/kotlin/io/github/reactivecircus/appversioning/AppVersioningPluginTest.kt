@@ -27,9 +27,19 @@ class AppVersioningPluginTest {
 
         (appProject as DefaultProject).evaluate()
 
-        assertTaskRegistered(appProject, "generateAppVersionInfoForRelease")
+        assertTaskRegistered(
+            appProject,
+            taskName = "generateAppVersionInfoForRelease",
+            taskDescription = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the release variant."
+        )
+        assertTaskRegistered(
+            appProject,
+            taskName = "printAppVersionInfoForRelease",
+            taskDescription = "${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the release variant."
+        )
 
         assertTaskNotRegistered(appProject, "generateAppVersionInfoForDebug")
+        assertTaskNotRegistered(appProject, "printAppVersionInfoForDebug")
     }
 
     @Test
@@ -41,11 +51,34 @@ class AppVersioningPluginTest {
 
         (appProject as DefaultProject).evaluate()
 
-        assertTaskRegistered(appProject, "generateAppVersionInfoForProdRelease")
-        assertTaskRegistered(appProject, "generateAppVersionInfoForMockRelease")
+        // prodRelease
+        assertTaskRegistered(
+            appProject,
+            taskName = "generateAppVersionInfoForProdRelease",
+            taskDescription = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodRelease variant."
+        )
+        assertTaskRegistered(
+            appProject,
+            taskName = "printAppVersionInfoForProdRelease",
+            taskDescription = "${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodRelease variant."
+        )
+
+        // mockRelease
+        assertTaskRegistered(
+            appProject,
+            taskName = "generateAppVersionInfoForMockRelease",
+            taskDescription = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockRelease variant."
+        )
+        assertTaskRegistered(
+            appProject,
+            taskName = "printAppVersionInfoForMockRelease",
+            taskDescription = "${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockRelease variant."
+        )
 
         assertTaskNotRegistered(appProject, "generateAppVersionInfoForProdDebug")
         assertTaskNotRegistered(appProject, "generateAppVersionInfoForMockDebug")
+        assertTaskNotRegistered(appProject, "printAppVersionInfoForProdDebug")
+        assertTaskNotRegistered(appProject, "printAppVersionInfoForMockDebug")
     }
 
     @Test
@@ -60,11 +93,53 @@ class AppVersioningPluginTest {
 
         (appProject as DefaultProject).evaluate()
 
-        assertTaskRegistered(appProject, "generateAppVersionInfoForProdRelease")
-        assertTaskRegistered(appProject, "generateAppVersionInfoForMockRelease")
+        // prodRelease
+        assertTaskRegistered(
+            appProject,
+            taskName = "generateAppVersionInfoForProdRelease",
+            taskDescription = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodRelease variant."
+        )
+        assertTaskRegistered(
+            appProject,
+            taskName = "printAppVersionInfoForProdRelease",
+            taskDescription = "${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodRelease variant."
+        )
 
-        assertTaskRegistered(appProject, "generateAppVersionInfoForProdDebug")
-        assertTaskRegistered(appProject, "generateAppVersionInfoForMockDebug")
+        // mockRelease
+        assertTaskRegistered(
+            appProject,
+            taskName = "generateAppVersionInfoForMockRelease",
+            taskDescription = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockRelease variant."
+        )
+        assertTaskRegistered(
+            appProject,
+            taskName = "printAppVersionInfoForMockRelease",
+            taskDescription = "${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockRelease variant."
+        )
+
+        // prodDebug
+        assertTaskRegistered(
+            appProject,
+            taskName = "generateAppVersionInfoForProdDebug",
+            taskDescription = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodDebug variant."
+        )
+        assertTaskRegistered(
+            appProject,
+            taskName = "printAppVersionInfoForProdDebug",
+            taskDescription = "${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodDebug variant."
+        )
+
+        // mockDebug
+        assertTaskRegistered(
+            appProject,
+            taskName = "generateAppVersionInfoForMockDebug",
+            taskDescription = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockDebug variant."
+        )
+        assertTaskRegistered(
+            appProject,
+            taskName = "printAppVersionInfoForMockDebug",
+            taskDescription = "${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockDebug variant."
+        )
     }
 
     @Test
@@ -113,11 +188,11 @@ class AppVersioningPluginTest {
     }
 
 
-    private fun assertTaskRegistered(project: Project, taskName: String) {
+    private fun assertTaskRegistered(project: Project, taskName: String, taskDescription: String) {
         val task = project.tasks.getByName(taskName)
         assertNotNull(task)
         assertEquals(APP_VERSIONING_TASK_GROUP, task.group)
-        assertEquals(GenerateAppVersionInfo.TASK_DESCRIPTION, task.description)
+        assertEquals(taskDescription, task.description)
     }
 
     private fun assertTaskNotRegistered(project: Project, taskName: String) {

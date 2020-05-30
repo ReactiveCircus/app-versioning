@@ -18,7 +18,7 @@ import org.gradle.api.tasks.TaskAction
 import kotlin.math.pow
 
 /**
- * Generates versionName and versionCode based on git-tag.
+ * Generates app's versionName and versionCode based on git-tag.
  */
 @CacheableTask
 abstract class GenerateAppVersionInfo : DefaultTask() {
@@ -96,8 +96,8 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
     }
 
     companion object {
-        const val TASK_NAME = "generateAppVersionInfo"
-        const val TASK_DESCRIPTION = "Generates versionName and versionCode based on git-tag."
+        const val TASK_NAME_PREFIX = "generateAppVersionInfo"
+        const val TASK_DESCRIPTION_PREFIX = "Generates app's versionName and versionCode based on git-tag"
     }
 }
 
