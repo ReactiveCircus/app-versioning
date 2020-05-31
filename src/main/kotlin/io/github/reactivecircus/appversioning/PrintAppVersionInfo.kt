@@ -6,25 +6,25 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 
 /**
- * Prints app's versionName and versionCode to the console.
+ * Prints app's versionCode and versionName to the console.
  */
 abstract class PrintAppVersionInfo : DefaultTask() {
 
     @get:Input
-    abstract val versionName: Property<String>
+    abstract val versionCode: Property<Int>
 
     @get:Input
-    abstract val versionCode: Property<Int>
+    abstract val versionName: Property<String>
 
 
     @TaskAction
     fun print() {
-        println("versionName: ${versionName.get()}")
         println("versionCode: ${versionCode.get()}")
+        println("versionName: ${versionName.get()}")
     }
 
     companion object {
         const val TASK_NAME_PREFIX = "printAppVersionInfo"
-        const val TASK_DESCRIPTION_PREFIX = "Prints app's versionName and versionCode to the console"
+        const val TASK_DESCRIPTION_PREFIX = "Prints app's versionCode and versionName to the console"
     }
 }

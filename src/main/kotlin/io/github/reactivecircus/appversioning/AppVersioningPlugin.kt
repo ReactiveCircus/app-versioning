@@ -14,7 +14,7 @@ import org.gradle.kotlin.dsl.withType
 import org.gradle.language.nativeplatform.internal.BuildType
 
 /**
- * A plugin that generates and sets the version name and version code for an Android app using the latest git tag.
+ * A plugin that generates and sets the version code and version name for an Android app using the latest git tag.
  */
 @Suppress("UnstableApiUsage")
 class AppVersioningPlugin : Plugin<Project> {
@@ -29,13 +29,13 @@ class AppVersioningPlugin : Plugin<Project> {
                         extension = appVersioningExtension
                     )
 
-                    val generatedVersionName = generateAppVersionInfo.flatMap { it.versionName() }
                     val generatedVersionCode = generateAppVersionInfo.flatMap { it.versionCode() }
+                    val generatedVersionName = generateAppVersionInfo.flatMap { it.versionName() }
 
                     project.registerPrintAppVersionInfoTask(
                         variantName = name,
-                        versionNameProvider = generatedVersionName,
-                        versionCodeProvider = generatedVersionCode
+                        versionCodeProvider = generatedVersionCode,
+                        versionNameProvider = generatedVersionName
                     )
 
                     val mainOutput = outputs.single { it.outputType == VariantOutputConfiguration.OutputType.SINGLE }
@@ -75,14 +75,14 @@ class AppVersioningPlugin : Plugin<Project> {
         requireValidTag.set(extension.requireValidGitTag)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
 
-        versionNameFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/$variantName/$VERSION_NAME_RESULT_FILE"))
         versionCodeFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/$variantName/$VERSION_CODE_RESULT_FILE"))
+        versionNameFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/$variantName/$VERSION_NAME_RESULT_FILE"))
     }
 
     private fun Project.registerPrintAppVersionInfoTask(
         variantName: String,
-        versionNameProvider: Provider<String>,
-        versionCodeProvider: Provider<Int>
+        versionCodeProvider: Provider<Int>,
+        versionNameProvider: Provider<String>
     ): TaskProvider<PrintAppVersionInfo> = tasks.register(
         "${PrintAppVersionInfo.TASK_NAME_PREFIX}For${variantName.capitalizeUS()}",
         PrintAppVersionInfo::class.java
@@ -90,13 +90,13 @@ class AppVersioningPlugin : Plugin<Project> {
         group = APP_VERSIONING_TASK_GROUP
         description = "${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the $variantName variant."
 
-        versionName.set(versionNameProvider)
         versionCode.set(versionCodeProvider)
+        versionName.set(versionNameProvider)
     }
 }
 
 internal const val APP_VERSIONING_TASK_GROUP = "versioning"
 internal const val APP_VERSIONING_TASK_OUTPUT_DIR = "outputs/app_versioning"
 internal const val GIT_REFS_DIRECTORY = ".git/refs"
-internal const val VERSION_NAME_RESULT_FILE = "version_name.txt"
 internal const val VERSION_CODE_RESULT_FILE = "version_code.txt"
+internal const val VERSION_NAME_RESULT_FILE = "version_name.txt"

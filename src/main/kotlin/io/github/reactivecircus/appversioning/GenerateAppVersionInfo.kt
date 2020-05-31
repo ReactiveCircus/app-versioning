@@ -18,7 +18,7 @@ import org.gradle.api.tasks.TaskAction
 import kotlin.math.pow
 
 /**
- * Generates app's versionName and versionCode based on git-tag.
+ * Generates app's versionCode and versionName based on git-tag.
  */
 @CacheableTask
 abstract class GenerateAppVersionInfo : DefaultTask() {
@@ -37,10 +37,10 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
     abstract val fetchTagsWhenNoneExistsLocally: Property<Boolean>
 
     @get:OutputFile
-    abstract val versionNameFile: RegularFileProperty
+    abstract val versionCodeFile: RegularFileProperty
 
     @get:OutputFile
-    abstract val versionCodeFile: RegularFileProperty
+    abstract val versionNameFile: RegularFileProperty
 
     @TaskAction
     fun generate() {
@@ -66,17 +66,16 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
                 }
             }
 
-
-        val versionName = gitTagVersion.toString()
-        versionNameFile.get().asFile.writeText(versionName)
-        logger.lifecycle("Generated app version name: \"$versionName\".")
-
         val versionCode = gitTagVersion.major * 10.0.pow(maxDigitsAllowed * 2).toInt() +
                 gitTagVersion.minor * 10.0.pow(maxDigitsAllowed).toInt() +
                 gitTagVersion.patch +
                 gitTagVersion.commitsSinceLatestTag
         versionCodeFile.get().asFile.writeText(versionCode.toString())
         logger.lifecycle("Generated app version code: $versionCode.")
+
+        val versionName = gitTagVersion.toString()
+        versionNameFile.get().asFile.writeText(versionName)
+        logger.lifecycle("Generated app version name: \"$versionName\".")
     }
 
     /**
@@ -97,7 +96,7 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
 
     companion object {
         const val TASK_NAME_PREFIX = "generateAppVersionInfo"
-        const val TASK_DESCRIPTION_PREFIX = "Generates app's versionName and versionCode based on git-tag"
+        const val TASK_DESCRIPTION_PREFIX = "Generates app's versionCode and versionName based on git-tag"
     }
 }
 
