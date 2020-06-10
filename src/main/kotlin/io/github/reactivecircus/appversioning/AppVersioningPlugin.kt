@@ -1,6 +1,7 @@
 package io.github.reactivecircus.appversioning
 
 import android.databinding.tool.ext.capitalizeUS
+import com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
 import com.android.build.api.variant.VariantOutputConfiguration
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
@@ -12,6 +13,7 @@ import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.hasPlugin
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.nativeplatform.internal.BuildType
+import org.gradle.util.VersionNumber
 
 /**
  * A plugin that generates and sets the version code and version name for an Android app using the latest git tag.
@@ -46,6 +48,10 @@ class AppVersioningPlugin : Plugin<Project> {
         }
 
         project.afterEvaluate {
+            val agpVersion = VersionNumber.parse(ANDROID_GRADLE_PLUGIN_VERSION)
+            require(agpVersion >= VersionNumber.parse(MIN_AGP_VERSION)) {
+                "Android App Versioning Gradle Plugin requires Android Gradle Plugin $MIN_AGP_VERSION or later. Detected AGP version is $agpVersion."
+            }
             require(plugins.hasPlugin(AppPlugin::class)) {
                 "The Android App Versioning plugin should only be applied to an Android Application project but ${project.displayName} doesn't have the 'com.android.application' plugin applied."
             }
@@ -92,6 +98,10 @@ class AppVersioningPlugin : Plugin<Project> {
 
         versionCode.set(versionCodeProvider)
         versionName.set(versionNameProvider)
+    }
+
+    companion object {
+        private const val MIN_AGP_VERSION = "4.0.0"
     }
 }
 

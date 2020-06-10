@@ -187,7 +187,6 @@ class AppVersioningPluginTest {
         }
     }
 
-
     private fun assertTaskRegistered(project: Project, taskName: String, taskDescription: String) {
         val task = project.tasks.getByName(taskName)
         assertNotNull(task)
