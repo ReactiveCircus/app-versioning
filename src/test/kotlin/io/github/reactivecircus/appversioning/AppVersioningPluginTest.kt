@@ -1,14 +1,11 @@
 package io.github.reactivecircus.appversioning
 
 import com.android.build.gradle.AppPlugin
-import com.android.build.gradle.LibraryPlugin
 import org.gradle.api.Project
-import org.gradle.api.ProjectConfigurationException
 import org.gradle.api.internal.project.DefaultProject
 import org.gradle.testfixtures.ProjectBuilder
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
@@ -140,51 +137,6 @@ class AppVersioningPluginTest {
             taskName = "printAppVersionInfoForMockDebug",
             taskDescription = "${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockDebug variant."
         )
-    }
-
-    @Test
-    fun `plugin throws ProjectConfigurationException when maxDigits is lower than minimum maxDigits required`() {
-        appProject.pluginManager.apply(AppPlugin::class.java)
-        appProject.pluginManager.apply(AppVersioningPlugin::class.java)
-
-        appProject.createAndroidAppProject(hasProductFlavor = false)
-        appProject.extensions.getByType(AppVersioningExtension::class.java).apply {
-            maxDigits.set(AppVersioningExtension.MAX_DIGITS_RANGE_MIN - 1)
-        }
-
-        assertFailsWith<ProjectConfigurationException>("`maxDigits` must be at least `1` and at most `4`") {
-            (appProject as DefaultProject).evaluate()
-        }
-    }
-
-    @Test
-    fun `plugin throws ProjectConfigurationException when maxDigits is higher than maximum maxDigits required`() {
-        appProject.pluginManager.apply(AppPlugin::class.java)
-        appProject.pluginManager.apply(AppVersioningPlugin::class.java)
-
-        appProject.createAndroidAppProject(hasProductFlavor = false)
-        appProject.extensions.getByType(AppVersioningExtension::class.java).apply {
-            maxDigits.set(AppVersioningExtension.MAX_DIGITS_RANGE_MAX + 1)
-        }
-
-        assertFailsWith<ProjectConfigurationException>("`maxDigits` must be at least `1` and at most `4`") {
-            (appProject as DefaultProject).evaluate()
-        }
-    }
-
-    @Test
-    fun `plugin cannot be applied to project without Android App plugin`() {
-        rootProject.pluginManager.apply(AppVersioningPlugin::class.java)
-        assertFailsWith<ProjectConfigurationException> {
-            (rootProject as DefaultProject).evaluate()
-        }
-
-        libraryProject.pluginManager.apply(LibraryPlugin::class.java)
-        libraryProject.pluginManager.apply(AppVersioningPlugin::class.java)
-
-        assertFailsWith<ProjectConfigurationException> {
-            (libraryProject as DefaultProject).evaluate()
-        }
     }
 
     private fun assertTaskRegistered(project: Project, taskName: String, taskDescription: String) {

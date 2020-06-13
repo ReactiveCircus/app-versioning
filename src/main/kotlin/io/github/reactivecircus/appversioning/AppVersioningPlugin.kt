@@ -10,7 +10,6 @@ import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.hasPlugin
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.nativeplatform.internal.BuildType
 import org.gradle.util.VersionNumber
@@ -21,6 +20,11 @@ import org.gradle.util.VersionNumber
 @Suppress("UnstableApiUsage")
 class AppVersioningPlugin : Plugin<Project> {
     override fun apply(project: Project) {
+        val agpVersion = VersionNumber.parse(ANDROID_GRADLE_PLUGIN_VERSION)
+        require(agpVersion >= VersionNumber.parse(MIN_AGP_VERSION)) {
+            "Android App Versioning Gradle Plugin requires Android Gradle Plugin $MIN_AGP_VERSION or later. Detected AGP version is $agpVersion."
+        }
+
         val appVersioningExtension = project.extensions.create("appVersioning", AppVersioningExtension::class.java)
 
         project.plugins.withType<AppPlugin> {
@@ -45,17 +49,6 @@ class AppVersioningPlugin : Plugin<Project> {
                     mainOutput.versionCode.set(generatedVersionCode)
                 }
             }
-        }
-
-        project.afterEvaluate {
-            val agpVersion = VersionNumber.parse(ANDROID_GRADLE_PLUGIN_VERSION)
-            require(agpVersion >= VersionNumber.parse(MIN_AGP_VERSION)) {
-                "Android App Versioning Gradle Plugin requires Android Gradle Plugin $MIN_AGP_VERSION or later. Detected AGP version is $agpVersion."
-            }
-            require(plugins.hasPlugin(AppPlugin::class)) {
-                "The Android App Versioning plugin should only be applied to an Android Application project but ${project.displayName} doesn't have the 'com.android.application' plugin applied."
-            }
-            validateExtensions(appVersioningExtension)
         }
     }
 
