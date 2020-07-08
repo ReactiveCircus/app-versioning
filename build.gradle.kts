@@ -1,13 +1,13 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
-val agpVersion = "4.1.0-beta02"
+val agpVersion = "4.1.0-beta03"
 
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     kotlin("jvm") version "1.3.72"
     id("com.gradle.plugin-publish") version "0.11.0"
-    id("com.vanniktech.maven.publish") version "0.11.1"
+    id("com.vanniktech.maven.publish") version "0.12.0"
     id("io.gitlab.arturbosch.detekt") version "1.10.0"
 }
 
@@ -66,7 +66,7 @@ val check by tasks.getting(Task::class) {
 tasks.withType<Test> {
     maxParallelForks = Runtime.getRuntime().availableProcessors() * 2
     testLogging {
-        events(org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+        events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
     }
 }
 
