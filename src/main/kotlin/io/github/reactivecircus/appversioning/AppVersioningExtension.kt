@@ -49,12 +49,49 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
         set(DEFAULT_MAX_DIGITS)
     }
 
+    /**
+     * A lambda for specifying a custom rule for generating versionCode.
+     *
+     * Default is `Int.MIN_VALUE` which indicates no custom rule has been specified.
+     */
+    internal val versionCodeCustomizer = objects.property<VersionCodeCustomizer>().apply {
+        set { Int.MIN_VALUE }
+    }
+
+    /**
+     * Provides a custom rule for generating versionCode by implementing a [GitTagInfo] -> Int lambda, where the [GitTagInfo] is computed and provided
+     * lazily during task execution. This is useful if you want to fully customize how the versionCode is generated.
+     * If not specified, versionCode will be computed from the latest git tag.
+     */
+    fun overrideVersionCode(customizer: VersionCodeCustomizer) {
+        versionCodeCustomizer.set(customizer)
+    }
+
+    /**
+     * A lambda for specifying a custom rule for generating versionName.
+     *
+     * Default is `""` (empty string) which indicates no custom rule has been specified.
+     */
+    internal val versionNameCustomizer = objects.property<VersionNameCustomizer>().apply {
+        set { "" }
+    }
+
+    /**
+     * Provides a custom rule for generating versionName by implementing a [GitTagInfo] -> String lambda, where the [GitTagInfo] is computed and provided
+     * lazily during task execution. This is useful if you want to fully customize how the versionName is generated.
+     * If not specified, versionName will be computed from the latest git tag.
+     */
+    fun overrideVersionName(customizer: VersionNameCustomizer) {
+        versionNameCustomizer.set(customizer)
+    }
+
     companion object {
         const val DEFAULT_RELEASE_BUILD_ONLY = true
         const val DEFAULT_REQUIRE_VALID_GIT_TAG = false
         const val DEFAULT_FETCH_TAGS_WHEN_NONE_EXISTS_LOCALLY = false
         const val DEFAULT_MAX_DIGITS = 3
-        const val MAX_DIGITS_RANGE_MIN = 1
-        const val MAX_DIGITS_RANGE_MAX = 4
     }
 }
+
+internal typealias VersionCodeCustomizer = (GitTagInfo) -> Int
+internal typealias VersionNameCustomizer = (GitTagInfo) -> String

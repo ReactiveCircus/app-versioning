@@ -10,6 +10,7 @@ import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.hasPlugin
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.nativeplatform.internal.BuildType
 import org.gradle.util.VersionNumber
@@ -18,7 +19,7 @@ import org.gradle.util.VersionNumber
  * A plugin that generates and sets the version code and version name for an Android app using the latest git tag.
  */
 @Suppress("UnstableApiUsage")
-class AppVersioningPlugin : Plugin<Project> {
+internal class AppVersioningPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val agpVersion = VersionNumber.parse(ANDROID_GRADLE_PLUGIN_VERSION)
         require(agpVersion >= VersionNumber.parse(MIN_AGP_VERSION)) {
@@ -50,12 +51,11 @@ class AppVersioningPlugin : Plugin<Project> {
                 }
             }
         }
-    }
 
-    private fun validateExtensions(extension: AppVersioningExtension) {
-        val maxDigits = extension.maxDigits.get()
-        require(maxDigits >= AppVersioningExtension.MAX_DIGITS_RANGE_MIN && maxDigits <= AppVersioningExtension.MAX_DIGITS_RANGE_MAX) {
-            "`maxDigits` must be at least `${AppVersioningExtension.MAX_DIGITS_RANGE_MIN}` and at most `${AppVersioningExtension.MAX_DIGITS_RANGE_MAX}`."
+        project.afterEvaluate {
+            require(plugins.hasPlugin(AppPlugin::class)) {
+                "Android App Versioning plugin should only be applied to an Android Application project but ${project.displayName} doesn't have the 'com.android.application' plugin applied."
+            }
         }
     }
 
@@ -74,6 +74,8 @@ class AppVersioningPlugin : Plugin<Project> {
         requireValidTag.set(extension.requireValidGitTag)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
 
+        versionCodeCustomizer.set(extension.versionCodeCustomizer)
+        versionNameCustomizer.set(extension.versionNameCustomizer)
         versionCodeFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/$variantName/$VERSION_CODE_RESULT_FILE"))
         versionNameFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/$variantName/$VERSION_NAME_RESULT_FILE"))
     }

@@ -36,6 +36,12 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
     @get:Input
     abstract val fetchTagsWhenNoneExistsLocally: Property<Boolean>
 
+    @get:Input
+    abstract val versionCodeCustomizer: Property<VersionCodeCustomizer>
+
+    @get:Input
+    abstract val versionNameCustomizer: Property<VersionNameCustomizer>
+
     @get:OutputFile
     abstract val versionCodeFile: RegularFileProperty
 
@@ -44,15 +50,19 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
 
     @TaskAction
     fun generate() {
+        check(project.rootProject.file(".git").exists()) {
+            "${project.rootProject.displayName} is not a git repository."
+        }
+
         val maxDigitsAllowed = maxDigits.get()
         check(maxDigitsAllowed in MAX_DIGITS_RANGE_MIN..MAX_DIGITS_RANGE_MAX) {
             "`maxDigits` must be at least `$MAX_DIGITS_RANGE_MIN` and at most `$MAX_DIGITS_RANGE_MAX`."
         }
 
-        val gitTagVersion: GitTagVersion =
-            project.getGitTagVersion(maxDigitsAllowed) ?: if (fetchTagsWhenNoneExistsLocally.get()) {
+        val gitTagInfo: GitTagInfo =
+            project.getGitTagInfo(maxDigitsAllowed) ?: if (fetchTagsWhenNoneExistsLocally.get()) {
                 project.fetchGitTagsIfNoneExistsLocally()
-                project.getGitTagVersion(maxDigitsAllowed)
+                project.getGitTagInfo(maxDigitsAllowed)
             } else {
                 null
             }.let {
@@ -66,18 +76,20 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
                     }
                 } else {
                     logger.warn("No valid git tag found. Falling back to version name \"0.0.0\" and version code 0.")
-                    GitTagVersion.FALLBACK
+                    GitTagInfo.FALLBACK
                 }
             }
 
-        val versionCode = gitTagVersion.major * 10.0.pow(maxDigitsAllowed * 2).toInt() +
-                gitTagVersion.minor * 10.0.pow(maxDigitsAllowed).toInt() +
-                gitTagVersion.patch +
-                gitTagVersion.commitsSinceLatestTag
+        val versionCode = versionCodeCustomizer.get().invoke(gitTagInfo).takeIf {
+            it > Int.MIN_VALUE
+        } ?: gitTagInfo.major * 10.0.pow(maxDigitsAllowed * 2).toInt() +
+        gitTagInfo.minor * 10.0.pow(maxDigitsAllowed).toInt() +
+        gitTagInfo.patch +
+        gitTagInfo.commitsSinceLatestTag
         versionCodeFile.get().asFile.writeText(versionCode.toString())
         logger.lifecycle("Generated app version code: $versionCode.")
 
-        val versionName = gitTagVersion.toString()
+        val versionName = versionNameCustomizer.get().invoke(gitTagInfo).ifBlank { gitTagInfo.toString() }
         versionNameFile.get().asFile.writeText(versionName)
         logger.lifecycle("Generated app version name: \"$versionName\".")
     }
@@ -106,7 +118,7 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
     }
 }
 
-private class GitTagVersion(
+class GitTagInfo(
     val major: Int,
     val minor: Int,
     val patch: Int,
@@ -123,11 +135,12 @@ private class GitTagVersion(
     }
 
     companion object {
-        val FALLBACK = GitTagVersion(0, 0, 0, 0)
+        val FALLBACK = GitTagInfo(0, 0, 0, 0)
     }
 }
 
-private fun Project.getGitTagVersion(maxDigits: Int): GitTagVersion? =
+// TODO add commitHash and commitsInCurrentBranch to GitTagInfo
+private fun Project.getGitTagInfo(maxDigits: Int): GitTagInfo? =
     "git describe --match [0-9]*.[0-9]*.[0-9]* --tags --long"
         .trimIndent().execute(workingDir = rootDir)
         .replace("-\\bg[0-9a-f]{5,40}\\b".toRegex(), "")
@@ -139,7 +152,7 @@ private fun Project.getGitTagVersion(maxDigits: Int): GitTagVersion? =
         .split(".")
         .let { parts ->
             if (parts.size == 4) {
-                GitTagVersion(
+                GitTagInfo(
                     major = parts[0].toInt(),
                     minor = parts[1].toInt(),
                     patch = parts[2].toInt(),
