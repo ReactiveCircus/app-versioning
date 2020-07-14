@@ -2,6 +2,8 @@ package io.github.reactivecircus.appversioning
 
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
+import io.github.reactivecircus.appversioning.tasks.GenerateAppVersionInfo
+import io.github.reactivecircus.appversioning.tasks.PrintAppVersionInfo
 import org.gradle.api.Project
 import org.gradle.api.ProjectConfigurationException
 import org.gradle.api.internal.project.DefaultProject

@@ -1,4 +1,4 @@
-package io.github.reactivecircus.appversioning
+package io.github.reactivecircus.appversioning.internal
 
 import java.io.File
 import java.util.concurrent.TimeUnit

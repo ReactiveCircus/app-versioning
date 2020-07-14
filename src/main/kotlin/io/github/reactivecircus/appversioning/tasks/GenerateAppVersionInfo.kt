@@ -1,7 +1,11 @@
 @file:Suppress("MagicNumber")
 
-package io.github.reactivecircus.appversioning
+package io.github.reactivecircus.appversioning.tasks
 
+import io.github.reactivecircus.appversioning.GitTag
+import io.github.reactivecircus.appversioning.VersionCodeCustomizer
+import io.github.reactivecircus.appversioning.VersionNameCustomizer
+import io.github.reactivecircus.appversioning.internal.execute
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
@@ -59,10 +63,10 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
             "`maxDigits` must be at least `$MAX_DIGITS_RANGE_MIN` and at most `$MAX_DIGITS_RANGE_MAX`."
         }
 
-        val gitTagInfo: GitTagInfo =
-            project.getGitTagInfo(maxDigitsAllowed) ?: if (fetchTagsWhenNoneExistsLocally.get()) {
+        val gitTag: GitTag =
+            project.getLatestGitTag(maxDigitsAllowed) ?: if (fetchTagsWhenNoneExistsLocally.get()) {
                 project.fetchGitTagsIfNoneExistsLocally()
-                project.getGitTagInfo(maxDigitsAllowed)
+                project.getLatestGitTag(maxDigitsAllowed)
             } else {
                 null
             }.let {
@@ -76,20 +80,20 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
                     }
                 } else {
                     logger.warn("No valid git tag found. Falling back to version name \"0.0.0\" and version code 0.")
-                    GitTagInfo.FALLBACK
+                    GitTag.FALLBACK
                 }
             }
 
-        val versionCode = versionCodeCustomizer.get().invoke(gitTagInfo).takeIf {
+        val versionCode = versionCodeCustomizer.get().invoke(gitTag).takeIf {
             it > Int.MIN_VALUE
-        } ?: gitTagInfo.major * 10.0.pow(maxDigitsAllowed * 2).toInt() +
-        gitTagInfo.minor * 10.0.pow(maxDigitsAllowed).toInt() +
-        gitTagInfo.patch +
-        gitTagInfo.commitsSinceLatestTag
+        } ?: gitTag.major * 10.0.pow(maxDigitsAllowed * 2).toInt() +
+        gitTag.minor * 10.0.pow(maxDigitsAllowed).toInt() +
+        gitTag.patch +
+        gitTag.commitsSinceLatestTag
         versionCodeFile.get().asFile.writeText(versionCode.toString())
         logger.lifecycle("Generated app version code: $versionCode.")
 
-        val versionName = versionNameCustomizer.get().invoke(gitTagInfo).ifBlank { gitTagInfo.toString() }
+        val versionName = versionNameCustomizer.get().invoke(gitTag).ifBlank { gitTag.toString() }
         versionNameFile.get().asFile.writeText(versionName)
         logger.lifecycle("Generated app version name: \"$versionName\".")
     }
@@ -118,29 +122,7 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
     }
 }
 
-class GitTagInfo(
-    val major: Int,
-    val minor: Int,
-    val patch: Int,
-    val commitsSinceLatestTag: Int
-) {
-    override fun toString(): String {
-        return "$major.$minor.$patch".let { semVersion ->
-            if (commitsSinceLatestTag > 0) {
-                "$semVersion.$commitsSinceLatestTag"
-            } else {
-                semVersion
-            }
-        }
-    }
-
-    companion object {
-        val FALLBACK = GitTagInfo(0, 0, 0, 0)
-    }
-}
-
-// TODO add commitHash and commitsInCurrentBranch to GitTagInfo
-private fun Project.getGitTagInfo(maxDigits: Int): GitTagInfo? =
+private fun Project.getLatestGitTag(maxDigits: Int): GitTag? =
     "git describe --match [0-9]*.[0-9]*.[0-9]* --tags --long"
         .trimIndent().execute(workingDir = rootDir)
         .replace("-\\bg[0-9a-f]{5,40}\\b".toRegex(), "")
@@ -152,7 +134,7 @@ private fun Project.getGitTagInfo(maxDigits: Int): GitTagInfo? =
         .split(".")
         .let { parts ->
             if (parts.size == 4) {
-                GitTagInfo(
+                GitTag(
                     major = parts[0].toInt(),
                     minor = parts[1].toInt(),
                     patch = parts[2].toInt(),

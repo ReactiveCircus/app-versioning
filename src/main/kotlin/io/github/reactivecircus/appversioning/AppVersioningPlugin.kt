@@ -5,6 +5,8 @@ import com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
 import com.android.build.api.variant.VariantOutputConfiguration
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import io.github.reactivecircus.appversioning.tasks.GenerateAppVersionInfo
+import io.github.reactivecircus.appversioning.tasks.PrintAppVersionInfo
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider

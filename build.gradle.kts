@@ -36,7 +36,7 @@ pluginBundle {
 }
 
 gradlePlugin {
-    val appVersioning by plugins.creating {
+    plugins.create("appVersioning") {
         id = "io.github.reactivecircus.appversioning"
         displayName = "Android App Versioning Gradle Plugin."
         description = "Gradle plugin for lazily generating Android app's versionCode & versionName from Git tags."
@@ -44,18 +44,18 @@ gradlePlugin {
     }
 }
 
-val fixtureClasspath by configurations.creating
-
-tasks.withType<PluginUnderTestMetadata> {
-    pluginClasspath.from(configurations.getByName("fixtureClasspath"))
+val functionalTestSourceSet = sourceSets.create("functionalTest") {
+    compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
+    runtimeClasspath += output + compileClasspath
 }
 
-val functionalTestSourceSet = sourceSets.create("functionalTest") {}
+val functionalTestImplementation = configurations.getByName("functionalTestImplementation")
+    .extendsFrom(configurations.getByName("testImplementation"))
 
 gradlePlugin.testSourceSets(functionalTestSourceSet)
-configurations.getByName("functionalTestImplementation").extendsFrom(configurations.getByName("testImplementation"))
 
 val functionalTest by tasks.creating(Test::class) {
+    maxParallelForks = Runtime.getRuntime().availableProcessors() * 2
     testClassesDirs = functionalTestSourceSet.output.classesDirs
     classpath = functionalTestSourceSet.runtimeClasspath
 }

@@ -1,4 +1,4 @@
-package io.github.reactivecircus.appversioning
+package io.github.reactivecircus.appversioning.tasks
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property

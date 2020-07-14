@@ -45,7 +45,7 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     val maxDigits = objects.property<Int>().convention(DEFAULT_MAX_DIGITS)
 
     /**
-     * Provides a custom rule for generating versionCode by implementing a [GitTagInfo] -> Int lambda, where the [GitTagInfo] is computed and provided
+     * Provides a custom rule for generating versionCode by implementing a [GitTag] -> Int lambda, where the [GitTag] is computed and provided
      * lazily during task execution. This is useful if you want to fully customize how the versionCode is generated.
      * If not specified, versionCode will be computed from the latest git tag.
      */
@@ -54,7 +54,7 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     }
 
     /**
-     * Provides a custom rule for generating versionName by implementing a [GitTagInfo] -> String lambda, where the [GitTagInfo] is computed and provided
+     * Provides a custom rule for generating versionName by implementing a [GitTag] -> String lambda, where the [GitTag] is computed and provided
      * lazily during task execution. This is useful if you want to fully customize how the versionName is generated.
      * If not specified, versionName will be computed from the latest git tag.
      */
@@ -84,5 +84,5 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     }
 }
 
-internal typealias VersionCodeCustomizer = (GitTagInfo) -> Int
-internal typealias VersionNameCustomizer = (GitTagInfo) -> String
+internal typealias VersionCodeCustomizer = (GitTag) -> Int
+internal typealias VersionNameCustomizer = (GitTag) -> String
