@@ -10,10 +10,10 @@ import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.hasPlugin
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.nativeplatform.internal.BuildType
 import org.gradle.util.VersionNumber
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * A plugin that generates and sets the version code and version name for an Android app using the latest git tag.
@@ -22,13 +22,15 @@ import org.gradle.util.VersionNumber
 internal class AppVersioningPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val agpVersion = VersionNumber.parse(ANDROID_GRADLE_PLUGIN_VERSION)
-        require(agpVersion >= VersionNumber.parse(MIN_AGP_VERSION)) {
+        check(agpVersion >= VersionNumber.parse(MIN_AGP_VERSION)) {
             "Android App Versioning Gradle Plugin requires Android Gradle Plugin $MIN_AGP_VERSION or later. Detected AGP version is $agpVersion."
         }
 
-        val appVersioningExtension = project.extensions.create("appVersioning", AppVersioningExtension::class.java)
+        val androidAppPluginApplied = AtomicBoolean(false)
 
+        val appVersioningExtension = project.extensions.create("appVersioning", AppVersioningExtension::class.java)
         project.plugins.withType<AppPlugin> {
+            androidAppPluginApplied.set(true)
             project.extensions.getByType<BaseAppModuleExtension>().onVariantProperties {
                 if (!appVersioningExtension.releaseBuildOnly.get() || buildType == BuildType.RELEASE.name) {
                     val generateAppVersionInfo = project.registerGenerateAppVersionInfoTask(
@@ -53,7 +55,7 @@ internal class AppVersioningPlugin : Plugin<Project> {
         }
 
         project.afterEvaluate {
-            require(plugins.hasPlugin(AppPlugin::class)) {
+            check(androidAppPluginApplied.get()) {
                 "Android App Versioning plugin should only be applied to an Android Application project but ${project.displayName} doesn't have the 'com.android.application' plugin applied."
             }
         }
