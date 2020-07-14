@@ -6,6 +6,7 @@ import org.gradle.kotlin.dsl.property
 /**
  * Extension for [AppVersioningPlugin].
  */
+@Suppress("UnstableApiUsage")
 open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
 
     /**
@@ -13,9 +14,7 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
      *
      * Default is `true`.
      */
-    val releaseBuildOnly = objects.property<Boolean>().apply {
-        set(DEFAULT_RELEASE_BUILD_ONLY)
-    }
+    val releaseBuildOnly = objects.property<Boolean>().convention(DEFAULT_RELEASE_BUILD_ONLY)
 
     /**
      * Whether a valid git tag is required.
@@ -24,18 +23,16 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
      *
      * Default is `false`.
      */
-    val requireValidGitTag = objects.property<Boolean>().apply {
-        set(DEFAULT_REQUIRE_VALID_GIT_TAG)
-    }
+    val requireValidGitTag = objects.property<Boolean>().convention(DEFAULT_REQUIRE_VALID_GIT_TAG)
 
     /**
      * Whether to fetch git tags from remote when no valid git tag can be found locally.
      *
      * Default is `false`.
      */
-    val fetchTagsWhenNoneExistsLocally = objects.property<Boolean>().apply {
-        set(DEFAULT_FETCH_TAGS_WHEN_NONE_EXISTS_LOCALLY)
-    }
+    val fetchTagsWhenNoneExistsLocally = objects.property<Boolean>().convention(
+        DEFAULT_FETCH_TAGS_WHEN_NONE_EXISTS_LOCALLY
+    )
 
     /**
      * Maximum number of digits allowed for any of the MAJOR, MINOR, or PATCH version.
@@ -45,18 +42,7 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
      *
      * Default is `3`.
      */
-    val maxDigits = objects.property<Int>().apply {
-        set(DEFAULT_MAX_DIGITS)
-    }
-
-    /**
-     * A lambda for specifying a custom rule for generating versionCode.
-     *
-     * Default is `Int.MIN_VALUE` which indicates no custom rule has been specified.
-     */
-    internal val versionCodeCustomizer = objects.property<VersionCodeCustomizer>().apply {
-        set { Int.MIN_VALUE }
-    }
+    val maxDigits = objects.property<Int>().convention(DEFAULT_MAX_DIGITS)
 
     /**
      * Provides a custom rule for generating versionCode by implementing a [GitTagInfo] -> Int lambda, where the [GitTagInfo] is computed and provided
@@ -68,15 +54,6 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     }
 
     /**
-     * A lambda for specifying a custom rule for generating versionName.
-     *
-     * Default is `""` (empty string) which indicates no custom rule has been specified.
-     */
-    internal val versionNameCustomizer = objects.property<VersionNameCustomizer>().apply {
-        set { "" }
-    }
-
-    /**
      * Provides a custom rule for generating versionName by implementing a [GitTagInfo] -> String lambda, where the [GitTagInfo] is computed and provided
      * lazily during task execution. This is useful if you want to fully customize how the versionName is generated.
      * If not specified, versionName will be computed from the latest git tag.
@@ -84,6 +61,20 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     fun overrideVersionName(customizer: VersionNameCustomizer) {
         versionNameCustomizer.set(customizer)
     }
+
+    /**
+     * A lambda for specifying a custom rule for generating versionCode.
+     *
+     * Default is `Int.MIN_VALUE` which indicates no custom rule has been specified.
+     */
+    internal val versionCodeCustomizer = objects.property<VersionCodeCustomizer>().convention { Int.MIN_VALUE }
+
+    /**
+     * A lambda for specifying a custom rule for generating versionName.
+     *
+     * Default is `""` (empty string) which indicates no custom rule has been specified.
+     */
+    internal val versionNameCustomizer = objects.property<VersionNameCustomizer>().convention { "" }
 
     companion object {
         const val DEFAULT_RELEASE_BUILD_ONLY = true
