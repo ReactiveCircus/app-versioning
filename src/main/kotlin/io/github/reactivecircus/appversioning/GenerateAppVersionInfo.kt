@@ -125,9 +125,9 @@ class GitTagInfo(
     val commitsSinceLatestTag: Int
 ) {
     override fun toString(): String {
-        return "${major}.${minor}.${patch}".let { semVersion ->
+        return "$major.$minor.$patch".let { semVersion ->
             if (commitsSinceLatestTag > 0) {
-                "$semVersion.${commitsSinceLatestTag}"
+                "$semVersion.$commitsSinceLatestTag"
             } else {
                 semVersion
             }

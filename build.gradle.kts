@@ -1,6 +1,7 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 val agpVersion = "4.1.0-beta03"
+val detekt = "1.10.0"
 
 plugins {
     `java-gradle-plugin`
@@ -89,3 +90,5 @@ detekt {
         html.destination = file("${project.buildDir}/reports/detekt/${project.name}.html")
     }
 }
+
+dependencies.add("detektPlugins", "io.gitlab.arturbosch.detekt:detekt-formatting:${detekt}")

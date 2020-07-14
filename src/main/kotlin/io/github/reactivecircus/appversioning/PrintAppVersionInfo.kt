@@ -16,7 +16,6 @@ abstract class PrintAppVersionInfo : DefaultTask() {
     @get:Input
     abstract val versionName: Property<String>
 
-
     @TaskAction
     fun print() {
         println("versionCode: ${versionCode.get()}")
