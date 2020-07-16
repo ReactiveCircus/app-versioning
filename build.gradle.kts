@@ -1,6 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
-val agpVersion = "4.1.0-beta03"
+val agpVersion = "4.1.0-beta04"
 val detekt = "1.10.0"
 
 plugins {
