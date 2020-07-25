@@ -35,16 +35,6 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     )
 
     /**
-     * Maximum number of digits allowed for any of the MAJOR, MINOR, or PATCH version.
-     * E.g. when set to `3`, the maximum version allowed for MAJOR, MINOR, or PATCH is 999.
-     *
-     * Must be at least `1` and at most `4`.
-     *
-     * Default is `3`.
-     */
-    val maxDigits = objects.property<Int>().convention(DEFAULT_MAX_DIGITS)
-
-    /**
      * Provides a custom rule for generating versionCode by implementing a [GitTag] -> Int lambda, where the [GitTag] is computed and provided
      * lazily during task execution. This is useful if you want to fully customize how the versionCode is generated.
      * If not specified, versionCode will be computed from the latest git tag.
@@ -77,10 +67,9 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     internal val versionNameCustomizer = objects.property<VersionNameCustomizer>().convention { "" }
 
     companion object {
-        const val DEFAULT_RELEASE_BUILD_ONLY = true
-        const val DEFAULT_REQUIRE_VALID_GIT_TAG = false
-        const val DEFAULT_FETCH_TAGS_WHEN_NONE_EXISTS_LOCALLY = false
-        const val DEFAULT_MAX_DIGITS = 3
+        internal const val DEFAULT_RELEASE_BUILD_ONLY = true
+        internal const val DEFAULT_REQUIRE_VALID_GIT_TAG = false
+        internal const val DEFAULT_FETCH_TAGS_WHEN_NONE_EXISTS_LOCALLY = false
     }
 }
 

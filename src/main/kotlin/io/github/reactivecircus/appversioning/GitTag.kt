@@ -2,7 +2,7 @@ package io.github.reactivecircus.appversioning
 
 // TODO add commitHash, rawTagName etc to GitTag
 /**
- * Type-safe representation of a git-tag.
+ * Type-safe representation of a git tag.
  */
 class GitTag(
     val major: Int,

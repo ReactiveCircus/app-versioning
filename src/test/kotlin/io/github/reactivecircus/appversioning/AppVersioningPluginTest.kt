@@ -153,7 +153,7 @@ class AppVersioningPluginTest {
 
         libraryProject.pluginManager.apply(LibraryPlugin::class.java)
         libraryProject.pluginManager.apply(AppVersioningPlugin::class.java)
-
+        libraryProject.createAndroidLibraryProject()
         assertFailsWith<ProjectConfigurationException> {
             (libraryProject as DefaultProject).evaluate()
         }

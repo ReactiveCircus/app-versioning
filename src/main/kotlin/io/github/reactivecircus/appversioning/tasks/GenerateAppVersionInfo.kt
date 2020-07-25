@@ -22,7 +22,7 @@ import org.gradle.api.tasks.TaskAction
 import kotlin.math.pow
 
 /**
- * Generates app's versionCode and versionName based on git-tag.
+ * Generates app's versionCode and versionName based on git tags.
  */
 @CacheableTask
 abstract class GenerateAppVersionInfo : DefaultTask() {
@@ -30,9 +30,6 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val gitRefsDirectory: DirectoryProperty
-
-    @get:Input
-    abstract val maxDigits: Property<Int>
 
     @get:Input
     abstract val requireValidTag: Property<Boolean>
@@ -58,15 +55,10 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
             "${project.rootProject.displayName} is not a git repository."
         }
 
-        val maxDigitsAllowed = maxDigits.get()
-        check(maxDigitsAllowed in MAX_DIGITS_RANGE_MIN..MAX_DIGITS_RANGE_MAX) {
-            "`maxDigits` must be at least `$MAX_DIGITS_RANGE_MIN` and at most `$MAX_DIGITS_RANGE_MAX`."
-        }
-
         val gitTag: GitTag =
-            project.getLatestGitTag(maxDigitsAllowed) ?: if (fetchTagsWhenNoneExistsLocally.get()) {
+            project.getLatestGitTag(MAX_DIGITS_ALLOCATED) ?: if (fetchTagsWhenNoneExistsLocally.get()) {
                 project.fetchGitTagsIfNoneExistsLocally()
-                project.getLatestGitTag(maxDigitsAllowed)
+                project.getLatestGitTag(MAX_DIGITS_ALLOCATED)
             } else {
                 null
             }.let {
@@ -75,7 +67,6 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
                         """
                         Could not find a git tag that follows semantic versioning.
                         Note that tags with additional labels after MAJOR.MINOR.PATCH are ignored.
-                        Tags with more than $maxDigitsAllowed digits for any of the MAJOR, MINOR or PATCH version are also ignored.
                     """.trimIndent()
                     }
                 } else {
@@ -86,10 +77,10 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
 
         val versionCode = versionCodeCustomizer.get().invoke(gitTag).takeIf {
             it > Int.MIN_VALUE
-        } ?: gitTag.major * 10.0.pow(maxDigitsAllowed * 2).toInt() +
-        gitTag.minor * 10.0.pow(maxDigitsAllowed).toInt() +
+        } ?: gitTag.major * 10.0.pow(MAX_DIGITS_ALLOCATED * 2).toInt() +
+        gitTag.minor * 10.0.pow(MAX_DIGITS_ALLOCATED).toInt() +
         gitTag.patch +
-        gitTag.commitsSinceLatestTag
+        gitTag.commitsSinceLatestTag // TODO do not add build number by default. Can be achieved with `overrideVersionCode`.
         versionCodeFile.get().asFile.writeText(versionCode.toString())
         logger.lifecycle("Generated app version code: $versionCode.")
 
@@ -116,9 +107,8 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
 
     companion object {
         const val TASK_NAME_PREFIX = "generateAppVersionInfo"
-        const val TASK_DESCRIPTION_PREFIX = "Generates app's versionCode and versionName based on git-tag"
-        internal const val MAX_DIGITS_RANGE_MIN = 1
-        internal const val MAX_DIGITS_RANGE_MAX = 4
+        const val TASK_DESCRIPTION_PREFIX = "Generates app's versionCode and versionName based on git tags"
+        private const val MAX_DIGITS_ALLOCATED = 2
     }
 }
 
@@ -143,6 +133,7 @@ private fun Project.getLatestGitTag(maxDigits: Int): GitTag? =
             } else null
         }
 
+// TODO do not filter based on [maxDigits], check if matched tag has version part that exceeds 2 digits and crash and suggest using `overrideVersionCode`.
 private fun buildGitTagRegex(maxDigits: Int): Regex =
     "^(0|[1-9]\\d{0,${maxDigits - 1}})\\.(0|[1-9]\\d{0,${maxDigits - 1}})\\.(0|[1-9]\\d{0,${maxDigits - 1}})\\.(0|[1-9]\\d*)\$".toRegex()
 

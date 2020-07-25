@@ -74,7 +74,6 @@ internal class AppVersioningPlugin : Plugin<Project> {
         description = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the $variantName variant."
 
         gitRefsDirectory.set(rootProject.file(GIT_REFS_DIRECTORY))
-        maxDigits.set(extension.maxDigits)
         requireValidTag.set(extension.requireValidGitTag)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
 
