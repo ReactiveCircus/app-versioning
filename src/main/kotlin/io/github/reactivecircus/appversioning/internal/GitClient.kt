@@ -3,53 +3,97 @@ package io.github.reactivecircus.appversioning.internal
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-internal class GitClient private constructor(private val workingDir: File) {
+@OptIn(ExperimentalStdlibApi::class)
+internal class GitClient private constructor(private val projectDir: File) {
 
     fun listLocalTags(): List<String> {
-        return "git tag --list".execute(workingDir).lines()
+        return listOf("git", "tag", "--list").execute(projectDir).lines()
     }
 
     fun fetchRemoteTags() {
-        "git fetch --tag".execute(workingDir)
+        listOf("git", "fetch", "--tags").execute(projectDir)
     }
 
     fun describeLatestTag(pattern: String? = null): String? {
-        val matchPattern = pattern?.let { "--match $it" } ?: ""
-        return runCatching {
-            "git describe $matchPattern --tags --long".execute(workingDir)
-        }.getOrNull()
+        val command = buildList {
+            add("git")
+            add("describe")
+            if (pattern != null) {
+                add("--match")
+                add(pattern)
+            }
+            add("--tags")
+            add("--long")
+        }
+        return runCatching { command.execute(projectDir) }.getOrNull()
+    }
+
+    fun commit(message: String, allowEmpty: Boolean = true): CommitId {
+        val commitCommand = buildList {
+            add("git")
+            add("commit")
+            if (allowEmpty) {
+                add("--allow-empty")
+            }
+            add("-m")
+            add(message)
+        }
+        commitCommand.execute(projectDir)
+
+        val getCommitIdCommand = listOf("git", "rev-parse", "--short", "HEAD")
+        return CommitId(getCommitIdCommand.execute(projectDir))
+    }
+
+    fun tag(name: String, message: String, commitId: CommitId? = null) {
+        val command = buildList {
+            add("git")
+            add("tag")
+            add("-a")
+            add(name)
+            if (commitId != null) {
+                add(commitId.value)
+            }
+            add("-m")
+            add(message)
+        }
+        command.execute(projectDir)
     }
 
     companion object {
 
-        fun initialize(workingDir: File): GitClient {
-            return GitClient(workingDir).apply {
-                "git init".execute(workingDir)
+        fun initialize(projectDir: File): GitClient {
+            return GitClient(projectDir).apply {
+                listOf("git", "init").execute(projectDir)
             }
         }
 
-        fun open(workingDir: File): GitClient {
-            require(workingDir.isInValidGitRepo)
-            return GitClient(workingDir)
+        fun open(projectDir: File): GitClient {
+            require(projectDir.isInValidGitRepo)
+            return GitClient(projectDir)
         }
     }
 
     // TODO add String -> GitTag parser
 }
 
-internal val File.isInValidGitRepo: Boolean
+internal inline class CommitId(val value: String)
+
+private val File.isInValidGitRepo: Boolean
     get() = runCatching {
-        "git rev-parse --is-inside-work-tree".execute(this).toBoolean()
+        listOf("git", "rev-parse", "--is-inside-work-tree").execute(this).toBoolean()
     }.getOrDefault(false)
 
-private fun String.execute(workingDir: File, timeoutInSeconds: Long = DEFAULT_COMMAND_TIMEOUT_SECONDS): String {
-    val parts = this.split("\\s".toRegex())
-    val process = ProcessBuilder(parts)
+private fun List<String>.execute(workingDir: File, timeoutInSeconds: Long = DEFAULT_COMMAND_TIMEOUT_SECONDS): String {
+    val process = ProcessBuilder(this)
         .directory(workingDir)
-        .redirectOutput(ProcessBuilder.Redirect.PIPE)
-        .redirectError(ProcessBuilder.Redirect.PIPE)
         .start()
-    process.waitFor(timeoutInSeconds, TimeUnit.SECONDS)
+    if (!process.waitFor(timeoutInSeconds, TimeUnit.SECONDS)) {
+        process.destroy()
+        throw IllegalStateException("Execution timeout: $this")
+    }
+    if (process.exitValue() != 0) {
+        throw IllegalStateException("Execution failed with exit code: ${process.exitValue()}: $this")
+    }
     return process.inputStream.bufferedReader().readText().trim()
 }
 

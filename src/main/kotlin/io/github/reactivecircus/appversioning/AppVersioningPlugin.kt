@@ -73,7 +73,7 @@ internal class AppVersioningPlugin : Plugin<Project> {
         group = APP_VERSIONING_TASK_GROUP
         description = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the $variantName variant."
 
-        gitRefsDirectory.set(rootProject.file(GIT_REFS_DIRECTORY))
+        gitRefsDirectory.set(project.rootProject.file(GIT_REFS_DIRECTORY).let { if (it.exists()) it else null })
         requireValidTag.set(extension.requireValidGitTag)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
 
@@ -99,7 +99,7 @@ internal class AppVersioningPlugin : Plugin<Project> {
     }
 
     companion object {
-        private const val MIN_AGP_VERSION = "4.0.0"
+        const val MIN_AGP_VERSION = "4.0.0"
     }
 }
 

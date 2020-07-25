@@ -6,7 +6,6 @@ import io.github.reactivecircus.appversioning.GitTag
 import io.github.reactivecircus.appversioning.VersionCodeCustomizer
 import io.github.reactivecircus.appversioning.VersionNameCustomizer
 import io.github.reactivecircus.appversioning.internal.GitClient
-import io.github.reactivecircus.appversioning.internal.isInValidGitRepo
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
@@ -15,6 +14,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
@@ -27,6 +27,7 @@ import kotlin.math.pow
 @CacheableTask
 abstract class GenerateAppVersionInfo : DefaultTask() {
 
+    @get:Optional
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val gitRefsDirectory: DirectoryProperty
@@ -51,8 +52,8 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
 
     @TaskAction
     fun generate() {
-        check(project.rootProject.rootDir.isInValidGitRepo) {
-            "${project.rootProject.displayName} is not a git repository."
+        check(gitRefsDirectory.isPresent) {
+            "Android App Versioning Gradle Plugin works with git tags but ${project.rootProject.displayName} is not a valid git repository."
         }
 
         val gitClient = GitClient.open(project.rootProject.rootDir)
@@ -88,11 +89,11 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
         gitTag.patch +
         gitTag.commitsSinceLatestTag // TODO do not add build number by default. Can be achieved with `overrideVersionCode`.
         versionCodeFile.get().asFile.writeText(versionCode.toString())
-        logger.lifecycle("Generated app version code: $versionCode.")
+        logger.info("Generated app version code: $versionCode.")
 
         val versionName = versionNameCustomizer.get().invoke(gitTag).ifBlank { gitTag.toString() }
         versionNameFile.get().asFile.writeText(versionName)
-        logger.lifecycle("Generated app version name: \"$versionName\".")
+        logger.info("Generated app version name: \"$versionName\".")
     }
 
     /**

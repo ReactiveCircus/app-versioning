@@ -1,7 +1,13 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val agpVersion = "4.1.0-beta05"
-val detekt = "1.10.0"
+@Suppress("ClassName")
+object versions {
+    const val agp = "4.2.0-alpha05"
+    const val detekt = "1.10.0"
+    const val junit = "4.13"
+    const val truth = "1.0.1"
+}
 
 plugins {
     `java-gradle-plugin`
@@ -44,24 +50,13 @@ gradlePlugin {
     }
 }
 
-val functionalTestSourceSet = sourceSets.create("functionalTest") {
-    compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
-    runtimeClasspath += output + compileClasspath
+val fixtureClasspath: Configuration by configurations.creating
+tasks.withType<PluginUnderTestMetadata> {
+    pluginClasspath.from(fixtureClasspath)
 }
 
-val functionalTestImplementation = configurations.getByName("functionalTestImplementation")
-    .extendsFrom(configurations.getByName("testImplementation"))
-
-gradlePlugin.testSourceSets(functionalTestSourceSet)
-
-val functionalTest by tasks.creating(Test::class) {
-    maxParallelForks = Runtime.getRuntime().availableProcessors() * 2
-    testClassesDirs = functionalTestSourceSet.output.classesDirs
-    classpath = functionalTestSourceSet.runtimeClasspath
-}
-
-val check by tasks.getting(Task::class) {
-    dependsOn(functionalTest)
+configurations {
+    testImplementation.get().extendsFrom(configurations.compileOnly.get())
 }
 
 tasks.withType<Test> {
@@ -71,14 +66,27 @@ tasks.withType<Test> {
     }
 }
 
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xinline-classes", "-Xopt-in=kotlin.Experimental")
+    }
+}
+
+@Suppress("UnstableApiUsage")
+val fixtureAgpVersion = providers
+    .environmentVariable("AGP_VERSION")
+    .forUseAtConfigurationTime()
+    .getOrElse(versions.agp)
+
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    compileOnly("com.android.tools.build:gradle:$agpVersion")
+    compileOnly("com.android.tools.build:gradle:${versions.agp}")
 
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation("com.android.tools.build:gradle:$agpVersion")
+    testImplementation("junit:junit:${versions.junit}")
+    testImplementation("com.google.truth:truth:${versions.truth}")
+    testImplementation("com.android.tools.build:gradle:${versions.agp}")
+    fixtureClasspath("com.android.tools.build:gradle:${fixtureAgpVersion}")
 }
 
 detekt {
@@ -91,4 +99,4 @@ detekt {
     }
 }
 
-dependencies.add("detektPlugins", "io.gitlab.arturbosch.detekt:detekt-formatting:${detekt}")
+dependencies.add("detektPlugins", "io.gitlab.arturbosch.detekt:detekt-formatting:${versions.detekt}")

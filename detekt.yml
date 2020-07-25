@@ -3,7 +3,7 @@ complexity:
   LongMethod:
     active: true
     threshold: 60
-    excludes: ["**/test/**","**/functionalTest/**"]
+    excludes: ["**/test/**"]
 
 formatting:
   active: true

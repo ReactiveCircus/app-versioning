@@ -18,8 +18,8 @@ abstract class PrintAppVersionInfo : DefaultTask() {
 
     @TaskAction
     fun print() {
-        println("versionCode: ${versionCode.get()}")
-        println("versionName: ${versionName.get()}")
+        logger.quiet("versionCode: ${versionCode.get()}")
+        logger.quiet("versionName: ${versionName.get()}")
     }
 
     companion object {
