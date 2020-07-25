@@ -5,9 +5,9 @@ package io.github.reactivecircus.appversioning.tasks
 import io.github.reactivecircus.appversioning.GitTag
 import io.github.reactivecircus.appversioning.VersionCodeCustomizer
 import io.github.reactivecircus.appversioning.VersionNameCustomizer
-import io.github.reactivecircus.appversioning.internal.execute
+import io.github.reactivecircus.appversioning.internal.GitClient
+import io.github.reactivecircus.appversioning.internal.isInValidGitRepo
 import org.gradle.api.DefaultTask
-import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
@@ -51,14 +51,20 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
 
     @TaskAction
     fun generate() {
-        check(project.rootProject.file(".git").exists()) {
+        check(project.rootProject.rootDir.isInValidGitRepo) {
             "${project.rootProject.displayName} is not a git repository."
         }
 
+        val gitClient = GitClient.open(project.rootProject.rootDir)
+
         val gitTag: GitTag =
-            project.getLatestGitTag(MAX_DIGITS_ALLOCATED) ?: if (fetchTagsWhenNoneExistsLocally.get()) {
-                project.fetchGitTagsIfNoneExistsLocally()
-                project.getLatestGitTag(MAX_DIGITS_ALLOCATED)
+            gitClient.getLatestGitTag(MAX_DIGITS_ALLOCATED) ?: if (fetchTagsWhenNoneExistsLocally.get()) {
+                val tagsList = gitClient.listLocalTags()
+                if (tagsList.isEmpty()) {
+                    logger.warn("No git tags found. Fetching tags from remote.")
+                    gitClient.fetchRemoteTags()
+                }
+                gitClient.getLatestGitTag(MAX_DIGITS_ALLOCATED)
             } else {
                 null
             }.let {
@@ -112,35 +118,27 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
     }
 }
 
-private fun Project.getLatestGitTag(maxDigits: Int): GitTag? =
-    "git describe --match [0-9]*.[0-9]*.[0-9]* --tags --long"
-        .trimIndent().execute(workingDir = rootDir)
-        .replace("-\\bg[0-9a-f]{5,40}\\b".toRegex(), "")
-        .replace("[a-zA-Z]".toRegex(), "")
-        .replace("-", ".")
-        .let { tag ->
-            if (buildGitTagRegex(maxDigits).matches(tag)) tag else ""
-        }
-        .split(".")
-        .let { parts ->
-            if (parts.size == 4) {
-                GitTag(
-                    major = parts[0].toInt(),
-                    minor = parts[1].toInt(),
-                    patch = parts[2].toInt(),
-                    commitsSinceLatestTag = parts[3].toInt()
-                )
-            } else null
-        }
+private fun GitClient.getLatestGitTag(maxDigits: Int): GitTag? =
+    describeLatestTag("[0-9]*.[0-9]*.[0-9]*")?.let {
+        it.replace("-\\bg[0-9a-f]{5,40}\\b".toRegex(), "")
+            .replace("[a-zA-Z]".toRegex(), "")
+            .replace("-", ".")
+            .let { tag ->
+                if (buildGitTagRegex(maxDigits).matches(tag)) tag else ""
+            }
+            .split(".")
+            .let { parts ->
+                if (parts.size == 4) {
+                    GitTag(
+                        major = parts[0].toInt(),
+                        minor = parts[1].toInt(),
+                        patch = parts[2].toInt(),
+                        commitsSinceLatestTag = parts[3].toInt()
+                    )
+                } else null
+            }
+    }
 
 // TODO do not filter based on [maxDigits], check if matched tag has version part that exceeds 2 digits and crash and suggest using `overrideVersionCode`.
 private fun buildGitTagRegex(maxDigits: Int): Regex =
     "^(0|[1-9]\\d{0,${maxDigits - 1}})\\.(0|[1-9]\\d{0,${maxDigits - 1}})\\.(0|[1-9]\\d{0,${maxDigits - 1}})\\.(0|[1-9]\\d*)\$".toRegex()
-
-private fun Project.fetchGitTagsIfNoneExistsLocally() {
-    val tagsList = "git tag --list".execute(workingDir = rootDir)
-    if (tagsList.isEmpty()) {
-        logger.warn("No git tags found. Fetching tags from remote.")
-        "git fetch --tag".execute(workingDir = rootDir)
-    }
-}
