@@ -68,7 +68,7 @@ tasks.withType<Test> {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        freeCompilerArgs = listOf("-Xinline-classes", "-Xopt-in=kotlin.Experimental")
+        freeCompilerArgs = freeCompilerArgs + listOf("-Xinline-classes", "-Xopt-in=kotlin.Experimental")
     }
 }
 
