@@ -1,16 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-// TODO remove once kotlin gradle plugin 1.4.0 is available from gradle plugin portal
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath(kotlin("gradle-plugin", version = "1.4.0-rc"))
-    }
-}
-
 @Suppress("ClassName")
 object versions {
     const val agp = "4.2.0-alpha05"
@@ -22,8 +12,7 @@ object versions {
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
-    // TODO uncomment once kotlin gradle plugin 1.4.0 is available from gradle plugin portal
-    //  kotlin("jvm") version "1.4.0-rc"
+    kotlin("jvm") version "1.4.0-rc"
     id("com.gradle.plugin-publish") version "0.11.0"
     id("com.vanniktech.maven.publish") version "0.12.0"
     id("io.gitlab.arturbosch.detekt") version "1.10.0"
