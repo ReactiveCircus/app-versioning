@@ -89,11 +89,11 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
         gitTag.patch +
         gitTag.commitsSinceLatestTag // TODO do not add build number by default. Can be achieved with `overrideVersionCode`.
         versionCodeFile.get().asFile.writeText(versionCode.toString())
-        logger.info("Generated app version code: $versionCode.")
+        logger.quiet("Generated app version code: $versionCode.")
 
         val versionName = versionNameCustomizer.get().invoke(gitTag, project.providers).ifBlank { gitTag.toString() }
         versionNameFile.get().asFile.writeText(versionName)
-        logger.info("Generated app version name: \"$versionName\".")
+        logger.quiet("Generated app version name: \"$versionName\".")
     }
 
     /**

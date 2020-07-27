@@ -3,9 +3,7 @@ package io.github.reactivecircus.appversioning.fixtures
 val rootBuildFileContent = """
     allprojects {
         repositories {
-            mavenCentral()
             google()
-            gradlePluginPortal()
         }
     }
 """.trimIndent()

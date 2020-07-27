@@ -86,6 +86,36 @@ class GenerateAppVersionInfoTest {
     }
 
     @Test
+    fun `GenerateAppVersionInfo generates custom versionCode when custom versionCode generation rule is provided`() {
+        GitClient.initialize(fixtureDir.root).apply {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+        }
+
+        val versionCodeFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_code.txt")
+
+        val extensions = """
+            appVersioning {
+                overrideVersionCode { gitTag, providers ->
+                    val buildNumber = providers
+                        .gradleProperty("buildNumber")
+                        .orNull?.toInt()?: 0
+                    gitTag.major * 1000000 + gitTag.minor * 10000 + gitTag.patch * 100 + buildNumber
+                }
+            }
+        """.trimIndent()
+
+        withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate(pluginExtension = extensions))
+        ).runAndCheckResult(
+            "generateAppVersionInfoForRelease", "-PbuildNumber=78"
+        ) {
+            assertThat(versionCodeFile.readText()).isEqualTo("1020378")
+        }
+    }
+
+    @Test
     fun `GenerateAppVersionInfo generates versionName directly from the latest SemVer tag when no custom versionName generation rule is provided`() {
         val gitClient = GitClient.initialize(fixtureDir.root).apply {
             val commitId = commit(message = "1st commit.")
@@ -124,11 +154,37 @@ class GenerateAppVersionInfoTest {
         }
     }
 
-    // TODO test with `requireValidGitTag`, `overrideVersionCode`, `overrideVersionName`
+    @Test
+    fun `GenerateAppVersionInfo generates custom versionName when custom versionName generation rule is provided`() {
+        GitClient.initialize(fixtureDir.root).apply {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+        }
+
+        val versionNameFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt")
+
+        val extensions = """
+            appVersioning {
+                overrideVersionName { gitTag, _ ->
+                    "Version " + gitTag.toString()
+                }
+            }
+        """.trimIndent()
+
+        withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate(pluginExtension = extensions))
+        ).runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertThat(versionNameFile.readText()).isEqualTo("Version 1.2.3")
+        }
+    }
+
     // TODO test groovy plugin configuration in build.gradle
 
     @Test
-    fun `GenerateAppVersionInfo is incremental`() {
+    fun `GenerateAppVersionInfo is incremental without custom versionCode and versionName generation rules`() {
         GitClient.initialize(fixtureDir.root).apply {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
@@ -153,7 +209,44 @@ class GenerateAppVersionInfoTest {
     }
 
     @Test
-    fun `GenerateAppVersionInfo is cacheable`() {
+    fun `GenerateAppVersionInfo is incremental with custom versionCode and versionName generation rules`() {
+        GitClient.initialize(fixtureDir.root).apply {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+            commit(message = "2nd commit.")
+        }
+
+        val extensions = """
+            appVersioning {
+                overrideVersionCode { gitTag, _ ->
+                    gitTag.major * 10000 + gitTag.minor * 100 + gitTag.patch + gitTag.commitsSinceLatestTag
+                }
+                overrideVersionName { gitTag, _ ->
+                    "Version " + gitTag.toString()
+                }
+            }
+        """.trimIndent()
+
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate(pluginExtension = extensions))
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        }
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.UP_TO_DATE)
+        }
+    }
+
+    @Test
+    fun `GenerateAppVersionInfo is cacheable without custom versionCode and versionName generation rules`() {
         GitClient.initialize(fixtureDir.root).apply {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
@@ -162,6 +255,44 @@ class GenerateAppVersionInfoTest {
         val runner = withFixtureRunner(
             fixtureDir = fixtureDir,
             subprojects = listOf(AppProjectTemplate())
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease", "--build-cache"
+        ) {
+            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        }
+
+        runner.runAndCheckResult(
+            "clean", "generateAppVersionInfoForRelease", "--build-cache"
+        ) {
+            assertThat(task(":app:clean")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.FROM_CACHE)
+        }
+    }
+
+    @Test
+    fun `GenerateAppVersionInfo is cacheable with custom versionCode and versionName generation rules`() {
+        GitClient.initialize(fixtureDir.root).apply {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+            commit(message = "2nd commit.")
+        }
+
+        val extensions = """
+            appVersioning {
+                overrideVersionCode { gitTag, _ ->
+                    gitTag.major * 10000 + gitTag.minor * 100 + gitTag.patch + gitTag.commitsSinceLatestTag
+                }
+                overrideVersionName { gitTag, _ ->
+                    "Version " + gitTag.toString()
+                }
+            }
+        """.trimIndent()
+
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate(pluginExtension = extensions))
         )
 
         runner.runAndCheckResult(

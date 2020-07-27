@@ -74,14 +74,14 @@ class AppVersioningPluginIntegrationTest {
     fun `plugin tasks are not registered for debug builds when releaseBuildOnly is enabled`() {
         GitClient.initialize(fixtureDir.root)
 
-        val extensions = """
+        val extension = """
             appVersioning {
                 releaseBuildOnly.set(true)            
             }
         """.trimIndent()
         withFixtureRunner(
             fixtureDir = fixtureDir,
-            subprojects = listOf(AppProjectTemplate(pluginExtension = extensions))
+            subprojects = listOf(AppProjectTemplate(pluginExtension = extension))
         ).runAndCheckResult(
             "tasks", "--group=versioning"
         ) {
@@ -94,14 +94,14 @@ class AppVersioningPluginIntegrationTest {
     fun `plugin tasks are registered for debug builds when releaseBuildOnly is disabled`() {
         GitClient.initialize(fixtureDir.root)
 
-        val extensions = """
+        val extension = """
             appVersioning {
                 releaseBuildOnly.set(false)            
             }
         """.trimIndent()
         withFixtureRunner(
             fixtureDir = fixtureDir,
-            subprojects = listOf(AppProjectTemplate(pluginExtension = extensions))
+            subprojects = listOf(AppProjectTemplate(pluginExtension = extension))
         ).runAndCheckResult(
             "tasks", "--group=versioning"
         ) {
