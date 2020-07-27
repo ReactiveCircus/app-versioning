@@ -2,6 +2,7 @@
 
 package io.github.reactivecircus.appversioning.tasks
 
+import groovy.lang.Closure
 import io.github.reactivecircus.appversioning.GitTag
 import io.github.reactivecircus.appversioning.VersionCodeCustomizer
 import io.github.reactivecircus.appversioning.VersionNameCustomizer
@@ -38,11 +39,21 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
     @get:Input
     abstract val fetchTagsWhenNoneExistsLocally: Property<Boolean>
 
+    @get:Optional
     @get:Input
-    abstract val versionCodeCustomizer: Property<VersionCodeCustomizer>
+    abstract val kotlinVersionCodeCustomizer: Property<VersionCodeCustomizer>
 
+    @get:Optional
     @get:Input
-    abstract val versionNameCustomizer: Property<VersionNameCustomizer>
+    abstract val kotlinVersionNameCustomizer: Property<VersionNameCustomizer>
+
+    @get:Optional
+    @get:Input
+    abstract val groovyVersionCodeCustomizer: Property<Closure<Int>>
+
+    @get:Optional
+    @get:Input
+    abstract val groovyVersionNameCustomizer: Property<Closure<String>>
 
     @get:OutputFile
     abstract val versionCodeFile: RegularFileProperty
@@ -82,16 +93,21 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
                 }
             }
 
-        val versionCode = versionCodeCustomizer.get().invoke(gitTag, project.providers).takeIf {
-            it > Int.MIN_VALUE
-        } ?: gitTag.major * 10.0.pow(MAX_DIGITS_ALLOCATED * 2).toInt() +
-        gitTag.minor * 10.0.pow(MAX_DIGITS_ALLOCATED).toInt() +
-        gitTag.patch +
-        gitTag.commitsSinceLatestTag // TODO do not add build number by default. Can be achieved with `overrideVersionCode`.
+        val versionCode = when {
+            kotlinVersionCodeCustomizer.isPresent -> kotlinVersionCodeCustomizer.get().invoke(gitTag, project.providers)
+            groovyVersionCodeCustomizer.isPresent -> groovyVersionCodeCustomizer.get().call(gitTag, project.providers)
+            else -> gitTag.major * 10.0.pow(MAX_DIGITS_ALLOCATED * 2).toInt() +
+                    gitTag.minor * 10.0.pow(MAX_DIGITS_ALLOCATED).toInt() +
+                    gitTag.patch + gitTag.commitsSinceLatestTag // TODO do not add build number by default. Can be achieved with `overrideVersionCode`.
+        }
         versionCodeFile.get().asFile.writeText(versionCode.toString())
         logger.quiet("Generated app version code: $versionCode.")
 
-        val versionName = versionNameCustomizer.get().invoke(gitTag, project.providers).ifBlank { gitTag.toString() }
+        val versionName = when {
+            kotlinVersionNameCustomizer.isPresent -> kotlinVersionNameCustomizer.get().invoke(gitTag, project.providers)
+            groovyVersionNameCustomizer.isPresent -> groovyVersionNameCustomizer.get().call(gitTag, project.providers)
+            else -> gitTag.toString()
+        }
         versionNameFile.get().asFile.writeText(versionName)
         logger.quiet("Generated app version name: \"$versionName\".")
     }

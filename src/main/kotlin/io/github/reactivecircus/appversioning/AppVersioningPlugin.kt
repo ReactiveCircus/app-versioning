@@ -77,8 +77,10 @@ internal class AppVersioningPlugin : Plugin<Project> {
         requireValidTag.set(extension.requireValidGitTag)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
 
-        versionCodeCustomizer.set(extension.versionCodeCustomizer)
-        versionNameCustomizer.set(extension.versionNameCustomizer)
+        kotlinVersionCodeCustomizer.set(extension.kotlinVersionCodeCustomizer)
+        kotlinVersionNameCustomizer.set(extension.kotlinVersionNameCustomizer)
+        groovyVersionCodeCustomizer.set(extension.groovyVersionCodeCustomizer)
+        groovyVersionNameCustomizer.set(extension.groovyVersionNameCustomizer)
         versionCodeFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/$variantName/$VERSION_CODE_RESULT_FILE"))
         versionNameFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/$variantName/$VERSION_NAME_RESULT_FILE"))
     }

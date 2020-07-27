@@ -181,7 +181,41 @@ class GenerateAppVersionInfoTest {
         }
     }
 
-    // TODO test groovy plugin configuration in build.gradle
+    @Test
+    fun `overrideVersionCode and overrideVersionName configurations work in groovy`() {
+        GitClient.initialize(fixtureDir.root).apply {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+            commit(message = "2nd commit.")
+        }
+
+        val versionCodeFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_code.txt")
+        val versionNameFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt")
+
+        val extensions = """
+            appVersioning {
+                overrideVersionCode { gitTag, _ ->
+                    gitTag.major * 10000 + gitTag.minor * 100 + gitTag.patch + gitTag.commitsSinceLatestTag
+                }
+                overrideVersionName { gitTag, _ ->
+                    "Version " + gitTag.toString()
+                }
+            }
+        """.trimIndent()
+
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate(pluginExtension = extensions, useKts = false))
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFile.readText()).isEqualTo("10204")
+            assertThat(versionNameFile.readText()).isEqualTo("Version 1.2.3.1")
+        }
+    }
 
     @Test
     fun `GenerateAppVersionInfo is incremental without custom versionCode and versionName generation rules`() {

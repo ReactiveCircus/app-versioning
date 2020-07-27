@@ -1,5 +1,6 @@
 package io.github.reactivecircus.appversioning
 
+import groovy.lang.Closure
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.kotlin.dsl.property
@@ -7,7 +8,7 @@ import org.gradle.kotlin.dsl.property
 /**
  * Extension for [AppVersioningPlugin].
  */
-@Suppress("UnstableApiUsage")
+@Suppress("UnstableApiUsage", "unused")
 open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
 
     /**
@@ -44,7 +45,14 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
      * If not specified, versionCode will be computed from the latest git tag that follows semantic versioning.
      */
     fun overrideVersionCode(customizer: VersionCodeCustomizer) {
-        versionCodeCustomizer.set(customizer)
+        kotlinVersionCodeCustomizer.set(customizer)
+    }
+
+    /**
+     * Same as `overrideVersionCode(customizer: VersionCodeCustomizer)` above but for groovy support.
+     */
+    fun overrideVersionCode(customizer: Closure<Int>) {
+        groovyVersionCodeCustomizer.set(customizer.dehydrate())
     }
 
     /**
@@ -56,22 +64,35 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
      * If not specified, versionName will be the name of the latest git tag.
      */
     fun overrideVersionName(customizer: VersionNameCustomizer) {
-        versionNameCustomizer.set(customizer)
+        kotlinVersionNameCustomizer.set(customizer)
     }
 
     /**
-     * A lambda for specifying a custom rule for generating versionCode.
-     *
-     * Default is `Int.MIN_VALUE` which indicates no custom rule has been specified.
+     * Same as `overrideVersionName(customizer: VersionNameCustomizer)` above but for groovy support.
      */
-    internal val versionCodeCustomizer = objects.property<VersionCodeCustomizer>().convention { _, _ -> Int.MIN_VALUE }
+    fun overrideVersionName(customizer: Closure<String>) {
+        groovyVersionNameCustomizer.set(customizer.dehydrate())
+    }
 
     /**
-     * A lambda for specifying a custom rule for generating versionName.
-     *
-     * Default is `""` (empty string) which indicates no custom rule has been specified.
+     * A lambda (Kotlin function type) for specifying a custom rule for generating versionCode.
      */
-    internal val versionNameCustomizer = objects.property<VersionNameCustomizer>().convention { _, _ -> "" }
+    internal val kotlinVersionCodeCustomizer = objects.property<VersionCodeCustomizer>()
+
+    /**
+     * A lambda (Groovy closure) for specifying a custom rule for generating versionCode.
+     */
+    internal val groovyVersionCodeCustomizer = objects.property<Closure<Int>>()
+
+    /**
+     * A lambda (Kotlin function type) for specifying a custom rule for generating versionName.
+     */
+    internal val kotlinVersionNameCustomizer = objects.property<VersionNameCustomizer>()
+
+    /**
+     * A lambda (Groovy closure) for specifying a custom rule for generating versionName.
+     */
+    internal val groovyVersionNameCustomizer = objects.property<Closure<String>>()
 
     companion object {
         internal const val DEFAULT_RELEASE_BUILD_ONLY = true
