@@ -43,7 +43,7 @@ pluginBundle {
 
 gradlePlugin {
     plugins.create("appVersioning") {
-        id = "io.github.reactivecircus.appversioning"
+        id = "io.github.reactivecircus.app-versioning"
         displayName = "Android App Versioning Gradle Plugin."
         description = "Gradle plugin for lazily generating Android app's versionCode & versionName from Git tags."
         implementationClass = "io.github.reactivecircus.appversioning.AppVersioningPlugin"
