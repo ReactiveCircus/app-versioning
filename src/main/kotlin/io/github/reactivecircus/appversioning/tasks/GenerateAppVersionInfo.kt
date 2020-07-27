@@ -82,7 +82,7 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
                 }
             }
 
-        val versionCode = versionCodeCustomizer.get().invoke(gitTag).takeIf {
+        val versionCode = versionCodeCustomizer.get().invoke(gitTag, project.providers).takeIf {
             it > Int.MIN_VALUE
         } ?: gitTag.major * 10.0.pow(MAX_DIGITS_ALLOCATED * 2).toInt() +
         gitTag.minor * 10.0.pow(MAX_DIGITS_ALLOCATED).toInt() +
@@ -91,7 +91,7 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
         versionCodeFile.get().asFile.writeText(versionCode.toString())
         logger.info("Generated app version code: $versionCode.")
 
-        val versionName = versionNameCustomizer.get().invoke(gitTag).ifBlank { gitTag.toString() }
+        val versionName = versionNameCustomizer.get().invoke(gitTag, project.providers).ifBlank { gitTag.toString() }
         versionNameFile.get().asFile.writeText(versionName)
         logger.info("Generated app version name: \"$versionName\".")
     }

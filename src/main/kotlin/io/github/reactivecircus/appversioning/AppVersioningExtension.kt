@@ -1,6 +1,7 @@
 package io.github.reactivecircus.appversioning
 
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ProviderFactory
 import org.gradle.kotlin.dsl.property
 
 /**
@@ -35,18 +36,24 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     )
 
     /**
-     * Provides a custom rule for generating versionCode by implementing a [GitTag] -> Int lambda, where the [GitTag] is computed and provided
-     * lazily during task execution. This is useful if you want to fully customize how the versionCode is generated.
-     * If not specified, versionCode will be computed from the latest git tag.
+     * Provides a custom rule for generating versionCode by implementing a [GitTag], [ProviderFactory] -> Int lambda.
+     * The [GitTag] is computed lazily by the plugin during task execution, whereas the [ProviderFactory] can be used for fetching
+     * environment variables, Gradle and system properties.
+     *
+     * This is useful if you want to fully customize how the versionCode is generated.
+     * If not specified, versionCode will be computed from the latest git tag that follows semantic versioning.
      */
     fun overrideVersionCode(customizer: VersionCodeCustomizer) {
         versionCodeCustomizer.set(customizer)
     }
 
     /**
-     * Provides a custom rule for generating versionName by implementing a [GitTag] -> String lambda, where the [GitTag] is computed and provided
-     * lazily during task execution. This is useful if you want to fully customize how the versionName is generated.
-     * If not specified, versionName will be computed from the latest git tag.
+     * Provides a custom rule for generating versionName by implementing a [GitTag], [ProviderFactory] -> String lambda.
+     * The [GitTag] is computed lazily by the plugin during task execution, whereas the [ProviderFactory] can be used for fetching
+     * environment variables, Gradle and system properties.
+     *
+     * This is useful if you want to fully customize how the versionName is generated.
+     * If not specified, versionName will be the name of the latest git tag.
      */
     fun overrideVersionName(customizer: VersionNameCustomizer) {
         versionNameCustomizer.set(customizer)
@@ -57,14 +64,14 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
      *
      * Default is `Int.MIN_VALUE` which indicates no custom rule has been specified.
      */
-    internal val versionCodeCustomizer = objects.property<VersionCodeCustomizer>().convention { Int.MIN_VALUE }
+    internal val versionCodeCustomizer = objects.property<VersionCodeCustomizer>().convention { _, _ -> Int.MIN_VALUE }
 
     /**
      * A lambda for specifying a custom rule for generating versionName.
      *
      * Default is `""` (empty string) which indicates no custom rule has been specified.
      */
-    internal val versionNameCustomizer = objects.property<VersionNameCustomizer>().convention { "" }
+    internal val versionNameCustomizer = objects.property<VersionNameCustomizer>().convention { _, _ -> "" }
 
     companion object {
         internal const val DEFAULT_RELEASE_BUILD_ONLY = true
@@ -73,5 +80,5 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     }
 }
 
-internal typealias VersionCodeCustomizer = (GitTag) -> Int
-internal typealias VersionNameCustomizer = (GitTag) -> String
+internal typealias VersionCodeCustomizer = (GitTag, ProviderFactory) -> Int
+internal typealias VersionNameCustomizer = (GitTag, ProviderFactory) -> String
