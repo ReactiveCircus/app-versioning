@@ -66,8 +66,14 @@ tasks.withType<Test> {
     }
 }
 
-tasks.withType<KotlinCompile> {
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
+        jvmTarget = "1.8"
         freeCompilerArgs = freeCompilerArgs + listOf("-Xinline-classes", "-Xopt-in=kotlin.Experimental")
     }
 }
