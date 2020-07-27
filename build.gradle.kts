@@ -1,6 +1,16 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+// TODO remove once kotlin gradle plugin 1.4.0 is available from gradle plugin portal
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath(kotlin("gradle-plugin", version = "1.4.0-rc"))
+    }
+}
+
 @Suppress("ClassName")
 object versions {
     const val agp = "4.2.0-alpha05"
@@ -12,7 +22,8 @@ object versions {
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
-    kotlin("jvm") version "1.3.72"
+    // TODO uncomment once kotlin gradle plugin 1.4.0 is available from gradle plugin portal
+    //  kotlin("jvm") version "1.4.0-rc"
     id("com.gradle.plugin-publish") version "0.11.0"
     id("com.vanniktech.maven.publish") version "0.12.0"
     id("io.gitlab.arturbosch.detekt") version "1.10.0"
@@ -55,10 +66,6 @@ tasks.withType<PluginUnderTestMetadata> {
     pluginClasspath.from(fixtureClasspath)
 }
 
-configurations {
-    testImplementation.get().extendsFrom(configurations.compileOnly.get())
-}
-
 tasks.withType<Test> {
     testLogging {
         events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
@@ -84,13 +91,9 @@ val fixtureAgpVersion = providers
     .getOrElse(versions.agp)
 
 dependencies {
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     compileOnly("com.android.tools.build:gradle:${versions.agp}")
-
     testImplementation("junit:junit:${versions.junit}")
     testImplementation("com.google.truth:truth:${versions.truth}")
-    testImplementation("com.android.tools.build:gradle:${versions.agp}")
     fixtureClasspath("com.android.tools.build:gradle:${fixtureAgpVersion}")
 }
 
