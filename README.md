@@ -2,7 +2,7 @@
 
 A Gradle Plugin for lazily generating Android app's `versionCode` & `versionName` from Git tags.
 
-...
+:soon:
 
 ## License
 
