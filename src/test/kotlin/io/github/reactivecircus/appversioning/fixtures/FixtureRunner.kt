@@ -68,10 +68,6 @@ private fun TemporaryFolder.buildFixture(subprojects: List<AndroidProjectTemplat
             )
         )
 
-    // gradle.properties
-    root.resolve("gradle.properties").also { it.parentFile.mkdir() }
-        .writeText(gradlePropertiesFileContent)
-
     // subprojects
     subprojects.forEach { subproject ->
         // build.gradle or build.gradle.kts

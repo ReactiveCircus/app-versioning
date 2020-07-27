@@ -113,19 +113,17 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
     }
 
     /**
-     * Returns the generated app version name as a `Provider<String>`.
+     * Returns the generated app version code as a `Provider<Int>`.
      */
-    @Suppress("UnstableApiUsage")
-    fun versionName(): Provider<String> = versionNameFile.asFile.map { file ->
-        file.readText().trim()
+    fun versionCode(): Provider<Int> = versionCodeFile.asFile.map { file ->
+        file.readText().trim().toInt()
     }
 
     /**
-     * Returns the generated app version code as a `Provider<Int>`.
+     * Returns the generated app version name as a `Provider<String>`.
      */
-    @Suppress("UnstableApiUsage")
-    fun versionCode(): Provider<Int> = versionCodeFile.asFile.map { file ->
-        file.readText().trim().toInt()
+    fun versionName(): Provider<String> = versionNameFile.asFile.map { file ->
+        file.readText().trim()
     }
 
     companion object {

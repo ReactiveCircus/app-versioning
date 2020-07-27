@@ -23,14 +23,6 @@ fun settingsFileContent(
     ${subprojects.map { it.projectName }.joinToString("\n") { "include ':$it'" }}
     """.trimIndent()
 
-val gradlePropertiesFileContent = """
-    android.defaults.buildfeatures.buildconfig=false
-    android.defaults.buildfeatures.aidl=false
-    android.defaults.buildfeatures.renderscript=false
-    android.defaults.buildfeatures.resvalues=false
-    android.defaults.buildfeatures.shaders=false
-""".trimIndent()
-
 abstract class AndroidProjectTemplate {
     abstract val projectName: String
     abstract val pluginExtension: String?
