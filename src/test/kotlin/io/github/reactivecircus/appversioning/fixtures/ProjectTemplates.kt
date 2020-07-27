@@ -53,7 +53,7 @@ abstract class AndroidProjectTemplate {
             return """
                 plugins {
                     id("com.android.${if (isAppProject) "application" else "library"}")
-                    id("io.github.reactivecircus.appversioning")
+                    id("io.github.reactivecircus.app-versioning")
                 }
                 
                 ${pluginExtension ?: ""}
@@ -83,7 +83,7 @@ abstract class AndroidProjectTemplate {
             return """
                 plugins {
                     id 'com.android.${if (isAppProject) "application" else "library"}'
-                    id 'io.github.reactivecircus.appversioning'
+                    id 'io.github.reactivecircus.app-versioning'
                 }
                 
                 ${pluginExtension ?: ""}
