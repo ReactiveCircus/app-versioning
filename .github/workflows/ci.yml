@@ -72,6 +72,10 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 14
+      - name: Configure git user
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
       - uses: actions/cache@v1
         with:
           path: ~/.gradle/caches
