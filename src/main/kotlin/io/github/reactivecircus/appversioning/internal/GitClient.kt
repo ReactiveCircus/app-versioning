@@ -4,7 +4,7 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalStdlibApi::class)
-internal class GitClient private constructor(private val projectDir: File) {
+class GitClient private constructor(private val projectDir: File) {
 
     fun listLocalTags(): List<String> {
         return listOf("git", "tag", "--list").execute(projectDir).lines()
@@ -76,7 +76,7 @@ internal class GitClient private constructor(private val projectDir: File) {
     // TODO add String -> GitTag parser
 }
 
-internal inline class CommitId(val value: String)
+inline class CommitId(val value: String)
 
 private val File.isInValidGitRepo: Boolean
     get() = runCatching {

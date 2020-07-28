@@ -55,8 +55,30 @@ tasks.pluginUnderTestMetadata {
     pluginClasspath.from(fixtureClasspath)
 }
 
-tasks.test {
+val functionalTestSourceSet = sourceSets.create("functionalTest") {
+    compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
+    runtimeClasspath += output + compileClasspath
+}
+
+val functionalTestImplementation = configurations.getByName("functionalTestImplementation")
+    .extendsFrom(configurations.getByName("testImplementation"))
+
+gradlePlugin.testSourceSets(functionalTestSourceSet)
+
+val functionalTest by tasks.registering(Test::class) {
     failFast = true
+    testLogging {
+        events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+    }
+    testClassesDirs = functionalTestSourceSet.output.classesDirs
+    classpath = functionalTestSourceSet.runtimeClasspath
+}
+
+val check by tasks.getting(Task::class) {
+    dependsOn(functionalTest)
+}
+
+tasks.test {
     testLogging {
         events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
     }

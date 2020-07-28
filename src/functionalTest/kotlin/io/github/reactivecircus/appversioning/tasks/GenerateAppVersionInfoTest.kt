@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package io.github.reactivecircus.appversioning.tasks
 
 import com.google.common.truth.Truth.assertThat
