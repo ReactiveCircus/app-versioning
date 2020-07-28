@@ -1,5 +1,8 @@
 # App Versioning
 
+![CI](https://github.com/ReactiveCircus/app-versioning/workflows/CI/badge.svg)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 A Gradle Plugin for lazily generating Android app's `versionCode` & `versionName` from Git tags.
 
 :soon:

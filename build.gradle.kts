@@ -51,11 +51,12 @@ gradlePlugin {
 }
 
 val fixtureClasspath: Configuration by configurations.creating
-tasks.withType<PluginUnderTestMetadata> {
+tasks.pluginUnderTestMetadata {
     pluginClasspath.from(fixtureClasspath)
 }
 
-tasks.withType<Test> {
+tasks.test {
+    failFast = true
     testLogging {
         events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
     }
