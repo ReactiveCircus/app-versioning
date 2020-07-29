@@ -34,7 +34,7 @@ version = property("VERSION_NAME") as String
 pluginBundle {
     website = property("POM_URL") as String
     vcsUrl = property("POM_SCM_URL") as String
-    tags = listOf("gradle", "gradle")
+    tags = listOf("gradle", "android", "versioning")
     mavenCoordinates {
         groupId = property("GROUP") as String
         artifactId = property("POM_ARTIFACT_ID") as String
