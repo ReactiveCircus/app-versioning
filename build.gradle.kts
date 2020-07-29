@@ -13,7 +13,7 @@ plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     kotlin("jvm") version "1.4.0-rc"
-    id("com.gradle.plugin-publish") version "0.11.0"
+    id("com.gradle.plugin-publish") version "0.12.0"
     id("com.vanniktech.maven.publish") version "0.12.0"
     id("io.gitlab.arturbosch.detekt") version "1.10.0"
 }
