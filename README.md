@@ -1,6 +1,7 @@
 # App Versioning
 
 ![CI](https://github.com/ReactiveCircus/app-versioning/workflows/CI/badge.svg)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.reactivecircus.appversioning/app-versioning-gradle-plugin/badge.svg)](https://search.maven.org/search?q=g:io.github.reactivecircus.appversioning)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A Gradle Plugin for lazily generating Android app's `versionCode` & `versionName` from Git tags.
