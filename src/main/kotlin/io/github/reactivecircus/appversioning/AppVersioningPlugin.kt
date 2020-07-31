@@ -9,7 +9,6 @@ import io.github.reactivecircus.appversioning.tasks.GenerateAppVersionInfo
 import io.github.reactivecircus.appversioning.tasks.PrintAppVersionInfo
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
@@ -43,11 +42,7 @@ internal class AppVersioningPlugin : Plugin<Project> {
                     val generatedVersionCode = generateAppVersionInfo.flatMap { it.versionCode() }
                     val generatedVersionName = generateAppVersionInfo.flatMap { it.versionName() }
 
-                    project.registerPrintAppVersionInfoTask(
-                        variantName = name,
-                        versionCodeProvider = generatedVersionCode,
-                        versionNameProvider = generatedVersionName
-                    )
+                    project.registerPrintAppVersionInfoTask(variantName = name)
 
                     val mainOutput = outputs.single { it.outputType == VariantOutputConfiguration.OutputType.SINGLE }
                     mainOutput.versionName.set(generatedVersionName)
@@ -86,9 +81,7 @@ internal class AppVersioningPlugin : Plugin<Project> {
     }
 
     private fun Project.registerPrintAppVersionInfoTask(
-        variantName: String,
-        versionCodeProvider: Provider<Int>,
-        versionNameProvider: Provider<String>
+        variantName: String
     ): TaskProvider<PrintAppVersionInfo> = tasks.register(
         "${PrintAppVersionInfo.TASK_NAME_PREFIX}For${variantName.capitalizeUS()}",
         PrintAppVersionInfo::class.java
@@ -96,8 +89,9 @@ internal class AppVersioningPlugin : Plugin<Project> {
         group = APP_VERSIONING_TASK_GROUP
         description = "${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the $variantName variant."
 
-        versionCode.set(versionCodeProvider)
-        versionName.set(versionNameProvider)
+        versionCodeFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/$variantName/$VERSION_CODE_RESULT_FILE"))
+        versionNameFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/$variantName/$VERSION_NAME_RESULT_FILE"))
+        buildVariantName.set(variantName)
     }
 
     companion object {

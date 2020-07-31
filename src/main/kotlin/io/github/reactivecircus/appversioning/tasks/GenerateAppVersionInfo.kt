@@ -69,29 +69,28 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
 
         val gitClient = GitClient.open(project.rootProject.rootDir)
 
-        val gitTag: GitTag =
-            gitClient.getLatestGitTag(MAX_DIGITS_ALLOCATED) ?: if (fetchTagsWhenNoneExistsLocally.get()) {
-                val tagsList = gitClient.listLocalTags()
-                if (tagsList.isEmpty()) {
-                    logger.warn("No git tags found. Fetching tags from remote.")
-                    gitClient.fetchRemoteTags()
-                }
-                gitClient.getLatestGitTag(MAX_DIGITS_ALLOCATED)
-            } else {
-                null
-            }.let {
-                if (requireValidTag.get()) {
-                    requireNotNull(it) {
-                        """
+        val gitTag: GitTag = gitClient.getLatestGitTag(MAX_DIGITS_ALLOCATED) ?: if (fetchTagsWhenNoneExistsLocally.get()) {
+            val tagsList = gitClient.listLocalTags()
+            if (tagsList.isEmpty()) {
+                logger.warn("No git tags found. Fetching tags from remote.")
+                gitClient.fetchRemoteTags()
+            }
+            gitClient.getLatestGitTag(MAX_DIGITS_ALLOCATED)
+        } else {
+            null
+        }.let {
+            if (requireValidTag.get()) {
+                requireNotNull(it) {
+                    """
                         Could not find a git tag that follows semantic versioning.
                         Note that tags with additional labels after MAJOR.MINOR.PATCH are ignored.
                     """.trimIndent()
-                    }
-                } else {
-                    logger.warn("No valid git tag found. Falling back to version name \"0.0.0\" and version code 0.")
-                    GitTag.FALLBACK
                 }
+            } else {
+                logger.warn("No valid git tag found. Falling back to version name \"0.0.0\" and version code 0.")
+                GitTag.FALLBACK
             }
+        }
 
         val versionCode = when {
             kotlinVersionCodeCustomizer.isPresent -> kotlinVersionCodeCustomizer.get().invoke(gitTag, project.providers)
