@@ -12,26 +12,35 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import javax.inject.Inject
 import kotlin.math.pow
 
 /**
  * Generates app's versionCode and versionName based on git tags.
  */
 @CacheableTask
-abstract class GenerateAppVersionInfo : DefaultTask() {
+abstract class GenerateAppVersionInfo @Inject constructor(private val providers: ProviderFactory) : DefaultTask() {
 
     @get:Optional
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val gitRefsDirectory: DirectoryProperty
+
+    @get:Internal
+    abstract val rootProjectDirectory: DirectoryProperty
+
+    @get:Internal
+    abstract val rootProjectDisplayName: Property<String>
 
     @get:Input
     abstract val requireValidTag: Property<Boolean>
@@ -64,10 +73,10 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
     @TaskAction
     fun generate() {
         check(gitRefsDirectory.isPresent) {
-            "Android App Versioning Gradle Plugin works with git tags but ${project.rootProject.displayName} is not a valid git repository."
+            "Android App Versioning Gradle Plugin works with git tags but ${rootProjectDisplayName.get()} is not a valid git repository."
         }
 
-        val gitClient = GitClient.open(project.rootProject.rootDir)
+        val gitClient = GitClient.open(rootProjectDirectory.get().asFile)
 
         val gitTag: GitTag = gitClient.getLatestGitTag(MAX_DIGITS_ALLOCATED) ?: if (fetchTagsWhenNoneExistsLocally.get()) {
             val tagsList = gitClient.listLocalTags()
@@ -93,8 +102,8 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
         }
 
         val versionCode = when {
-            kotlinVersionCodeCustomizer.isPresent -> kotlinVersionCodeCustomizer.get().invoke(gitTag, project.providers)
-            groovyVersionCodeCustomizer.isPresent -> groovyVersionCodeCustomizer.get().call(gitTag, project.providers)
+            kotlinVersionCodeCustomizer.isPresent -> kotlinVersionCodeCustomizer.get().invoke(gitTag, providers)
+            groovyVersionCodeCustomizer.isPresent -> groovyVersionCodeCustomizer.get().call(gitTag, providers)
             else -> gitTag.major * 10.0.pow(MAX_DIGITS_ALLOCATED * 2).toInt() +
                     gitTag.minor * 10.0.pow(MAX_DIGITS_ALLOCATED).toInt() +
                     gitTag.patch + gitTag.commitsSinceLatestTag // TODO do not add build number by default. Can be achieved with `overrideVersionCode`.
@@ -103,8 +112,8 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
         logger.quiet("Generated app version code: $versionCode.")
 
         val versionName = when {
-            kotlinVersionNameCustomizer.isPresent -> kotlinVersionNameCustomizer.get().invoke(gitTag, project.providers)
-            groovyVersionNameCustomizer.isPresent -> groovyVersionNameCustomizer.get().call(gitTag, project.providers)
+            kotlinVersionNameCustomizer.isPresent -> kotlinVersionNameCustomizer.get().invoke(gitTag, providers)
+            groovyVersionNameCustomizer.isPresent -> groovyVersionNameCustomizer.get().call(gitTag, providers)
             else -> gitTag.toString()
         }
         versionNameFile.get().asFile.writeText(versionName)

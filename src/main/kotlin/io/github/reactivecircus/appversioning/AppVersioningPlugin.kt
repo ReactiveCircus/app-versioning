@@ -69,9 +69,10 @@ internal class AppVersioningPlugin : Plugin<Project> {
         description = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the $variantName variant."
 
         gitRefsDirectory.set(project.rootProject.file(GIT_REFS_DIRECTORY).let { if (it.exists()) it else null })
+        rootProjectDirectory.set(project.rootProject.rootDir)
+        rootProjectDisplayName.set(project.rootProject.displayName)
         requireValidTag.set(extension.requireValidGitTag)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
-
         kotlinVersionCodeCustomizer.set(extension.kotlinVersionCodeCustomizer)
         kotlinVersionNameCustomizer.set(extension.kotlinVersionNameCustomizer)
         groovyVersionCodeCustomizer.set(extension.groovyVersionCodeCustomizer)
