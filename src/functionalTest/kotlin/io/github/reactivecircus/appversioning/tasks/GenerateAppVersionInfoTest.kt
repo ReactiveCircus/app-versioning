@@ -1,4 +1,4 @@
-@file:Suppress("FunctionName")
+@file:Suppress("FunctionName", "DuplicatedCode")
 
 package io.github.reactivecircus.appversioning.tasks
 
@@ -342,6 +342,74 @@ class GenerateAppVersionInfoTest {
         ) {
             assertThat(task(":app:clean")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
             assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.FROM_CACHE)
+        }
+    }
+
+    @Test
+    fun `GenerateAppVersionInfo (up-to-date) is re-executed after changing git refs`() {
+        val gitClient = GitClient.initialize(fixtureDir.root).apply {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+        }
+
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate())
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        }
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.UP_TO_DATE)
+        }
+
+        gitClient.commit(message = "2nd commit.")
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        }
+    }
+
+    @Test
+    fun `GenerateAppVersionInfo (from cache) is re-executed after changing git refs`() {
+        val gitClient = GitClient.initialize(fixtureDir.root).apply {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+        }
+        val commitId2 = gitClient.commit(message = "2nd commit.")
+
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate())
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease", "--build-cache"
+        ) {
+            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        }
+
+        runner.runAndCheckResult(
+            "clean", "generateAppVersionInfoForRelease", "--build-cache"
+        ) {
+            assertThat(task(":app:clean")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.FROM_CACHE)
+        }
+
+        gitClient.tag(name = "1.3.0", message = "2nd tag", commitId = commitId2)
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease", "--build-cache"
+        ) {
+            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
         }
     }
 }
