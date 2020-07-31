@@ -104,4 +104,4 @@ jobs:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
       - run: |
-          ./gradlew clean kotlinSourcesJar javadocsJar uploadArchives --no-daemon --no-parallel
+          ./gradlew clean kotlinSourcesJar javadocsJar uploadArchives --no-daemon --no-parallel --no-configuration-cache
