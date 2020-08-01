@@ -17,11 +17,15 @@ fun settingsFileContent(
             directory '$localBuildCacheUri'
         }
     }
-    
+
     rootProject.name='app-versioning-fixture'
 
     ${subprojects.map { it.projectName }.joinToString("\n") { "include ':$it'" }}
     """.trimIndent()
+
+val gradlePropertiesFileContent = """
+    org.gradle.unsafe.watch-fs=true
+""".trimIndent()
 
 abstract class AndroidProjectTemplate {
     abstract val projectName: String
@@ -45,18 +49,18 @@ abstract class AndroidProjectTemplate {
                     id("com.android.${if (isAppProject) "application" else "library"}")
                     id("io.github.reactivecircus.app-versioning")
                 }
-                
+
                 ${pluginExtension ?: ""}
-                
+
                 android {
                     compileSdkVersion(30)
                     defaultConfig {
                         minSdkVersion(21)
                         targetSdkVersion(30)
                     }
-                    
+
                     lintOptions.isCheckReleaseBuilds = false
-                
+
                     $flavorConfigs
                 }
             """.trimIndent()
@@ -75,20 +79,20 @@ abstract class AndroidProjectTemplate {
                     id 'com.android.${if (isAppProject) "application" else "library"}'
                     id 'io.github.reactivecircus.app-versioning'
                 }
-                
+
                 ${pluginExtension ?: ""}
-                
+
                 android {
                     compileSdkVersion 30
                     defaultConfig {
                         minSdkVersion 21
                         targetSdkVersion 30
                     }
-                    
+
                     lintOptions {
                         checkReleaseBuilds false
                     }
-                
+
                     $flavorConfigs
                 }
             """.trimIndent()
