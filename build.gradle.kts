@@ -106,6 +106,7 @@ dependencies {
     compileOnly("com.android.tools.build:gradle:${versions.agp}")
     testImplementation("junit:junit:${versions.junit}")
     testImplementation("com.google.truth:truth:${versions.truth}")
+    functionalTestImplementation("com.android.tools.build:gradle:${fixtureAgpVersion}")
     fixtureClasspath("com.android.tools.build:gradle:${fixtureAgpVersion}")
 }
 

@@ -275,7 +275,7 @@ class GenerateAppVersionInfoTest {
         }
 
         runner.runAndCheckResult(
-            "generateAppVersionInfoForRelease"
+            "generateAppVersionInfoForRelease", "--no-configuration-cache"
         ) {
             assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.UP_TO_DATE)
         }

@@ -23,9 +23,18 @@ fun settingsFileContent(
     ${subprojects.map { it.projectName }.joinToString("\n") { "include ':$it'" }}
     """.trimIndent()
 
-val gradlePropertiesFileContent = """
-    org.gradle.unsafe.watch-fs=true
-""".trimIndent()
+fun gradlePropertiesFileContent(enableConfigurationCache: Boolean): String {
+    val configurationCacheProperties = if (enableConfigurationCache) {
+        """
+            org.gradle.unsafe.configuration-cache=true
+            org.gradle.unsafe.configuration-cache-problems=warn
+        """.trimIndent()
+    } else ""
+    return """
+        org.gradle.unsafe.watch-fs=true
+        $configurationCacheProperties
+    """.trimIndent()
+}
 
 abstract class AndroidProjectTemplate {
     abstract val projectName: String
