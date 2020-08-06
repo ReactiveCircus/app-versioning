@@ -8,7 +8,7 @@ The following steps publish the plugin to both **Maven Central** and **Gradle Pl
 4. `git commit -am "Prepare for release X.Y.Z."` (where X.Y.Z is the new version).
 5. `./gradlew clean uploadArchives --no-daemon --no-parallel --no-configuration-cache`
 6. Visit [Sonatype Nexus](https://oss.sonatype.org/) and promote the artifact.
-7. `./gradlew publishPlugins`
+7. `./gradlew publishPlugins --no-configuration-cache`
 8. `git tag -a X.Y.X -m "X.Y.Z"` (where X.Y.Z is the new version)
 9. Update the top-level `gradle.properties` to the next SNAPSHOT version.
 10. `git commit -am "Prepare next development version."`
