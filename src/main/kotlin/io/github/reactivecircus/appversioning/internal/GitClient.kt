@@ -72,8 +72,6 @@ class GitClient private constructor(private val projectDir: File) {
             return GitClient(projectDir)
         }
     }
-
-    // TODO add String -> GitTag parser
 }
 
 inline class CommitId(val value: String)

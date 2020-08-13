@@ -7,6 +7,8 @@ import io.github.reactivecircus.appversioning.GitTag
 import io.github.reactivecircus.appversioning.VersionCodeCustomizer
 import io.github.reactivecircus.appversioning.VersionNameCustomizer
 import io.github.reactivecircus.appversioning.internal.GitClient
+import io.github.reactivecircus.appversioning.toGitTag
+import io.github.reactivecircus.appversioning.toSemVer
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
@@ -43,9 +45,6 @@ abstract class GenerateAppVersionInfo @Inject constructor(private val providers:
     abstract val rootProjectDisplayName: Property<String>
 
     @get:Input
-    abstract val requireValidTag: Property<Boolean>
-
-    @get:Input
     abstract val fetchTagsWhenNoneExistsLocally: Property<Boolean>
 
     @get:Optional
@@ -78,40 +77,44 @@ abstract class GenerateAppVersionInfo @Inject constructor(private val providers:
 
         val gitClient = GitClient.open(rootProjectDirectory.get().asFile)
 
-        val gitTag: GitTag = gitClient.getLatestGitTag(MAX_DIGITS_ALLOCATED) ?: if (fetchTagsWhenNoneExistsLocally.get()) {
+        val gitTag: GitTag = gitClient.describeLatestTag()?.toGitTag() ?: if (fetchTagsWhenNoneExistsLocally.get()) {
             val tagsList = gitClient.listLocalTags()
             if (tagsList.isEmpty()) {
                 logger.warn("No git tags found. Fetching tags from remote.")
                 gitClient.fetchRemoteTags()
             }
-            gitClient.getLatestGitTag(MAX_DIGITS_ALLOCATED)
+            gitClient.describeLatestTag()?.toGitTag()
         } else {
             null
-        }.let {
-            if (requireValidTag.get()) {
-                requireNotNull(it) {
-                    """
-                        Could not find a git tag that follows semantic versioning.
-                        Note that tags with additional labels after MAJOR.MINOR.PATCH are ignored.
-                    """.trimIndent()
-                }
-            } else {
-                logger.warn("No valid git tag found. Falling back to version name \"0.0.0\" and version code 0.")
-                GitTag.FALLBACK
-            }
+        } ?: run {
+            // TODO improve fallback mechanism
+            logger.warn("No git tags found. Falling back to version code 0 and version name \"0\".")
+            versionCodeFile.get().asFile.writeText(0.toString())
+            logger.quiet("Generated app version code: 0.")
+            versionNameFile.get().asFile.writeText("0")
+            logger.quiet("Generated app version name: \"0\".")
+            return
         }
 
-        val versionCode = when {
+        val versionCode: Int = when {
             kotlinVersionCodeCustomizer.isPresent -> kotlinVersionCodeCustomizer.get().invoke(gitTag, providers)
             groovyVersionCodeCustomizer.isPresent -> groovyVersionCodeCustomizer.get().call(gitTag, providers)
-            else -> gitTag.major * 10.0.pow(MAX_DIGITS_ALLOCATED * 2).toInt() +
-                    gitTag.minor * 10.0.pow(MAX_DIGITS_ALLOCATED).toInt() +
-                    gitTag.patch + gitTag.commitsSinceLatestTag // TODO do not add build number by default. Can be achieved with `overrideVersionCode`.
+            else -> {
+                // no custom rule for generating versionCode has been provided, attempt calculation based on SemVer
+                val semVer = runCatching {
+                    gitTag.toSemVer()
+                }.getOrNull()
+                checkNotNull(semVer) {
+                    "Could not generate versionCode as \"${gitTag.rawTagName}\" does not follow semantic versioning. Please either ensure latest git tag follows semantic versioning, or provide a custom rule for generating versionCode using the `overrideVersionCode` lambda."
+                }
+                // TODO check int range
+                semVer.major * 10.0.pow(MAX_DIGITS_ALLOCATED * 2).toInt() + semVer.minor * 10.0.pow(MAX_DIGITS_ALLOCATED).toInt() + semVer.patch
+            }
         }
         versionCodeFile.get().asFile.writeText(versionCode.toString())
         logger.quiet("Generated app version code: $versionCode.")
 
-        val versionName = when {
+        val versionName: String = when {
             kotlinVersionNameCustomizer.isPresent -> kotlinVersionNameCustomizer.get().invoke(gitTag, providers)
             groovyVersionNameCustomizer.isPresent -> groovyVersionNameCustomizer.get().call(gitTag, providers)
             else -> gitTag.toString()
@@ -140,28 +143,3 @@ abstract class GenerateAppVersionInfo @Inject constructor(private val providers:
         private const val MAX_DIGITS_ALLOCATED = 2
     }
 }
-
-private fun GitClient.getLatestGitTag(maxDigits: Int): GitTag? =
-    describeLatestTag("[0-9]*.[0-9]*.[0-9]*")?.let {
-        it.replace("-\\bg[0-9a-f]{5,40}\\b".toRegex(), "")
-            .replace("[a-zA-Z]".toRegex(), "")
-            .replace("-", ".")
-            .let { tag ->
-                if (buildGitTagRegex(maxDigits).matches(tag)) tag else ""
-            }
-            .split(".")
-            .let { parts ->
-                if (parts.size == 4) {
-                    GitTag(
-                        major = parts[0].toInt(),
-                        minor = parts[1].toInt(),
-                        patch = parts[2].toInt(),
-                        commitsSinceLatestTag = parts[3].toInt()
-                    )
-                } else null
-            }
-    }
-
-// TODO do not filter based on [maxDigits], check if matched tag has version part that exceeds 2 digits and crash and suggest using `overrideVersionCode`.
-private fun buildGitTagRegex(maxDigits: Int): Regex =
-    "^(0|[1-9]\\d{0,${maxDigits - 1}})\\.(0|[1-9]\\d{0,${maxDigits - 1}})\\.(0|[1-9]\\d{0,${maxDigits - 1}})\\.(0|[1-9]\\d*)\$".toRegex()

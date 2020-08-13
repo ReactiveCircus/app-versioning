@@ -1,26 +1,23 @@
 package io.github.reactivecircus.appversioning
 
-// TODO add commitHash, rawTagName etc to GitTag
 /**
  * Type-safe representation of a git tag.
  */
-class GitTag(
-    val major: Int,
-    val minor: Int,
-    val patch: Int,
-    val commitsSinceLatestTag: Int
+data class GitTag(
+    val rawTagName: String,
+    val commitsSinceLatestTag: Int,
+    val commitHash: String
 ) {
-    override fun toString(): String {
-        return "$major.$minor.$patch".let { semVersion ->
-            if (commitsSinceLatestTag > 0) {
-                "$semVersion.$commitsSinceLatestTag"
-            } else {
-                semVersion
-            }
-        }
-    }
+    override fun toString() = rawTagName
+}
 
-    companion object {
-        val FALLBACK = GitTag(0, 0, 0, 0)
+/**
+ * Parses the output of `git describe --tags --long` into a [GitTag].
+ */
+internal fun String.toGitTag(): GitTag {
+    val result = requireNotNull("(.*)-(\\d+)-g([0-9,a-f]{7})\$".toRegex().matchEntire(this)) {
+        "$this is not a valid git tag."
     }
+    val (rawTagName, commitsSinceLatestTag, commitHash) = result.destructured
+    return GitTag(rawTagName, commitsSinceLatestTag.toInt(), commitHash)
 }

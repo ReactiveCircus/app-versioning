@@ -19,15 +19,6 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     val releaseBuildOnly = objects.property<Boolean>().convention(DEFAULT_RELEASE_BUILD_ONLY)
 
     /**
-     * Whether a valid git tag is required.
-     * When set to `true` a git tag in the MAJOR.MINOR.PATCH format must be present.
-     * When set to `false` version name "0.0.0" and version code 0 will be used if no valid git tag exists.
-     *
-     * Default is `false`.
-     */
-    val requireValidGitTag = objects.property<Boolean>().convention(DEFAULT_REQUIRE_VALID_GIT_TAG)
-
-    /**
      * Whether to fetch git tags from remote when no valid git tag can be found locally.
      *
      * Default is `false`.
@@ -96,7 +87,6 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
 
     companion object {
         internal const val DEFAULT_RELEASE_BUILD_ONLY = true
-        internal const val DEFAULT_REQUIRE_VALID_GIT_TAG = false
         internal const val DEFAULT_FETCH_TAGS_WHEN_NONE_EXISTS_LOCALLY = false
     }
 }

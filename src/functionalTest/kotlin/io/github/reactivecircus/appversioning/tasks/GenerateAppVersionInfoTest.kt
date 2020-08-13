@@ -97,12 +97,14 @@ class GenerateAppVersionInfoTest {
         val versionCodeFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_code.txt")
 
         val extensions = """
+            import io.github.reactivecircus.appversioning.toSemVer
             appVersioning {
                 overrideVersionCode { gitTag, providers ->
                     val buildNumber = providers
                         .gradleProperty("buildNumber")
                         .orNull?.toInt()?: 0
-                    gitTag.major * 1000000 + gitTag.minor * 10000 + gitTag.patch * 100 + buildNumber
+                    val semVer = gitTag.toSemVer()
+                    semVer.major * 1000000 + semVer.minor * 10000 + semVer.patch * 100 + buildNumber
                 }
             }
         """.trimIndent()
@@ -195,9 +197,11 @@ class GenerateAppVersionInfoTest {
         val versionNameFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt")
 
         val extensions = """
+            import io.github.reactivecircus.appversioning.SemVer
             appVersioning {
                 overrideVersionCode { gitTag, _ ->
-                    gitTag.major * 10000 + gitTag.minor * 100 + gitTag.patch + gitTag.commitsSinceLatestTag
+                    def semVer = SemVer.fromGitTag(gitTag)
+                    semVer.major * 10000 + semVer.minor * 100 + semVer.patch + gitTag.commitsSinceLatestTag
                 }
                 overrideVersionName { gitTag, _ ->
                     "Version " + gitTag.toString()
@@ -215,7 +219,7 @@ class GenerateAppVersionInfoTest {
         ) {
             assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
             assertThat(versionCodeFile.readText()).isEqualTo("10204")
-            assertThat(versionNameFile.readText()).isEqualTo("Version 1.2.3.1")
+            assertThat(versionNameFile.readText()).isEqualTo("Version 1.2.3")
         }
     }
 
@@ -253,9 +257,11 @@ class GenerateAppVersionInfoTest {
         }
 
         val extensions = """
+            import io.github.reactivecircus.appversioning.toSemVer
             appVersioning {
                 overrideVersionCode { gitTag, _ ->
-                    gitTag.major * 10000 + gitTag.minor * 100 + gitTag.patch + gitTag.commitsSinceLatestTag
+                    val semVer = gitTag.toSemVer()
+                    semVer.major * 10000 + semVer.minor * 100 + semVer.patch + gitTag.commitsSinceLatestTag
                 }
                 overrideVersionName { gitTag, _ ->
                     "Version " + gitTag.toString()
@@ -316,9 +322,11 @@ class GenerateAppVersionInfoTest {
         }
 
         val extensions = """
+            import io.github.reactivecircus.appversioning.toSemVer
             appVersioning {
                 overrideVersionCode { gitTag, _ ->
-                    gitTag.major * 10000 + gitTag.minor * 100 + gitTag.patch + gitTag.commitsSinceLatestTag
+                    val semVer = gitTag.toSemVer()
+                    semVer.major * 10000 + semVer.minor * 100 + semVer.patch + gitTag.commitsSinceLatestTag
                 }
                 overrideVersionName { gitTag, _ ->
                     "Version " + gitTag.toString()
