@@ -1,10 +1,8 @@
 package io.github.reactivecircus.appversioning.fixtures
 
-import com.android.Version
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.util.GradleVersion
-import org.gradle.util.VersionNumber
 import org.junit.rules.TemporaryFolder
 
 fun withFixtureRunner(
@@ -71,10 +69,8 @@ private fun TemporaryFolder.buildFixture(subprojects: List<AndroidProjectTemplat
         )
 
     // gradle.properties
-    val currentAgpVersion = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION)
-    val minConfigurationCacheCompliantAgpVersion = VersionNumber.parse(MIN_CONFIGURATION_CACHE_COMPLIANT_AGP_VERSION)
     root.resolve("gradle.properties").also { it.parentFile.mkdir() }
-        .writeText(gradlePropertiesFileContent(enableConfigurationCache = currentAgpVersion >= minConfigurationCacheCompliantAgpVersion))
+        .writeText(gradlePropertiesFileContent(enableConfigurationCache = false))
 
     // subprojects
     subprojects.forEach { subproject ->

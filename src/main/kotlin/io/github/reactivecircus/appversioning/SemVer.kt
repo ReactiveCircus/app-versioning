@@ -34,11 +34,11 @@ data class SemVer(
  */
 fun GitTag.toSemVer(allowPrefixV: Boolean = true): SemVer {
     val result = requireNotNull(SEM_VER_REGEX.toRegex().matchEntire(rawTagName)) {
-        "$rawTagName is not a valid SemVer."
+        "\"$rawTagName\" is not a valid SemVer."
     }
     val (prefixV, major, minor, patch, preRelease, buildMetadata) = result.destructured
     require(prefixV.isEmpty() || allowPrefixV) {
-        "$rawTagName is not a valid SemVer as prefix \"v\" is not allowed unless `allowPrefixV` is set to true."
+        "\"$rawTagName\" is not a valid SemVer as prefix \"v\" is not allowed unless `allowPrefixV` is set to true."
     }
     return SemVer(
         major = major.toInt(),
