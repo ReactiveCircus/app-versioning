@@ -1,5 +1,3 @@
-@file:Suppress("MagicNumber")
-
 package io.github.reactivecircus.appversioning.tasks
 
 import groovy.lang.Closure
@@ -8,6 +6,7 @@ import io.github.reactivecircus.appversioning.VersionCodeCustomizer
 import io.github.reactivecircus.appversioning.VersionNameCustomizer
 import io.github.reactivecircus.appversioning.internal.GitClient
 import io.github.reactivecircus.appversioning.toGitTag
+import io.github.reactivecircus.appversioning.toInt
 import io.github.reactivecircus.appversioning.toSemVer
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
@@ -25,7 +24,6 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
-import kotlin.math.pow
 
 /**
  * Generates app's versionCode and versionName based on git tags.
@@ -96,21 +94,7 @@ abstract class GenerateAppVersionInfo @Inject constructor(private val providers:
             return
         }
 
-        val versionCode: Int = when {
-            kotlinVersionCodeCustomizer.isPresent -> kotlinVersionCodeCustomizer.get().invoke(gitTag, providers)
-            groovyVersionCodeCustomizer.isPresent -> groovyVersionCodeCustomizer.get().call(gitTag, providers)
-            else -> {
-                // no custom rule for generating versionCode has been provided, attempt calculation based on SemVer
-                val semVer = runCatching {
-                    gitTag.toSemVer()
-                }.getOrNull()
-                checkNotNull(semVer) {
-                    "Could not generate versionCode as \"${gitTag.rawTagName}\" does not follow semantic versioning. Please either ensure latest git tag follows semantic versioning, or provide a custom rule for generating versionCode using the `overrideVersionCode` lambda."
-                }
-                // TODO check int range
-                semVer.major * 10.0.pow(MAX_DIGITS_ALLOCATED * 2).toInt() + semVer.minor * 10.0.pow(MAX_DIGITS_ALLOCATED).toInt() + semVer.patch
-            }
-        }
+        val versionCode: Int = generateVersionCodeFromGitTag(gitTag)
         versionCodeFile.get().asFile.writeText(versionCode.toString())
         logger.quiet("Generated app version code: $versionCode.")
 
@@ -137,9 +121,39 @@ abstract class GenerateAppVersionInfo @Inject constructor(private val providers:
         file.readText().trim()
     }
 
+    private fun generateVersionCodeFromGitTag(gitTag: GitTag): Int = when {
+        kotlinVersionCodeCustomizer.isPresent -> kotlinVersionCodeCustomizer.get().invoke(gitTag, providers)
+        groovyVersionCodeCustomizer.isPresent -> groovyVersionCodeCustomizer.get().call(gitTag, providers)
+        else -> {
+            // no custom rule for generating versionCode has been provided, attempt calculation based on SemVer
+            val semVer = runCatching {
+                gitTag.toSemVer()
+            }.getOrNull()
+            checkNotNull(semVer) {
+                """
+                    Could not generate versionCode as "${gitTag.rawTagName}" does not follow semantic versioning.
+                    Please either ensure latest git tag follows semantic versioning, or provide a custom rule for generating versionCode using the `overrideVersionCode` lambda.
+                """.trimIndent()
+            }
+            runCatching {
+                semVer.toInt(maxDigitsPerComponent = MAX_DIGITS_PER_SEM_VER_COMPONENT)
+            }.getOrElse {
+                Int.MAX_VALUE
+                throw IllegalStateException(
+                    """
+                        Could not generate versionCode from "${gitTag.rawTagName}" as the SemVer cannot be represented as an Integer.
+                        This is usually because MAJOR or MINOR version is greater than 99, as by default maximum of 2 digits is allowed for MINOR and PATCH components of a SemVer tag.
+                        Another reason might be that the overall positional notation of the SemVer (MAJOR * 10000 + MINOR * 100 + PATCH) is greater than the maximum value of an integer (2147483647).
+                        As a workaround you can provide a custom rule for generating versionCode using the `overrideVersionCode` lambda.
+                    """.trimIndent()
+                )
+            }
+        }
+    }
+
     companion object {
         const val TASK_NAME_PREFIX = "generateAppVersionInfo"
         const val TASK_DESCRIPTION_PREFIX = "Generates app's versionCode and versionName based on git tags"
-        private const val MAX_DIGITS_ALLOCATED = 2
+        private const val MAX_DIGITS_PER_SEM_VER_COMPONENT = 2
     }
 }

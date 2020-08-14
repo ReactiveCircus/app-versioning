@@ -31,7 +31,7 @@ class GenerateAppVersionInfoTest {
     }
 
     @Test
-    fun `GenerateAppVersionInfo generates versionCode by converting latest SemVer-compliant git tag to a single integer when no custom versionCode generation rule is provided`() {
+    fun `GenerateAppVersionInfo generates versionCode by converting latest SemVer-compliant git tag to a single integer using positional notation when no custom versionCode generation rule is provided`() {
         val gitClient = GitClient.initialize(fixtureDir.root).apply {
             val commitId = commit(message = "1st commit.")
             tag(name = "0.0.1", message = "1st tag", commitId = commitId)
@@ -120,7 +120,35 @@ class GenerateAppVersionInfoTest {
         ) {
             assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.FAILED)
             assertThat(output).contains(
-                "Could not generate versionCode as \"1.2\" does not follow semantic versioning. Please either ensure latest git tag follows semantic versioning, or provide a custom rule for generating versionCode using the `overrideVersionCode` lambda."
+                """
+                    Could not generate versionCode as "1.2" does not follow semantic versioning.
+                    Please either ensure latest git tag follows semantic versioning, or provide a custom rule for generating versionCode using the `overrideVersionCode` lambda.
+                """.trimIndent()
+            )
+        }
+    }
+
+    @Test
+    fun `GenerateAppVersionInfo fails when SemVer-compliant git tag has a component that exceeds the maximum digits allocated (2) and no custom versionCode generation rule is provided`() {
+        GitClient.initialize(fixtureDir.root).apply {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.100", message = "1st tag", commitId = commitId)
+        }
+
+        withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate())
+        ).runAndExpectFailure(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.FAILED)
+            assertThat(output).contains(
+                """
+                    Could not generate versionCode from "1.2.100" as the SemVer cannot be represented as an Integer.
+                    This is usually because MAJOR or MINOR version is greater than 99, as by default maximum of 2 digits is allowed for MINOR and PATCH components of a SemVer tag.
+                    Another reason might be that the overall positional notation of the SemVer (MAJOR * 10000 + MINOR * 100 + PATCH) is greater than the maximum value of an integer (2147483647).
+                    As a workaround you can provide a custom rule for generating versionCode using the `overrideVersionCode` lambda.
+                """.trimIndent()
             )
         }
     }

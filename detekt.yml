@@ -3,6 +3,8 @@ complexity:
     excludes: ["**/test/**","**/functionalTest/**"]
   TooManyFunctions:
     excludes: ["**/test/**","**/functionalTest/**"]
+  LargeClass:
+    excludes: ["**/test/**","**/functionalTest/**"]
 
 formatting:
   MaximumLineLength:

@@ -1,5 +1,7 @@
 package io.github.reactivecircus.appversioning
 
+import kotlin.math.pow
+
 /**
  * Type-safe representation of a version number that follows [Semantic Versioning 2.0.0](https://semver.org/#semantic-versioning-200).
  */
@@ -25,6 +27,21 @@ data class SemVer(
         @JvmOverloads
         fun fromGitTag(gitTag: GitTag, allowPrefixV: Boolean = true): SemVer = gitTag.toSemVer(allowPrefixV)
     }
+}
+
+/**
+ * Generates an Integer representation of the [SemVer] using positional notation.
+ * @param maxDigitsPerComponent number of digits allocated to the MINOR and PATCH components.
+ * @throws [IllegalArgumentException] when MINOR or PATCH version is out of range allowed by [maxDigitsPerComponent], or when the result is above [Int.MAX_VALUE].
+ */
+@Suppress("MagicNumber")
+internal fun SemVer.toInt(maxDigitsPerComponent: Int): Int {
+    require(maxDigitsPerComponent > 0)
+    require(patch < 10.0.pow(maxDigitsPerComponent))
+    require(minor < 10.0.pow(maxDigitsPerComponent))
+    val result = major * 10.0.pow(maxDigitsPerComponent * 2) + minor * 10.0.pow(maxDigitsPerComponent) + patch
+    require(result <= Int.MAX_VALUE)
+    return result.toInt()
 }
 
 /**

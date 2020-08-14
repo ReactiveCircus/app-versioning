@@ -7,6 +7,132 @@ import org.junit.Test
 class SemVerTest {
 
     @Test
+    fun `SemVer can be converted to integer representation using positional notation`() {
+        assertThat(
+            SemVer(
+                major = 0,
+                minor = 0,
+                patch = 3
+            ).toInt(maxDigitsPerComponent = 2)
+        )
+            .isEqualTo(3)
+
+        assertThat(
+            SemVer(
+                major = 0,
+                minor = 1,
+                patch = 3
+            ).toInt(maxDigitsPerComponent = 2)
+        )
+            .isEqualTo(103)
+
+        assertThat(
+            SemVer(
+                major = 2,
+                minor = 1,
+                patch = 3
+            ).toInt(maxDigitsPerComponent = 2)
+        )
+            .isEqualTo(20103)
+
+        assertThat(
+            SemVer(
+                major = 0,
+                minor = 0,
+                patch = 99
+            ).toInt(maxDigitsPerComponent = 2)
+        )
+            .isEqualTo(99)
+
+        assertThat(
+            SemVer(
+                major = 0,
+                minor = 99,
+                patch = 99
+            ).toInt(maxDigitsPerComponent = 2)
+        )
+            .isEqualTo(9999)
+
+        assertThat(
+            SemVer(
+                major = 100,
+                minor = 99,
+                patch = 99
+            ).toInt(maxDigitsPerComponent = 2)
+        )
+            .isEqualTo(1009999)
+    }
+
+    @Test
+    fun `converting SemVer to integer throws exception when maxDigitsPerComponent is not positive`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            SemVer(
+                major = 1,
+                minor = 2,
+                patch = 3
+            ).toInt(maxDigitsPerComponent = -1)
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            SemVer(
+                major = 1,
+                minor = 2,
+                patch = 3
+            ).toInt(maxDigitsPerComponent = 0)
+        }
+    }
+
+    @Test
+    fun `converting SemVer to integer throws exception when a version component is out of range`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            SemVer(
+                major = 1,
+                minor = 2,
+                patch = 10
+            ).toInt(maxDigitsPerComponent = 1)
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            SemVer(
+                major = 1,
+                minor = 10,
+                patch = 3
+            ).toInt(maxDigitsPerComponent = 1)
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            SemVer(
+                major = 1,
+                minor = 2,
+                patch = 100
+            ).toInt(maxDigitsPerComponent = 2)
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            SemVer(
+                major = 1,
+                minor = 100,
+                patch = 3
+            ).toInt(maxDigitsPerComponent = 2)
+        }
+    }
+
+    @Test
+    fun `converting SemVer to integer throws exception when result is out of range`() {
+        assertThat(
+            SemVer(
+                major = 0,
+                minor = 0,
+                patch = Int.MAX_VALUE
+            ).toInt(maxDigitsPerComponent = 10)
+        ).isEqualTo(Int.MAX_VALUE)
+
+        assertThrows(IllegalArgumentException::class.java) {
+            SemVer(
+                major = 0,
+                minor = 1,
+                patch = Int.MAX_VALUE
+            ).toInt(maxDigitsPerComponent = 10)
+        }
+    }
+
+    @Test
     fun `SemVer compliant GitTag can be converted to a SemVer`() {
         assertThat(
             GitTag(
