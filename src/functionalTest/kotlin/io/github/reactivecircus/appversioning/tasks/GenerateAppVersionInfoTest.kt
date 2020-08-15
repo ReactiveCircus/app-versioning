@@ -484,6 +484,59 @@ class GenerateAppVersionInfoTest {
     }
 
     @Test
+    fun `GenerateAppVersionInfo is incremental for specific build variants`() {
+        GitClient.initialize(fixtureDir.root).apply {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+        }
+
+        val flavors = listOf("mock", "prod")
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate(flavors = flavors))
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForProdRelease"
+        ) {
+            assertThat(task(":app:generateAppVersionInfoForProdRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        }
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForMockRelease"
+        ) {
+            assertThat(task(":app:generateAppVersionInfoForMockRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        }
+    }
+
+    @Test
+    fun `GenerateAppVersionInfo is cacheable for specific build variants`() {
+        GitClient.initialize(fixtureDir.root).apply {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+        }
+
+        val flavors = listOf("mock", "prod")
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate(flavors = flavors))
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForProdRelease", "--build-cache"
+        ) {
+            assertThat(task(":app:generateAppVersionInfoForProdRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        }
+
+        runner.runAndCheckResult(
+            "clean", "generateAppVersionInfoForMockRelease", "--build-cache"
+        ) {
+            assertThat(task(":app:clean")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(task(":app:generateAppVersionInfoForMockRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        }
+    }
+
+    @Test
     fun `GenerateAppVersionInfo (up-to-date) is re-executed after changing git refs`() {
         val gitClient = GitClient.initialize(fixtureDir.root).apply {
             val commitId = commit(message = "1st commit.")

@@ -42,6 +42,9 @@ abstract class GenerateAppVersionInfo @Inject constructor(private val providers:
     abstract val rootProjectDisplayName: Property<String>
 
     @get:Input
+    abstract val targetVariantName: Property<String>
+
+    @get:Input
     abstract val fetchTagsWhenNoneExistsLocally: Property<Boolean>
 
     @get:Optional

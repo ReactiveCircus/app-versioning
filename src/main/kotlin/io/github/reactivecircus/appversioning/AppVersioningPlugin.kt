@@ -76,6 +76,7 @@ internal class AppVersioningPlugin : Plugin<Project> {
         gitRefsDirectory.set(project.rootProject.file(GIT_REFS_DIRECTORY).let { if (it.exists()) it else null })
         rootProjectDirectory.set(project.rootProject.rootDir)
         rootProjectDisplayName.set(project.rootProject.displayName)
+        targetVariantName.set(variantName)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
         kotlinVersionCodeCustomizer.set(extension.kotlinVersionCodeCustomizer)
         kotlinVersionNameCustomizer.set(extension.kotlinVersionNameCustomizer)
