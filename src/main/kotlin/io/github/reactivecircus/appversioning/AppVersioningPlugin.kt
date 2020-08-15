@@ -27,28 +27,31 @@ internal class AppVersioningPlugin : Plugin<Project> {
             "Android App Versioning Gradle Plugin requires Android Gradle Plugin $MIN_AGP_VERSION or later. Detected AGP version is $agpVersion."
         }
         val androidAppPluginApplied = AtomicBoolean(false)
+        val pluginDisabled = AtomicBoolean(false)
         val appVersioningExtension = project.extensions.create("appVersioning", AppVersioningExtension::class.java)
         project.plugins.withType<AppPlugin> {
             androidAppPluginApplied.set(true)
             project.extensions.getByType<BaseAppModuleExtension>().onVariantProperties {
-                if (appVersioningExtension.enabled.get()) {
-                    if (!appVersioningExtension.releaseBuildOnly.get() || buildType == BuildType.RELEASE.name) {
-                        val generateAppVersionInfo = project.registerGenerateAppVersionInfoTask(
-                            variantName = name,
-                            extension = appVersioningExtension
-                        )
+                if (pluginDisabled.get()) return@onVariantProperties
+                if (!appVersioningExtension.enabled.get()) {
+                    project.logger.quiet("Android App Versioning plugin is disabled.")
+                    pluginDisabled.set(true)
+                    return@onVariantProperties
+                }
+                if (!appVersioningExtension.releaseBuildOnly.get() || buildType == BuildType.RELEASE.name) {
+                    val generateAppVersionInfo = project.registerGenerateAppVersionInfoTask(
+                        variantName = name,
+                        extension = appVersioningExtension
+                    )
 
-                        val generatedVersionCode = generateAppVersionInfo.map { it.versionCodeFile.asFile.get().readText().trim().toInt() }
-                        val generatedVersionName = generateAppVersionInfo.map { it.versionNameFile.asFile.get().readText().trim() }
+                    val generatedVersionCode = generateAppVersionInfo.map { it.versionCodeFile.asFile.get().readText().trim().toInt() }
+                    val generatedVersionName = generateAppVersionInfo.map { it.versionNameFile.asFile.get().readText().trim() }
 
-                        project.registerPrintAppVersionInfoTask(variantName = name)
+                    project.registerPrintAppVersionInfoTask(variantName = name)
 
-                        val mainOutput = outputs.single { it.outputType == VariantOutputConfiguration.OutputType.SINGLE }
-                        mainOutput.versionCode.set(generatedVersionCode)
-                        mainOutput.versionName.set(generatedVersionName)
-                    }
-                } else {
-                    project.logger.info("Android App Versioning plugin is disabled.")
+                    val mainOutput = outputs.single { it.outputType == VariantOutputConfiguration.OutputType.SINGLE }
+                    mainOutput.versionCode.set(generatedVersionCode)
+                    mainOutput.versionName.set(generatedVersionName)
                 }
             }
         }
