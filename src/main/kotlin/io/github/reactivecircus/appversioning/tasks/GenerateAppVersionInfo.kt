@@ -12,7 +12,6 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
@@ -85,12 +84,17 @@ abstract class GenerateAppVersionInfo @Inject constructor(private val providers:
         } else {
             null
         } ?: run {
-            // TODO improve fallback mechanism
-            logger.warn("No git tags found. Falling back to version code 0 and version name \"0\".")
-            versionCodeFile.get().asFile.writeText(0.toString())
-            logger.quiet("Generated app version code: 0.")
-            versionNameFile.get().asFile.writeText("0")
-            logger.quiet("Generated app version name: \"0\".")
+            logger.warn(
+                """
+                    No git tags found. Falling back to version code $VERSION_CODE_FALLBACK and version name "$VERSION_NAME_FALLBACK".
+                    If you want to fallback to the versionCode and versionName set via the DSL or manifest, or stop generating versionCode and versionName from Git tags:
+                    appVersioning {
+                        enabled.set(false)
+                    }
+                """.trimIndent()
+            )
+            versionCodeFile.get().asFile.writeText(VERSION_CODE_FALLBACK.toString())
+            versionNameFile.get().asFile.writeText(VERSION_NAME_FALLBACK)
             return
         }
 
@@ -105,20 +109,6 @@ abstract class GenerateAppVersionInfo @Inject constructor(private val providers:
         }
         versionNameFile.get().asFile.writeText(versionName)
         logger.quiet("Generated app version name: \"$versionName\".")
-    }
-
-    /**
-     * Returns the generated app version code as a `Provider<Int>`.
-     */
-    fun versionCode(): Provider<Int> = versionCodeFile.asFile.map { file ->
-        file.readText().trim().toInt()
-    }
-
-    /**
-     * Returns the generated app version name as a `Provider<String>`.
-     */
-    fun versionName(): Provider<String> = versionNameFile.asFile.map { file ->
-        file.readText().trim()
     }
 
     private fun generateVersionCodeFromGitTag(gitTag: GitTag): Int = when {
@@ -154,6 +144,8 @@ abstract class GenerateAppVersionInfo @Inject constructor(private val providers:
     companion object {
         const val TASK_NAME_PREFIX = "generateAppVersionInfo"
         const val TASK_DESCRIPTION_PREFIX = "Generates app's versionCode and versionName based on git tags"
+        const val VERSION_CODE_FALLBACK = 0
+        const val VERSION_NAME_FALLBACK = ""
         private const val MAX_DIGITS_PER_SEM_VER_COMPONENT = 2
     }
 }

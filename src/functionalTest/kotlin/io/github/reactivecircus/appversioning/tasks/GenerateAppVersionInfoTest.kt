@@ -154,6 +154,36 @@ class GenerateAppVersionInfoTest {
     }
 
     @Test
+    fun `GenerateAppVersionInfo generates fallback versionCode and versionName when no git tags exist`() {
+        GitClient.initialize(fixtureDir.root).apply {
+            commit(message = "1st commit.")
+        }
+
+        val versionCodeFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_code.txt")
+        val versionNameFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt")
+
+        withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate())
+        ).runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(output).contains(
+                """
+                    No git tags found. Falling back to version code ${GenerateAppVersionInfo.VERSION_CODE_FALLBACK} and version name "${GenerateAppVersionInfo.VERSION_NAME_FALLBACK}".
+                    If you want to fallback to the versionCode and versionName set via the DSL or manifest, or stop generating versionCode and versionName from Git tags:
+                    appVersioning {
+                        enabled.set(false)
+                    }
+                """.trimIndent()
+            )
+            assertThat(versionCodeFile.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_CODE_FALLBACK.toString())
+            assertThat(versionNameFile.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_NAME_FALLBACK)
+        }
+    }
+
+    @Test
     fun `GenerateAppVersionInfo generates custom versionCode when custom versionCode generation rule is provided`() {
         GitClient.initialize(fixtureDir.root).apply {
             val commitId = commit(message = "1st commit.")

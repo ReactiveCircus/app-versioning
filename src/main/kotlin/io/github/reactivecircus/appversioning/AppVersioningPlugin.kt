@@ -39,14 +39,14 @@ internal class AppVersioningPlugin : Plugin<Project> {
                         extension = appVersioningExtension
                     )
 
-                    val generatedVersionCode = generateAppVersionInfo.flatMap { it.versionCode() }
-                    val generatedVersionName = generateAppVersionInfo.flatMap { it.versionName() }
+                    val generatedVersionCode = generateAppVersionInfo.map { it.versionCodeFile.asFile.get().readText().trim().toInt() }
+                    val generatedVersionName = generateAppVersionInfo.map { it.versionNameFile.asFile.get().readText().trim() }
 
                     project.registerPrintAppVersionInfoTask(variantName = name)
 
                     val mainOutput = outputs.single { it.outputType == VariantOutputConfiguration.OutputType.SINGLE }
-                    mainOutput.versionName.set(generatedVersionName)
                     mainOutput.versionCode.set(generatedVersionCode)
+                    mainOutput.versionName.set(generatedVersionName)
                 }
             }
         }
