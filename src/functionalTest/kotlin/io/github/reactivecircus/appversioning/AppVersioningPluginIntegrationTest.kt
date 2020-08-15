@@ -78,7 +78,7 @@ class AppVersioningPluginIntegrationTest {
 
         val extension = """
             appVersioning {
-                releaseBuildOnly.set(true)            
+                releaseBuildOnly.set(true)
             }
         """.trimIndent()
         withFixtureRunner(
@@ -98,7 +98,7 @@ class AppVersioningPluginIntegrationTest {
 
         val extension = """
             appVersioning {
-                releaseBuildOnly.set(false)            
+                releaseBuildOnly.set(false)
             }
         """.trimIndent()
         withFixtureRunner(
@@ -109,6 +109,48 @@ class AppVersioningPluginIntegrationTest {
         ) {
             assertThat(output).contains("generateAppVersionInfoForDebug - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the debug variant.")
             assertThat(output).contains("printAppVersionInfoForDebug - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the debug variant.")
+        }
+    }
+
+    @Test
+    fun `plugin tasks are registered when plugin is enabled`() {
+        GitClient.initialize(fixtureDir.root)
+
+        val extension = """
+            appVersioning {
+                enabled.set(true)
+            }
+        """.trimIndent()
+        withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate(pluginExtension = extension))
+        ).runAndCheckResult(
+            "tasks", "--group=versioning"
+        ) {
+            assertThat(output).contains("Versioning tasks")
+            assertThat(output).contains("generateAppVersionInfoForRelease - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the release variant.")
+            assertThat(output).contains("printAppVersionInfoForRelease - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the release variant.")
+        }
+    }
+
+    @Test
+    fun `plugin tasks are not registered when plugin is disabled`() {
+        GitClient.initialize(fixtureDir.root)
+
+        val extension = """
+            appVersioning {
+                enabled.set(false)
+            }
+        """.trimIndent()
+        withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate(pluginExtension = extension))
+        ).runAndCheckResult(
+            "tasks", "--group=versioning"
+        ) {
+            assertThat(output).doesNotContain("Versioning tasks")
+            assertThat(output).contains("No tasks")
+            assertThat(output).contains("Android App Versioning plugin is disabled.")
         }
     }
 
@@ -140,6 +182,41 @@ class AppVersioningPluginIntegrationTest {
 
             assertThat(versionCodeFileContent).isEqualTo("10203")
             assertThat(versionNameFileContent).isEqualTo("1.2.3")
+        }
+    }
+
+    @Test
+    fun `plugin (when disabled) does not generate versionCode and versionName from git tag for the assembled APK when assemble task is run`() {
+        GitClient.initialize(fixtureDir.root).apply {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.0.0", message = "1st tag", commitId = commitId)
+        }
+
+        val extension = """
+            appVersioning {
+                enabled.set(false)
+            }
+        """.trimIndent()
+        withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate(pluginExtension = extension))
+        ).runAndCheckResult(
+            "assembleRelease"
+        ) {
+            val versionCodeFile = File(
+                fixtureDir.root, "app/build/outputs/app_versioning/release/version_code.txt"
+            )
+            val versionNameFile = File(
+                fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt"
+            )
+
+            assertThat(task(":app:assembleRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+
+            assertThat(output).doesNotContain("Generated app version code")
+            assertThat(output).doesNotContain("Generated app version name")
+
+            assertThat(versionCodeFile.exists()).isFalse()
+            assertThat(versionNameFile.exists()).isFalse()
         }
     }
 }

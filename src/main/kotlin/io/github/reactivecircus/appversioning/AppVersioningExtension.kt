@@ -12,6 +12,13 @@ import org.gradle.kotlin.dsl.property
 open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
 
     /**
+     * Whether to enable the plugin.
+     *
+     * Default is `true`.
+     */
+    val enabled = objects.property<Boolean>().convention(DEFAULT_ENABLED)
+
+    /**
      * Whether to only generate version name and version code for `release` builds.
      *
      * Default is `true`.
@@ -29,11 +36,17 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
 
     /**
      * Provides a custom rule for generating versionCode by implementing a [GitTag], [ProviderFactory] -> Int lambda.
-     * The [GitTag] is computed lazily by the plugin during task execution, whereas the [ProviderFactory] can be used for fetching
-     * environment variables, Gradle and system properties.
+     * [GitTag] is generated from latest git tag lazily by the plugin during task execution.
+     * [ProviderFactory] can be used for fetching environment variables, Gradle and system properties.
      *
-     * This is useful if you want to fully customize how the versionCode is generated.
-     * If not specified, versionCode will be computed from the latest git tag that follows semantic versioning.
+     * By default the plugin attempts to generate the versionCode by converting a SemVer compliant tag to an integer
+     * using positional notation: versionCode = MAJOR * 10000 + MINOR * 100 + PATCH
+     *
+     * If your tags don't follow semantic versioning, you don't like the default formula used to convert a SemVer tag to versionCode,
+     * or if you want to fully customize how the versionCode is generated, you can implement this lambda to provide your own versionCode generation rule.
+     *
+     * Note that you can use the `gitTag.toSemVer()` extension (or `SemVer.fromGitTag(gitTag)` if you use groovy) to get a type-safe `SemVer` model
+     * if your custom rule is still based on semantic versioning.
      */
     fun overrideVersionCode(customizer: VersionCodeCustomizer) {
         kotlinVersionCodeCustomizer.set(customizer)
@@ -48,8 +61,8 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
 
     /**
      * Provides a custom rule for generating versionName by implementing a [GitTag], [ProviderFactory] -> String lambda.
-     * The [GitTag] is computed lazily by the plugin during task execution, whereas the [ProviderFactory] can be used for fetching
-     * environment variables, Gradle and system properties.
+     * [GitTag] is generated from latest git tag lazily by the plugin during task execution.
+     * [ProviderFactory] can be used for fetching environment variables, Gradle and system properties.
      *
      * This is useful if you want to fully customize how the versionName is generated.
      * If not specified, versionName will be the name of the latest git tag.
@@ -86,6 +99,7 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     internal val groovyVersionNameCustomizer = objects.property<Closure<String>>()
 
     companion object {
+        internal const val DEFAULT_ENABLED = true
         internal const val DEFAULT_RELEASE_BUILD_ONLY = true
         internal const val DEFAULT_FETCH_TAGS_WHEN_NONE_EXISTS_LOCALLY = false
     }
