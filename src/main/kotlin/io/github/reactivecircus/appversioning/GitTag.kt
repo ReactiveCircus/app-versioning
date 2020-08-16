@@ -15,7 +15,7 @@ data class GitTag(
  * Parses the output of `git describe --tags --long` into a [GitTag].
  */
 internal fun String.toGitTag(): GitTag {
-    val result = requireNotNull("(.*)-(\\d+)-g([0-9,a-f]{7})\$".toRegex().matchEntire(this)) {
+    val result = requireNotNull("(.*)-(\\d+)-g([0-9,a-f]{7,40})\$".toRegex().matchEntire(this)) {
         "$this is not a valid git tag."
     }
     val (rawTagName, commitsSinceLatestTag, commitHash) = result.destructured
