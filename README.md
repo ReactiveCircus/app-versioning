@@ -75,9 +75,9 @@ appVersioning {
     /**
      * Whether to only generate version name and version code for `release` builds.
      *
-     * Default is `true`.
+     * Default is `false`.
      */
-    releaseBuildOnly.set(true)
+    releaseBuildOnly.set(false)
 
     /**
      * Whether to fetch git tags from remote when no valid git tag can be found locally.

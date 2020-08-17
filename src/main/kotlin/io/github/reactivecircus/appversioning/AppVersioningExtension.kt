@@ -21,7 +21,7 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     /**
      * Whether to only generate version name and version code for `release` builds.
      *
-     * Default is `true`.
+     * Default is `false`.
      */
     val releaseBuildOnly = objects.property<Boolean>().convention(DEFAULT_RELEASE_BUILD_ONLY)
 
@@ -100,7 +100,7 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
 
     companion object {
         internal const val DEFAULT_ENABLED = true
-        internal const val DEFAULT_RELEASE_BUILD_ONLY = true
+        internal const val DEFAULT_RELEASE_BUILD_ONLY = false
         internal const val DEFAULT_FETCH_TAGS_WHEN_NONE_EXISTS_LOCALLY = false
     }
 }

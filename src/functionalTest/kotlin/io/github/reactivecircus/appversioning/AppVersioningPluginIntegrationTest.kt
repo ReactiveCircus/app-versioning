@@ -48,7 +48,9 @@ class AppVersioningPluginIntegrationTest {
             "tasks", "--group=versioning"
         ) {
             assertThat(output).contains("Versioning tasks")
+            assertThat(output).contains("generateAppVersionInfoForDebug - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the debug variant.")
             assertThat(output).contains("generateAppVersionInfoForRelease - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the release variant.")
+            assertThat(output).contains("printAppVersionInfoForDebug - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the debug variant.")
             assertThat(output).contains("printAppVersionInfoForRelease - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the release variant.")
         }
     }
@@ -65,9 +67,13 @@ class AppVersioningPluginIntegrationTest {
             "tasks", "--group=versioning"
         ) {
             assertThat(output).contains("Versioning tasks")
+            assertThat(output).contains("generateAppVersionInfoForMockDebug - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockDebug variant.")
+            assertThat(output).contains("generateAppVersionInfoForProdDebug - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodDebug variant.")
             assertThat(output).contains("generateAppVersionInfoForMockRelease - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockRelease variant.")
-            assertThat(output).contains("printAppVersionInfoForMockRelease - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockRelease variant.")
             assertThat(output).contains("generateAppVersionInfoForProdRelease - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodRelease variant.")
+            assertThat(output).contains("printAppVersionInfoForMockDebug - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockDebug variant.")
+            assertThat(output).contains("printAppVersionInfoForProdDebug - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodDebug variant.")
+            assertThat(output).contains("printAppVersionInfoForMockRelease - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockRelease variant.")
             assertThat(output).contains("printAppVersionInfoForProdRelease - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodRelease variant.")
         }
     }
