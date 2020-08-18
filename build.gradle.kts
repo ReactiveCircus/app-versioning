@@ -91,6 +91,7 @@ java {
 
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
+        useIR = true
         jvmTarget = "1.8"
         freeCompilerArgs = freeCompilerArgs + listOf("-Xinline-classes", "-Xopt-in=kotlin.Experimental")
     }
