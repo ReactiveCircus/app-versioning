@@ -97,6 +97,7 @@ tasks.withType<KotlinCompile>().configureEach {
             "-Xuse-ir",
             "-Xskip-runtime-version-check",
             "-Xskip-metadata-version-check",
+            "-Xjvm-default=all",
             "-Xinline-classes",
             "-Xopt-in=kotlin.Experimental"
         )
