@@ -12,11 +12,12 @@ More details coming :soon:
 
 ## Installation
 
-The **Android App Versioning Gradle Plugin** is available from both [Maven Central](https://search.maven.org/artifact/io.github.reactivecircus.appversioning/app-versioning-gradle-plugin) and [Gradle Plugin Portal](https://plugins.gradle.org/plugin/io.github.reactivecircus.app-versioning). Make sure your top-level `build.gradle` has either `mavenCentral()` or `gradlePluginPortal()` defined in the `buildscript` block:
+The **Android App Versioning Gradle Plugin** is available from both [Maven Central](https://search.maven.org/artifact/io.github.reactivecircus.appversioning/app-versioning-gradle-plugin) and [Gradle Plugin Portal](https://plugins.gradle.org/plugin/io.github.reactivecircus.app-versioning). Make sure your top-level `build.gradle` has **either** `mavenCentral()` or `gradlePluginPortal()` defined in the `buildscript` block:
 
 ```groovy
 buildscript {
     repositories {
+        // add either one of the following repositories
         mavenCentral()
         gradlePluginPortal()
     }
