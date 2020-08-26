@@ -121,7 +121,6 @@ dependencies {
 detekt {
     input = files("src/")
     failFast = true
-    autoCorrect = true
     config = files("${project.rootDir}/detekt.yml")
     buildUponDefaultConfig = true
     reports {
