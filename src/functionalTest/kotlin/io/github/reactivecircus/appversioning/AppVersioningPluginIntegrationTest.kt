@@ -45,7 +45,8 @@ class AppVersioningPluginIntegrationTest {
             fixtureDir = fixtureDir,
             subprojects = listOf(AppProjectTemplate())
         ).runAndCheckResult(
-            "tasks", "--group=versioning"
+            "tasks",
+            "--group=versioning"
         ) {
             assertThat(output).contains("Versioning tasks")
             assertThat(output).contains("generateAppVersionInfoForDebug - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the debug variant.")
@@ -64,7 +65,8 @@ class AppVersioningPluginIntegrationTest {
             fixtureDir = fixtureDir,
             subprojects = listOf(AppProjectTemplate(flavors = flavors))
         ).runAndCheckResult(
-            "tasks", "--group=versioning"
+            "tasks",
+            "--group=versioning"
         ) {
             assertThat(output).contains("Versioning tasks")
             assertThat(output).contains("generateAppVersionInfoForMockDebug - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockDebug variant.")
@@ -91,7 +93,8 @@ class AppVersioningPluginIntegrationTest {
             fixtureDir = fixtureDir,
             subprojects = listOf(AppProjectTemplate(pluginExtension = extension))
         ).runAndCheckResult(
-            "tasks", "--group=versioning"
+            "tasks",
+            "--group=versioning"
         ) {
             assertThat(output).doesNotContain("generateAppVersionInfoForDebug")
             assertThat(output).doesNotContain("printAppVersionInfoForDebug")
@@ -111,7 +114,8 @@ class AppVersioningPluginIntegrationTest {
             fixtureDir = fixtureDir,
             subprojects = listOf(AppProjectTemplate(pluginExtension = extension))
         ).runAndCheckResult(
-            "tasks", "--group=versioning"
+            "tasks",
+            "--group=versioning"
         ) {
             assertThat(output).contains("generateAppVersionInfoForDebug - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the debug variant.")
             assertThat(output).contains("printAppVersionInfoForDebug - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the debug variant.")
@@ -131,7 +135,8 @@ class AppVersioningPluginIntegrationTest {
             fixtureDir = fixtureDir,
             subprojects = listOf(AppProjectTemplate(pluginExtension = extension))
         ).runAndCheckResult(
-            "tasks", "--group=versioning"
+            "tasks",
+            "--group=versioning"
         ) {
             assertThat(output).contains("Versioning tasks")
             assertThat(output).contains("generateAppVersionInfoForRelease - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the release variant.")
@@ -152,7 +157,8 @@ class AppVersioningPluginIntegrationTest {
             fixtureDir = fixtureDir,
             subprojects = listOf(AppProjectTemplate(pluginExtension = extension))
         ).runAndCheckResult(
-            "tasks", "--group=versioning"
+            "tasks",
+            "--group=versioning"
         ) {
             assertThat(output).doesNotContain("Versioning tasks")
             assertThat(output).contains("No tasks")
@@ -174,10 +180,12 @@ class AppVersioningPluginIntegrationTest {
             "assembleRelease"
         ) {
             val versionCodeFileContent = File(
-                fixtureDir.root, "app/build/outputs/app_versioning/release/version_code.txt"
+                fixtureDir.root,
+                "app/build/outputs/app_versioning/release/version_code.txt"
             ).readText()
             val versionNameFileContent = File(
-                fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt"
+                fixtureDir.root,
+                "app/build/outputs/app_versioning/release/version_name.txt"
             ).readText()
 
             assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
@@ -210,10 +218,12 @@ class AppVersioningPluginIntegrationTest {
             "assembleRelease"
         ) {
             val versionCodeFile = File(
-                fixtureDir.root, "app/build/outputs/app_versioning/release/version_code.txt"
+                fixtureDir.root,
+                "app/build/outputs/app_versioning/release/version_code.txt"
             )
             val versionNameFile = File(
-                fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt"
+                fixtureDir.root,
+                "app/build/outputs/app_versioning/release/version_name.txt"
             )
 
             assertThat(task(":app:assembleRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)

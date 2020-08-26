@@ -209,7 +209,8 @@ class GenerateAppVersionInfoTest {
             fixtureDir = fixtureDir,
             subprojects = listOf(AppProjectTemplate(pluginExtension = extensions))
         ).runAndCheckResult(
-            "generateAppVersionInfoForRelease", "-PbuildNumber=78"
+            "generateAppVersionInfoForRelease",
+            "-PbuildNumber=78"
         ) {
             assertThat(versionCodeFile.readText()).isEqualTo("1020378")
         }
@@ -430,13 +431,16 @@ class GenerateAppVersionInfoTest {
         )
 
         runner.runAndCheckResult(
-            "generateAppVersionInfoForRelease", "--build-cache"
+            "generateAppVersionInfoForRelease",
+            "--build-cache"
         ) {
             assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
         }
 
         runner.runAndCheckResult(
-            "clean", "generateAppVersionInfoForRelease", "--build-cache"
+            "clean",
+            "generateAppVersionInfoForRelease",
+            "--build-cache"
         ) {
             assertThat(task(":app:clean")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
             assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.FROM_CACHE)
@@ -470,13 +474,16 @@ class GenerateAppVersionInfoTest {
         )
 
         runner.runAndCheckResult(
-            "generateAppVersionInfoForRelease", "--build-cache"
+            "generateAppVersionInfoForRelease",
+            "--build-cache"
         ) {
             assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
         }
 
         runner.runAndCheckResult(
-            "clean", "generateAppVersionInfoForRelease", "--build-cache"
+            "clean",
+            "generateAppVersionInfoForRelease",
+            "--build-cache"
         ) {
             assertThat(task(":app:clean")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
             assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.FROM_CACHE)
@@ -523,13 +530,16 @@ class GenerateAppVersionInfoTest {
         )
 
         runner.runAndCheckResult(
-            "generateAppVersionInfoForProdRelease", "--build-cache"
+            "generateAppVersionInfoForProdRelease",
+            "--build-cache"
         ) {
             assertThat(task(":app:generateAppVersionInfoForProdRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
         }
 
         runner.runAndCheckResult(
-            "clean", "generateAppVersionInfoForMockRelease", "--build-cache"
+            "clean",
+            "generateAppVersionInfoForMockRelease",
+            "--build-cache"
         ) {
             assertThat(task(":app:clean")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
             assertThat(task(":app:generateAppVersionInfoForMockRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
@@ -583,13 +593,16 @@ class GenerateAppVersionInfoTest {
         )
 
         runner.runAndCheckResult(
-            "generateAppVersionInfoForRelease", "--build-cache"
+            "generateAppVersionInfoForRelease",
+            "--build-cache"
         ) {
             assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
         }
 
         runner.runAndCheckResult(
-            "clean", "generateAppVersionInfoForRelease", "--build-cache"
+            "clean",
+            "generateAppVersionInfoForRelease",
+            "--build-cache"
         ) {
             assertThat(task(":app:clean")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
             assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.FROM_CACHE)
@@ -598,7 +611,8 @@ class GenerateAppVersionInfoTest {
         gitClient.tag(name = "1.3.0", message = "2nd tag", commitId = commitId2)
 
         runner.runAndCheckResult(
-            "generateAppVersionInfoForRelease", "--build-cache"
+            "generateAppVersionInfoForRelease",
+            "--build-cache"
         ) {
             assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
         }

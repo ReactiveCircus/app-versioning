@@ -84,5 +84,3 @@ private fun TemporaryFolder.buildFixture(subprojects: List<AndroidProjectTemplat
             .writeText(subproject.manifestFileContent)
     }
 }
-
-const val MIN_CONFIGURATION_CACHE_COMPLIANT_AGP_VERSION = "4.1.0"
