@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 @Suppress("ClassName")
 object versions {
-    const val agp = "4.2.0-alpha07"
+    const val agp = "4.2.0-alpha08"
     const val detekt = "1.12.0"
     const val junit = "4.13"
     const val truth = "1.0.1"
