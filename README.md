@@ -6,6 +6,8 @@
 
 A Gradle Plugin for lazily generating Android app's `versionCode` & `versionName` from Git tags.
 
+![App Versioning](docs/images/sample.png)
+
 **Minimum version of Android Gradle Plugin required is `4.0.0`.**
 
 More details coming :soon:
