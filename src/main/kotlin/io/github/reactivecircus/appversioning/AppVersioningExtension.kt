@@ -26,7 +26,7 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     val releaseBuildOnly = objects.property<Boolean>().convention(DEFAULT_RELEASE_BUILD_ONLY)
 
     /**
-     * Whether to fetch git tags from remote when no valid git tag can be found locally.
+     * Whether to fetch git tags from remote when no git tags can be found locally.
      *
      * Default is `false`.
      */
