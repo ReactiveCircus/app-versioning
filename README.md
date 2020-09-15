@@ -12,6 +12,8 @@ Android Gradle Plugin 4.0 introduced some [new APIs](https://medium.com/androidd
 
 **Minimum version of Android Gradle Plugin required is `4.0.0`.**
 
+This [blogpost](https://dev.to/ychescale9/git-based-android-app-versioning-with-agp-4-0-24ip) should provide more context around Git-based app versioning in general and why this plugin needs to build on top of AGP 4.0+.
+
 ## Installation
 
 The **Android App Versioning Gradle Plugin** is available from both [Maven Central](https://search.maven.org/artifact/io.github.reactivecircus.appversioning/app-versioning-gradle-plugin) and [Gradle Plugin Portal](https://plugins.gradle.org/plugin/io.github.reactivecircus.app-versioning). Make sure your top-level `build.gradle` has **either** `mavenCentral()` or `gradlePluginPortal()` defined in the `buildscript` block:
