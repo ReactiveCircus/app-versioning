@@ -215,7 +215,6 @@ appVersioning {
 </details>
 
 
-
 `versionName` can be customized with the same approach:
 
 <details open><summary>Kotlin</summary>
@@ -231,6 +230,7 @@ appVersioning {
         "${gitTag.rawTagName} - #$buildNumber (${gitTag.commitHash})"
     }
 }
+```
 
 </details>
 
@@ -246,10 +246,9 @@ appVersioning {
         "${gitTag.rawTagName} - #$buildNumber (${gitTag.commitHash})".toString()
     }
 }
-    
-</details>
-
 ```
+
+</details>
 
 ## More configurations
 
