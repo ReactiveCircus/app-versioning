@@ -18,7 +18,7 @@ This [blogpost](https://dev.to/ychescale9/git-based-android-app-versioning-with-
 
 The **Android App Versioning Gradle Plugin** is available from both [Maven Central](https://search.maven.org/artifact/io.github.reactivecircus.appversioning/app-versioning-gradle-plugin) and [Gradle Plugin Portal](https://plugins.gradle.org/plugin/io.github.reactivecircus.app-versioning). Make sure your top-level `build.gradle` has **either** `mavenCentral()` or `gradlePluginPortal()` defined in the `buildscript` block:
 
-```groovy
+```kt
 buildscript {
     repositories {
         // add either one of the following repositories
@@ -30,16 +30,18 @@ buildscript {
 
 The plugin can now be applied to your **Android Application** module (Gradle subproject).
 
-If you use Kotlin DSL (`build.gradle.kts`):
-
-```kotlin
+<details open><summary>Kotlin</summary>
+    
+```kt
 plugins {
     id("com.android.application")
     id("io.github.reactivecircus.app-versioning") version "x.y.z"
 }
 ```
 
-If you use Groovy DSL (`build.gradle`):
+</details>
+
+<details><summary>Groovy</summary>
 
 ```groovy
 plugins {
@@ -48,21 +50,7 @@ plugins {
 }
 ```
 
-The `version` can be omitted by adding a classpath dependency in the `buildscript` block within the top-level `build.gradle`:
-
-```groovy
-buildscript {
-    repositories {
-        mavenCentral()
-        google()
-        gradlePluginPortal()
-    }
-
-    dependencies {
-        classpath "io.github.reactivecircus.appversioning:app-versioning-gradle-plugin:x.y.z"
-    }
-}
-```
+</details>
 
 ## Usage
 
@@ -94,8 +82,8 @@ If the default behavior described above works for you, you are all set to go.
 ### Custom rules
 
 The plugin lets you define how you want to compute the `versionCode` and `versionName` by implementing lambdas which are evaluated lazily during execution:
-
-```kotlin
+    
+```kt
 appVersioning {
     overrideVersionCode { gitTag, providers ->
         // TODO generate an Int from the given gitTag and/or providers
@@ -107,6 +95,7 @@ appVersioning {
 }
 ```
 
+
 `GitTag` is a type-safe representation of a tag encapsulating the `rawTagName`, `commitsSinceLatestTag` and `commitHash`, provided by the plugin.
 
 `providers` is a `ProviderFactory` instance which is a Gradle API that can be useful for [reading environment variables and system properties lazily](https://docs.gradle.org/current/javadoc/org/gradle/api/provider/ProviderFactory.html).
@@ -117,15 +106,34 @@ The plugin by default reserves 2 digits for each of the **MAJOR**, **MINOR** and
 
 To allocate 3 digits per component instead (i.e. each version component can go up to 999):
 
-```kotlin
+<details open><summary>Kotlin</summary>
+
+```kt
 import io.github.reactivecircus.appversioning.toSemVer
 appVersioning {
-    overrideVersionCode { gitTag, providers ->
+    overrideVersionCode { gitTag, _ ->
         val semVer = gitTag.toSemVer()
         semVer.major * 1000000 + semVer.minor * 1000 + semVer.patch
     }
 }
 ```
+
+</details>
+
+<details><summary>Groovy</summary>
+ 
+```groovy
+import io.github.reactivecircus.appversioning.SemVer
+appVersioning {
+    overrideVersionCode { gitTag, providers ->
+        def semVer = SemVer.fromGitTag(gitTag)
+        semVer.major * 1000000 + semVer.minor * 1000 + semVer.patch
+    }
+}
+```
+    
+</details>
+
 
 `toSemVer()` is an extension function (or `SemVer.fromGitTag(gitTag)` if you use Groovy) provided by the plugin to help create a type-safe `SemVer` object from the `GitTag` by parsing its `rawTagName` field.
 
@@ -135,7 +143,9 @@ If a Git tag is not fully [SemVer compliant](https://semver.org/#semantic-versio
 
 Since the key characteristic for `versionCode` is that it must **monotonically increase** with each app release, a common approach is to use the Epoch / Unix timestamp for `versionCode`:
 
-```kotlin
+<details open><summary>Kotlin</summary>
+
+```kt
 import java.time.Instant
 appVersioning {
     overrideVersionCode { _, _ ->
@@ -143,6 +153,22 @@ appVersioning {
     }
 }
 ```
+
+</details>
+
+<details><summary>Groovy</summary>
+
+```groovy
+appVersioning {
+    overrideVersionCode { gitTag, providers ->
+        Instant.now().epochSecond.intValue()
+    }
+}
+```
+
+</details>
+
+
 
 This will generate a monotonically increasing version code every time the `generateAppVersionInfoForRelease` task is run:
 
@@ -154,7 +180,9 @@ Generated app version code: 1599750437.
 
 We can also add a `BUILD_NUMBER` environment variable provided by CI to the `versionCode` or `versionName`. To do this, use the `providers` lambda parameter to create a provider that's only queried during execution:
 
-```kotlin
+<details open><summary>Kotlin</summary>
+
+```kt
 import io.github.reactivecircus.appversioning.toSemVer
 appVersioning {
     overrideVersionCode { gitTag, providers ->
@@ -167,9 +195,32 @@ appVersioning {
 }
 ```
 
+</details>
+
+<details><summary>Groovy</summary>
+
+```groovy
+import io.github.reactivecircus.appversioning.SemVer
+appVersioning {
+    overrideVersionCode { gitTag, providers ->
+        def buildNumber = providers
+            .environmentVariable("BUILD_NUMBER")
+            .getOrElse("0") as Integer
+        def semVer = SemVer.fromGitTag(gitTag)
+        semVer.major * 10000 + semVer.minor * 100 + semVer.patch + buildNumber
+    }
+}
+```
+
+</details>
+
+
+
 `versionName` can be customized with the same approach:
 
-```kotlin
+<details open><summary>Kotlin</summary>
+
+```kt
 import io.github.reactivecircus.appversioning.toSemVer
 appVersioning {
     overrideVersionName { gitTag, providers ->
@@ -180,6 +231,24 @@ appVersioning {
         "${gitTag.rawTagName} - #$buildNumber (${gitTag.commitHash})"
     }
 }
+
+</details>
+
+<details><summary>Groovy</summary>
+
+```groovy
+appVersioning {
+    overrideVersionName { gitTag, providers ->
+        // a custom versionName combining the tag name, commitHash and an environment variable
+        def buildNumber = providers
+            .environmentVariable("BUILD_NUMBER")
+            .getOrElse("0") as Integer
+        "${gitTag.rawTagName} - #$buildNumber (${gitTag.commitHash})".toString()
+    }
+}
+    
+</details>
+
 ```
 
 ## More configurations
@@ -188,7 +257,7 @@ appVersioning {
 
 To disable the plugin such that the `versionCode` and `versionName` defined in the `defaultConfig` block are used instead (if specified):
 
-```kotlin
+```kt
 appVersioning {
     /**
      * Whether to enable the plugin.
@@ -203,7 +272,7 @@ appVersioning {
 
 To generate `versionCode` and `versionName` **only** for the `Release` build type:
 
-```kotlin
+```kt
 appVersioning {
     /**
      * Whether to only generate version name and version code for `release` builds.
@@ -229,7 +298,7 @@ printAppVersionInfoForRelease - Prints the versionCode and versionName generated
 
 Sometimes a local checkout may not contain the Git tags (e.g. when cloning was done with `--no-tags`). To fetch git tags from remote when no tags can be found locally:
 
-```kotlin
+```kt
 appVersioning {
     /**
      * Whether to fetch git tags from remote when no git tag can be found locally.
