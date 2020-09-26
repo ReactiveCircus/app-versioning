@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 @Suppress("ClassName")
 object versions {
     const val agp = "4.2.0-alpha11"
-    const val detekt = "1.13.1"
+    const val detekt = "1.14.0"
     const val junit = "4.13"
     const val truth = "1.0.1"
 }
@@ -16,7 +16,7 @@ plugins {
     id("org.jetbrains.dokka") version "1.4.0"
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.vanniktech.maven.publish") version "0.13.0"
-    id("io.gitlab.arturbosch.detekt") version "1.13.1"
+    id("io.gitlab.arturbosch.detekt") version "1.14.0"
 }
 
 kotlinDslPluginOptions {
