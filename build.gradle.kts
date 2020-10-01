@@ -12,7 +12,7 @@ object versions {
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
-    kotlin("jvm") version "1.4.10"
+    kotlin("jvm") version "1.4.20-M1"
     id("org.jetbrains.dokka") version "1.4.0"
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.vanniktech.maven.publish") version "0.13.0"
@@ -27,6 +27,7 @@ repositories {
     mavenCentral()
     google()
     gradlePluginPortal()
+    maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
 group = property("GROUP") as String
