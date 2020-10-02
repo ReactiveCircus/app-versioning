@@ -8,11 +8,17 @@ A Gradle Plugin for lazily generating Android app's `versionCode` & `versionName
 
 ![App Versioning](docs/images/sample.png)
 
-Android Gradle Plugin 4.0 introduced some [new APIs](https://medium.com/androiddevelopers/new-apis-in-the-android-gradle-plugin-f5325742e614) to support **lazily** computing and setting the `versionCode` and `versionName` for an APK or App Bundle. This plugin builds on top of these APIs to support the common app versioning use cases based on Git.
+Android Gradle Plugin 4.0 and 4.1 introduced some [new experimental APIs](https://medium.com/androiddevelopers/new-apis-in-the-android-gradle-plugin-f5325742e614) to support **lazily** computing and setting the `versionCode` and `versionName` for an APK or App Bundle. This plugin builds on top of these APIs to support the common app versioning use cases based on Git.
 
-**Minimum version of Android Gradle Plugin required is `4.0.0`.**
+This [blogpost](https://dev.to/ychescale9/git-based-android-app-versioning-with-agp-4-0-24ip) should provide more context around Git-based app versioning in general and why this plugin needs to build on top of the new variant APIs introduced in AGP 4.0 / 4.1 which are currently **incubating**.
 
-This [blogpost](https://dev.to/ychescale9/git-based-android-app-versioning-with-agp-4-0-24ip) should provide more context around Git-based app versioning in general and why this plugin needs to build on top of AGP 4.0+.
+## Android Gradle Plugin version compatibility
+
+The minimum version of Android Gradle Plugin required is `4.2.0-alpha13`.
+
+The plugin currently requires the latest version of AGP as the variant APIs it uses are incubating and won't be stable until AGP 5.0.
+
+Version `0.4.0` of the plugin is the final version that's compatible with AGP 4.0 and 4.1.
 
 ## Installation
 
@@ -31,7 +37,7 @@ buildscript {
 The plugin can now be applied to your **Android Application** module (Gradle subproject).
 
 <details open><summary>Kotlin</summary>
-    
+
 ```kt
 plugins {
     id("com.android.application")
@@ -82,7 +88,7 @@ If the default behavior described above works for you, you are all set to go.
 ### Custom rules
 
 The plugin lets you define how you want to compute the `versionCode` and `versionName` by implementing lambdas which are evaluated lazily during execution:
-    
+
 ```kt
 appVersioning {
     overrideVersionCode { gitTag, providers ->
@@ -121,7 +127,7 @@ appVersioning {
 </details>
 
 <details><summary>Groovy</summary>
- 
+
 ```groovy
 import io.github.reactivecircus.appversioning.SemVer
 appVersioning {
@@ -131,7 +137,7 @@ appVersioning {
     }
 }
 ```
-    
+
 </details>
 
 
