@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.5.0
+
+The plugin now requires the latest version of Android Gradle Plugin (currently `4.2.0-alpha13`) until the next variant APIs become stable.
+
+Please use version `0.4.0` if you want to use the plugin with AGP 4.0 or 4.1.
+
 ## 0.4.0
 
 This is the final release of the plugin that's compatible with **Android Gradle Plugin 4.0 and 4.1**.
