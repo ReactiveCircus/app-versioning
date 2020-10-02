@@ -65,14 +65,10 @@ jobs:
           ./gradlew test detekt
 
   functional-tests:
-    name: Functional tests - AGP ${{ matrix.agp-version }}
+    name: Functional tests
     runs-on: ubuntu-latest
     env:
       JAVA_TOOL_OPTIONS: -Xmx4g
-      AGP_VERSION: ${{ matrix.agp-version }}
-    strategy:
-      matrix:
-        agp-version: [4.0.1, 4.1.0-rc03, 4.2.0-alpha11]
 
     steps:
       - uses: actions/checkout@v2
@@ -89,9 +85,9 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-${{ github.job }}-${{ matrix.agp-version }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+          key: ${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
-            ${{ runner.os }}-${{ github.job }}-${{ matrix.agp-version }}-
+            ${{ runner.os }}-${{ github.job }}-
       - run: |
           ./gradlew functionalTest
 

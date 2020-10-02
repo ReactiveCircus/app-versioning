@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 @Suppress("ClassName")
 object versions {
-    const val agp = "4.2.0-alpha11"
+    const val agp = "4.2.0-alpha13"
     const val detekt = "1.14.1"
     const val junit = "4.13"
     const val truth = "1.0.1"
@@ -106,18 +106,12 @@ tasks.withType<KotlinCompile>().configureEach {
     }
 }
 
-@Suppress("UnstableApiUsage")
-val fixtureAgpVersion = providers
-    .environmentVariable("AGP_VERSION")
-    .forUseAtConfigurationTime()
-    .getOrElse(versions.agp)
-
 dependencies {
     compileOnly("com.android.tools.build:gradle:${versions.agp}")
     testImplementation("junit:junit:${versions.junit}")
     testImplementation("com.google.truth:truth:${versions.truth}")
-    functionalTestImplementation("com.android.tools.build:gradle:${fixtureAgpVersion}")
-    fixtureClasspath("com.android.tools.build:gradle:${fixtureAgpVersion}")
+    functionalTestImplementation("com.android.tools.build:gradle:${versions.agp}")
+    fixtureClasspath("com.android.tools.build:gradle:${versions.agp}")
 }
 
 detekt {
