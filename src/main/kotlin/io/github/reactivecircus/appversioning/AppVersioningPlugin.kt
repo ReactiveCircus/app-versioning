@@ -2,9 +2,9 @@ package io.github.reactivecircus.appversioning
 
 import android.databinding.tool.ext.capitalizeUS
 import com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+import com.android.build.api.extension.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.VariantOutputConfiguration
 import com.android.build.gradle.AppPlugin
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import io.github.reactivecircus.appversioning.tasks.GenerateAppVersionInfo
 import io.github.reactivecircus.appversioning.tasks.PrintAppVersionInfo
 import org.gradle.api.Plugin
@@ -31,25 +31,25 @@ internal class AppVersioningPlugin : Plugin<Project> {
         val appVersioningExtension = project.extensions.create("appVersioning", AppVersioningExtension::class.java)
         project.plugins.withType<AppPlugin> {
             androidAppPluginApplied.set(true)
-            project.extensions.getByType<BaseAppModuleExtension>().onVariantProperties {
-                if (pluginDisabled.get()) return@onVariantProperties
+            project.extensions.getByType<ApplicationAndroidComponentsExtension>().onVariants { variant ->
+                if (pluginDisabled.get()) return@onVariants
                 if (!appVersioningExtension.enabled.get()) {
                     project.logger.quiet("Android App Versioning plugin is disabled.")
                     pluginDisabled.set(true)
-                    return@onVariantProperties
+                    return@onVariants
                 }
-                if (!appVersioningExtension.releaseBuildOnly.get() || buildType == BuildType.RELEASE.name) {
+                if (!appVersioningExtension.releaseBuildOnly.get() || variant.buildType == BuildType.RELEASE.name) {
                     val generateAppVersionInfo = project.registerGenerateAppVersionInfoTask(
-                        variantName = name,
+                        variantName = variant.name,
                         extension = appVersioningExtension
                     )
 
                     val generatedVersionCode = generateAppVersionInfo.map { it.versionCodeFile.asFile.get().readText().trim().toInt() }
                     val generatedVersionName = generateAppVersionInfo.map { it.versionNameFile.asFile.get().readText().trim() }
 
-                    project.registerPrintAppVersionInfoTask(variantName = name)
+                    project.registerPrintAppVersionInfoTask(variantName = variant.name)
 
-                    val mainOutput = outputs.single { it.outputType == VariantOutputConfiguration.OutputType.SINGLE }
+                    val mainOutput = variant.outputs.single { it.outputType == VariantOutputConfiguration.OutputType.SINGLE }
                     mainOutput.versionCode.set(generatedVersionCode)
                     mainOutput.versionName.set(generatedVersionName)
                 }
