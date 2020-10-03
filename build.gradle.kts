@@ -86,19 +86,12 @@ tasks.test {
     }
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
         useIR = true
-        jvmTarget = "1.8"
+        jvmTarget = "14"
         freeCompilerArgs = freeCompilerArgs + listOf(
             "-Xuse-ir",
-            "-Xskip-runtime-version-check",
-            "-Xskip-metadata-version-check",
             "-Xjvm-default=all",
             "-Xinline-classes",
             "-Xopt-in=kotlin.Experimental"
