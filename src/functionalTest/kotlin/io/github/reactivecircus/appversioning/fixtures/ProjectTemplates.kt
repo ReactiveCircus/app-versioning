@@ -27,7 +27,6 @@ fun gradlePropertiesFileContent(enableConfigurationCache: Boolean): String {
     val configurationCacheProperties = if (enableConfigurationCache) {
         """
             org.gradle.unsafe.configuration-cache=true
-            org.gradle.unsafe.configuration-cache-problems=warn
         """.trimIndent()
     } else ""
     return """
