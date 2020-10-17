@@ -1,5 +1,4 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 @Suppress("ClassName")
 object versions {
@@ -52,6 +51,28 @@ gradlePlugin {
     }
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+kotlin {
+    target {
+        compilations.all {
+            kotlinOptions {
+                useIR = true
+                jvmTarget = "1.8"
+                freeCompilerArgs = freeCompilerArgs + listOf(
+                    "-Xuse-ir",
+                    "-Xjvm-default=all",
+                    "-Xinline-classes",
+                    "-Xopt-in=kotlin.Experimental"
+                )
+            }
+        }
+    }
+}
+
 val fixtureClasspath: Configuration by configurations.creating
 tasks.pluginUnderTestMetadata {
     pluginClasspath.from(fixtureClasspath)
@@ -80,22 +101,9 @@ val check by tasks.getting(Task::class) {
     dependsOn(functionalTest)
 }
 
-tasks.test {
+val test by tasks.getting(Test::class) {
     testLogging {
         events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
-    }
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        useIR = true
-        jvmTarget = "14"
-        freeCompilerArgs = freeCompilerArgs + listOf(
-            "-Xuse-ir",
-            "-Xjvm-default=all",
-            "-Xinline-classes",
-            "-Xopt-in=kotlin.Experimental"
-        )
     }
 }
 
