@@ -107,7 +107,7 @@ internal class AppVersioningPlugin : Plugin<Project> {
     }
 
     companion object {
-        const val MIN_AGP_VERSION = "4.2.0-alpha13"
+        const val MIN_AGP_VERSION = "4.2.0-alpha15"
     }
 }
 
