@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * A plugin that generates and sets the version code and version name for an Android app using the latest git tag.
  */
 @Suppress("UnstableApiUsage")
-internal class AppVersioningPlugin : Plugin<Project> {
+class AppVersioningPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val agpVersion = VersionNumber.parse(ANDROID_GRADLE_PLUGIN_VERSION)
         check(agpVersion >= VersionNumber.parse(MIN_AGP_VERSION)) {
