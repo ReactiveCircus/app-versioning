@@ -60,10 +60,8 @@ kotlin {
     target {
         compilations.all {
             kotlinOptions {
-                useIR = true
                 jvmTarget = "1.8"
                 freeCompilerArgs = freeCompilerArgs + listOf(
-                    "-Xuse-ir",
                     "-Xjvm-default=all",
                     "-Xinline-classes",
                     "-Xopt-in=kotlin.Experimental"
