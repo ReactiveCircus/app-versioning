@@ -4,6 +4,7 @@ package io.github.reactivecircus.appversioning.tasks
 
 import groovy.lang.Closure
 import io.github.reactivecircus.appversioning.GitTag
+import io.github.reactivecircus.appversioning.VariantInfo
 import io.github.reactivecircus.appversioning.VersionCodeCustomizer
 import io.github.reactivecircus.appversioning.VersionNameCustomizer
 import io.github.reactivecircus.appversioning.internal.GitClient
@@ -50,9 +51,6 @@ abstract class GenerateAppVersionInfo @Inject constructor(
     abstract val rootProjectDisplayName: Property<String>
 
     @get:Input
-    abstract val targetVariantName: Property<String>
-
-    @get:Input
     abstract val fetchTagsWhenNoneExistsLocally: Property<Boolean>
 
     @get:Optional
@@ -77,6 +75,9 @@ abstract class GenerateAppVersionInfo @Inject constructor(
     @get:OutputFile
     abstract val versionNameFile: RegularFileProperty
 
+    @get:Input
+    abstract val variantInfo: Property<VariantInfo>
+
     @TaskAction
     fun generate() {
         workerExecutor.noIsolation().submit(GenerateAppVersionInfoWorkAction::class.java) {
@@ -90,6 +91,7 @@ abstract class GenerateAppVersionInfo @Inject constructor(
             groovyVersionNameCustomizer.set(this@GenerateAppVersionInfo.groovyVersionNameCustomizer)
             versionCodeFile.set(this@GenerateAppVersionInfo.versionCodeFile)
             versionNameFile.set(this@GenerateAppVersionInfo.versionNameFile)
+            variantInfo.set(this@GenerateAppVersionInfo.variantInfo)
         }
     }
 
@@ -112,6 +114,7 @@ interface GenerateAppVersionInfoWorkParameters : WorkParameters {
     val groovyVersionNameCustomizer: Property<Closure<String>>
     val versionCodeFile: RegularFileProperty
     val versionNameFile: RegularFileProperty
+    val variantInfo: Property<VariantInfo>
 }
 
 abstract class GenerateAppVersionInfoWorkAction @Inject constructor(
@@ -131,6 +134,7 @@ abstract class GenerateAppVersionInfoWorkAction @Inject constructor(
         val groovyVersionNameCustomizer = parameters.groovyVersionNameCustomizer
         val versionCodeFile = parameters.versionCodeFile
         val versionNameFile = parameters.versionNameFile
+        val variantInfo = parameters.variantInfo
 
         check(gitRefsDirectory.isPresent) {
             "Android App Versioning Gradle Plugin works with git tags but ${rootProjectDisplayName.get()} is not a valid git repository."
@@ -162,13 +166,13 @@ abstract class GenerateAppVersionInfoWorkAction @Inject constructor(
             return
         }
 
-        val versionCode: Int = generateVersionCodeFromGitTag(gitTag, kotlinVersionCodeCustomizer, groovyVersionCodeCustomizer)
+        val versionCode: Int = generateVersionCodeFromGitTag(variantInfo, gitTag, kotlinVersionCodeCustomizer, groovyVersionCodeCustomizer)
         versionCodeFile.get().asFile.writeText(versionCode.toString())
         logger.quiet("Generated app version code: $versionCode.")
 
         val versionName: String = when {
-            kotlinVersionNameCustomizer.isPresent -> kotlinVersionNameCustomizer.get().invoke(gitTag, providers)
-            groovyVersionNameCustomizer.isPresent -> groovyVersionNameCustomizer.get().call(gitTag, providers)
+            kotlinVersionNameCustomizer.isPresent -> kotlinVersionNameCustomizer.get().invoke(gitTag, providers, variantInfo.get())
+            groovyVersionNameCustomizer.isPresent -> groovyVersionNameCustomizer.get().call(gitTag, providers, variantInfo.get())
             else -> gitTag.toString()
         }
         versionNameFile.get().asFile.writeText(versionName)
@@ -176,12 +180,13 @@ abstract class GenerateAppVersionInfoWorkAction @Inject constructor(
     }
 
     private fun generateVersionCodeFromGitTag(
+        variantInfo: Property<VariantInfo>,
         gitTag: GitTag,
         kotlinVersionCodeCustomizer: Property<VersionCodeCustomizer>,
         groovyVersionCodeCustomizer: Property<Closure<Int>>
     ): Int = when {
-        kotlinVersionCodeCustomizer.isPresent -> kotlinVersionCodeCustomizer.get().invoke(gitTag, providers)
-        groovyVersionCodeCustomizer.isPresent -> groovyVersionCodeCustomizer.get().call(gitTag, providers)
+        kotlinVersionCodeCustomizer.isPresent -> kotlinVersionCodeCustomizer.get().invoke(gitTag, providers, variantInfo.get())
+        groovyVersionCodeCustomizer.isPresent -> groovyVersionCodeCustomizer.get().call(gitTag, providers, variantInfo.get())
         else -> {
             // no custom rule for generating versionCode has been provided, attempt calculation based on SemVer
             val semVer = runCatching {

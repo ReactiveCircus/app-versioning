@@ -3,6 +3,7 @@ package io.github.reactivecircus.appversioning
 import android.databinding.tool.ext.capitalizeUS
 import com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
 import com.android.build.api.extension.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.ApplicationVariant
 import com.android.build.api.variant.VariantOutputConfiguration
 import com.android.build.gradle.AppPlugin
 import io.github.reactivecircus.appversioning.tasks.GenerateAppVersionInfo
@@ -40,7 +41,7 @@ class AppVersioningPlugin : Plugin<Project> {
                 }
                 if (!appVersioningExtension.releaseBuildOnly.get() || variant.buildType == BuildType.RELEASE.name) {
                     val generateAppVersionInfo = project.registerGenerateAppVersionInfoTask(
-                        variantName = variant.name,
+                        variant = variant,
                         extension = appVersioningExtension
                     )
 
@@ -64,26 +65,32 @@ class AppVersioningPlugin : Plugin<Project> {
     }
 
     private fun Project.registerGenerateAppVersionInfoTask(
-        variantName: String,
+        variant: ApplicationVariant,
         extension: AppVersioningExtension
     ): TaskProvider<GenerateAppVersionInfo> = tasks.register(
-        "${GenerateAppVersionInfo.TASK_NAME_PREFIX}For${variantName.capitalizeUS()}",
+        "${GenerateAppVersionInfo.TASK_NAME_PREFIX}For${variant.name.capitalizeUS()}",
         GenerateAppVersionInfo::class.java
     ) {
         group = APP_VERSIONING_TASK_GROUP
-        description = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the $variantName variant."
+        description = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the ${variant.name} variant."
 
         gitRefsDirectory.set(project.rootProject.file(GIT_REFS_DIRECTORY).let { if (it.exists()) it else null })
         rootProjectDirectory.set(project.rootProject.rootDir)
         rootProjectDisplayName.set(project.rootProject.displayName)
-        targetVariantName.set(variantName)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
         kotlinVersionCodeCustomizer.set(extension.kotlinVersionCodeCustomizer)
         kotlinVersionNameCustomizer.set(extension.kotlinVersionNameCustomizer)
         groovyVersionCodeCustomizer.set(extension.groovyVersionCodeCustomizer)
         groovyVersionNameCustomizer.set(extension.groovyVersionNameCustomizer)
-        versionCodeFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/$variantName/$VERSION_CODE_RESULT_FILE"))
-        versionNameFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/$variantName/$VERSION_NAME_RESULT_FILE"))
+        versionCodeFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/${variant.name}/$VERSION_CODE_RESULT_FILE"))
+        versionNameFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/${variant.name}/$VERSION_NAME_RESULT_FILE"))
+        variantInfo.set(
+            VariantInfo(
+                buildType = variant.buildType,
+                flavorName = variant.flavorName,
+                variantName = variant.name
+            )
+        )
     }
 
     private fun Project.registerPrintAppVersionInfoTask(
