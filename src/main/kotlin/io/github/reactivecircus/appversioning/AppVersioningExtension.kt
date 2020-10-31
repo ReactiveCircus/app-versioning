@@ -35,9 +35,10 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     )
 
     /**
-     * Provides a custom rule for generating versionCode by implementing a [GitTag], [ProviderFactory] -> Int lambda.
+     * Provides a custom rule for generating versionCode by implementing a [GitTag], [ProviderFactory], [VariantInfo] -> Int lambda.
      * [GitTag] is generated from latest git tag lazily by the plugin during task execution.
      * [ProviderFactory] can be used for fetching environment variables, Gradle and system properties.
+     * [VariantInfo] can be used to customize version code based on the build variants (product flavors and build types).
      *
      * By default the plugin attempts to generate the versionCode by converting a SemVer compliant tag to an integer
      * using positional notation: versionCode = MAJOR * 10000 + MINOR * 100 + PATCH
@@ -60,9 +61,10 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     }
 
     /**
-     * Provides a custom rule for generating versionName by implementing a [GitTag], [ProviderFactory] -> String lambda.
+     * Provides a custom rule for generating versionName by implementing a [GitTag], [ProviderFactory], [VariantInfo] -> String lambda.
      * [GitTag] is generated from latest git tag lazily by the plugin during task execution.
      * [ProviderFactory] can be used for fetching environment variables, Gradle and system properties.
+     * [VariantInfo] can be used to customize version name based on the build variants (product flavors and build types).
      *
      * This is useful if you want to fully customize how the versionName is generated.
      * If not specified, versionName will be the name of the latest git tag.
@@ -105,5 +107,5 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     }
 }
 
-internal typealias VersionCodeCustomizer = (GitTag, ProviderFactory) -> Int
-internal typealias VersionNameCustomizer = (GitTag, ProviderFactory) -> String
+internal typealias VersionCodeCustomizer = (GitTag, ProviderFactory, VariantInfo) -> Int
+internal typealias VersionNameCustomizer = (GitTag, ProviderFactory, VariantInfo) -> String

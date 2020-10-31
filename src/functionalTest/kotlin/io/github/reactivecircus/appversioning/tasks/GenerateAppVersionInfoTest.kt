@@ -195,7 +195,7 @@ class GenerateAppVersionInfoTest {
         val extensions = """
             import io.github.reactivecircus.appversioning.toSemVer
             appVersioning {
-                overrideVersionCode { gitTag, providers ->
+                overrideVersionCode { gitTag, providers, _ ->
                     val buildNumber = providers
                         .gradleProperty("buildNumber")
                         .orNull?.toInt()?: 0
@@ -226,7 +226,7 @@ class GenerateAppVersionInfoTest {
         val extensions = """
             import io.github.reactivecircus.appversioning.toSemVer
             appVersioning {
-                overrideVersionCode { gitTag, providers ->
+                overrideVersionCode { gitTag, providers, _ ->
                     val semVer = gitTag.toSemVer()
                     semVer.major * 1000000 + semVer.minor * 10000 + semVer.patch * 100
                 }
@@ -255,7 +255,7 @@ class GenerateAppVersionInfoTest {
 
         val extensions = """
             appVersioning {
-                overrideVersionCode { _, _ -> 0 }
+                overrideVersionCode { _, _, _ -> 0 }
             }
         """.trimIndent()
 
@@ -300,7 +300,7 @@ class GenerateAppVersionInfoTest {
 
         val extensions = """
             appVersioning {
-                overrideVersionName { gitTag, _ ->
+                overrideVersionName { gitTag, _, _ ->
                     "Version " + gitTag.toString()
                 }
             }
@@ -317,6 +317,116 @@ class GenerateAppVersionInfoTest {
     }
 
     @Test
+    fun `GenerateAppVersionInfo can generate custom versionCode based on build variant`() {
+        GitClient.initialize(fixtureDir.root).apply {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+        }
+
+        val versionCodeFileForFreeDebug = File(fixtureDir.root, "app/build/outputs/app_versioning/freeDebug/version_code.txt")
+        val versionCodeFileForFreeRelease = File(fixtureDir.root, "app/build/outputs/app_versioning/freeRelease/version_code.txt")
+        val versionCodeFileForPaidDebug = File(fixtureDir.root, "app/build/outputs/app_versioning/paidDebug/version_code.txt")
+        val versionCodeFileForPaidRelease = File(fixtureDir.root, "app/build/outputs/app_versioning/paidRelease/version_code.txt")
+
+        val extensions = """
+            import io.github.reactivecircus.appversioning.toSemVer
+            appVersioning {
+                overrideVersionCode { gitTag, _, variantInfo ->
+                    val offset = if (variantInfo.flavorName == "paid") 1 else 0
+                    val semVer = gitTag.toSemVer()
+                    semVer.major * 1000000 + semVer.minor * 10000 + semVer.patch * 100 + offset
+                }
+            }
+        """.trimIndent()
+
+        val flavors = listOf("free", "paid")
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate(pluginExtension = extensions, flavors = flavors))
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForFreeDebug"
+        ) {
+            assertThat(versionCodeFileForFreeDebug.readText()).isEqualTo("1020300")
+        }
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForFreeRelease"
+        ) {
+            assertThat(versionCodeFileForFreeRelease.readText()).isEqualTo("1020300")
+        }
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForPaidDebug"
+        ) {
+            assertThat(versionCodeFileForPaidDebug.readText()).isEqualTo("1020301")
+        }
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForPaidRelease"
+        ) {
+            assertThat(versionCodeFileForPaidRelease.readText()).isEqualTo("1020301")
+        }
+    }
+
+    @Test
+    fun `GenerateAppVersionInfo can generate custom versionName based on build variant`() {
+        GitClient.initialize(fixtureDir.root).apply {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+        }
+
+        val versionNameFileForFreeDebug = File(fixtureDir.root, "app/build/outputs/app_versioning/freeDebug/version_name.txt")
+        val versionNameFileForFreeRelease = File(fixtureDir.root, "app/build/outputs/app_versioning/freeRelease/version_name.txt")
+        val versionNameFileForPaidDebug = File(fixtureDir.root, "app/build/outputs/app_versioning/paidDebug/version_name.txt")
+        val versionNameFileForPaidRelease = File(fixtureDir.root, "app/build/outputs/app_versioning/paidRelease/version_name.txt")
+
+        val extensions = """
+            appVersioning {
+                overrideVersionName { gitTag, _, variantInfo ->
+                    val suffix = if (!variantInfo.isReleaseBuild) {
+                        " (" + variantInfo.variantName + ")"
+                    } else {
+                        ""
+                    }
+                    "Version " + gitTag.toString() + suffix
+                }
+            }
+        """.trimIndent()
+
+        val flavors = listOf("free", "paid")
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate(pluginExtension = extensions, flavors = flavors))
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForFreeDebug"
+        ) {
+            assertThat(versionNameFileForFreeDebug.readText()).isEqualTo("Version 1.2.3 (freeDebug)")
+        }
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForFreeRelease"
+        ) {
+            assertThat(versionNameFileForFreeRelease.readText()).isEqualTo("Version 1.2.3")
+        }
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForPaidDebug"
+        ) {
+            assertThat(versionNameFileForPaidDebug.readText()).isEqualTo("Version 1.2.3 (paidDebug)")
+        }
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForPaidRelease"
+        ) {
+            assertThat(versionNameFileForPaidRelease.readText()).isEqualTo("Version 1.2.3")
+        }
+    }
+
+    @Test
     fun `overrideVersionCode and overrideVersionName configurations work in groovy`() {
         GitClient.initialize(fixtureDir.root).apply {
             val commitId = commit(message = "1st commit.")
@@ -324,18 +434,26 @@ class GenerateAppVersionInfoTest {
             commit(message = "2nd commit.")
         }
 
-        val versionCodeFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_code.txt")
-        val versionNameFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt")
+        val versionCodeFileForDebug = File(fixtureDir.root, "app/build/outputs/app_versioning/debug/version_code.txt")
+        val versionNameFileForDebug = File(fixtureDir.root, "app/build/outputs/app_versioning/debug/version_name.txt")
+        val versionCodeFileForRelease = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_code.txt")
+        val versionNameFileForRelease = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt")
 
         val extensions = """
             import io.github.reactivecircus.appversioning.SemVer
             appVersioning {
-                overrideVersionCode { gitTag, _ ->
+                overrideVersionCode { gitTag, providers, variantInfo ->
                     def semVer = SemVer.fromGitTag(gitTag)
                     semVer.major * 10000 + semVer.minor * 100 + semVer.patch + gitTag.commitsSinceLatestTag
                 }
-                overrideVersionName { gitTag, _ ->
-                    "Version " + gitTag.toString()
+                overrideVersionName { gitTag, providers, variantInfo ->
+                    def suffix
+                    if (variantInfo.debugBuild == true) {
+                        suffix = " (" + variantInfo.variantName + ")"
+                    } else {
+                        suffix = ""
+                    }
+                    "Version " + gitTag.toString() + suffix
                 }
             }
         """.trimIndent()
@@ -346,11 +464,19 @@ class GenerateAppVersionInfoTest {
         )
 
         runner.runAndCheckResult(
+            "generateAppVersionInfoForDebug"
+        ) {
+            assertThat(task(":app:generateAppVersionInfoForDebug")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFileForDebug.readText()).isEqualTo("10204")
+            assertThat(versionNameFileForDebug.readText()).isEqualTo("Version 1.2.3 (debug)")
+        }
+
+        runner.runAndCheckResult(
             "generateAppVersionInfoForRelease"
         ) {
             assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
-            assertThat(versionCodeFile.readText()).isEqualTo("10204")
-            assertThat(versionNameFile.readText()).isEqualTo("Version 1.2.3")
+            assertThat(versionCodeFileForRelease.readText()).isEqualTo("10204")
+            assertThat(versionNameFileForRelease.readText()).isEqualTo("Version 1.2.3")
         }
     }
 
@@ -390,11 +516,11 @@ class GenerateAppVersionInfoTest {
         val extensions = """
             import io.github.reactivecircus.appversioning.toSemVer
             appVersioning {
-                overrideVersionCode { gitTag, _ ->
+                overrideVersionCode { gitTag, _, _ ->
                     val semVer = gitTag.toSemVer()
                     semVer.major * 10000 + semVer.minor * 100 + semVer.patch + gitTag.commitsSinceLatestTag
                 }
-                overrideVersionName { gitTag, _ ->
+                overrideVersionName { gitTag, _, _ ->
                     "Version " + gitTag.toString()
                 }
             }
@@ -458,11 +584,11 @@ class GenerateAppVersionInfoTest {
         val extensions = """
             import io.github.reactivecircus.appversioning.toSemVer
             appVersioning {
-                overrideVersionCode { gitTag, _ ->
+                overrideVersionCode { gitTag, _, _ ->
                     val semVer = gitTag.toSemVer()
                     semVer.major * 10000 + semVer.minor * 100 + semVer.patch + gitTag.commitsSinceLatestTag
                 }
-                overrideVersionName { gitTag, _ ->
+                overrideVersionName { gitTag, _, _ ->
                     "Version " + gitTag.toString()
                 }
             }

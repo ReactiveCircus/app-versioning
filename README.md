@@ -91,20 +91,21 @@ The plugin lets you define how you want to compute the `versionCode` and `versio
 
 ```kt
 appVersioning {
-    overrideVersionCode { gitTag, providers ->
-        // TODO generate an Int from the given gitTag and/or providers
+    overrideVersionCode { gitTag, providers, variantInfo ->
+        // TODO generate an Int from the given gitTag, providers, build variant
     }
 
-    overrideVersionName { gitTag, providers ->
-        // TODO generate a String from the given gitTag and/or providers
+    overrideVersionName { gitTag, providers, variantInfo ->
+        // TODO generate a String from the given gitTag, providers, build variant
     }
 }
 ```
 
-
 `GitTag` is a type-safe representation of a tag encapsulating the `rawTagName`, `commitsSinceLatestTag` and `commitHash`, provided by the plugin.
 
 `providers` is a `ProviderFactory` instance which is a Gradle API that can be useful for [reading environment variables and system properties lazily](https://docs.gradle.org/current/javadoc/org/gradle/api/provider/ProviderFactory.html).
+
+`VariantInfo` is an object that encapsulates the build variant information including `buildType`, `flavorName`, and `variantName`.
 
 #### SemVer-based version code
 
@@ -117,7 +118,7 @@ To allocate 3 digits per component instead (i.e. each version component can go u
 ```kt
 import io.github.reactivecircus.appversioning.toSemVer
 appVersioning {
-    overrideVersionCode { gitTag, _ ->
+    overrideVersionCode { gitTag, _, _ ->
         val semVer = gitTag.toSemVer()
         semVer.major * 1000000 + semVer.minor * 1000 + semVer.patch
     }
@@ -131,7 +132,7 @@ appVersioning {
 ```groovy
 import io.github.reactivecircus.appversioning.SemVer
 appVersioning {
-    overrideVersionCode { gitTag, providers ->
+    overrideVersionCode { gitTag, providers, variantInfo ->
         def semVer = SemVer.fromGitTag(gitTag)
         semVer.major * 1000000 + semVer.minor * 1000 + semVer.patch
     }
@@ -154,7 +155,7 @@ Since the key characteristic for `versionCode` is that it must **monotonically i
 ```kt
 import java.time.Instant
 appVersioning {
-    overrideVersionCode { _, _ ->
+    overrideVersionCode { _, _, _ ->
         Instant.now().epochSecond.toInt()
     }
 }
@@ -166,14 +167,13 @@ appVersioning {
 
 ```groovy
 appVersioning {
-    overrideVersionCode { gitTag, providers ->
+    overrideVersionCode { gitTag, providers, variantInfo ->
         Instant.now().epochSecond.intValue()
     }
 }
 ```
 
 </details>
-
 
 
 This will generate a monotonically increasing version code every time the `generateAppVersionInfoForRelease` task is run:
@@ -191,7 +191,7 @@ We can also add a `BUILD_NUMBER` environment variable provided by CI to the `ver
 ```kt
 import io.github.reactivecircus.appversioning.toSemVer
 appVersioning {
-    overrideVersionCode { gitTag, providers ->
+    overrideVersionCode { gitTag, providers, _ ->
         val buildNumber = providers
             .environmentVariable("BUILD_NUMBER")
             .getOrElse("0").toInt()
@@ -208,7 +208,7 @@ appVersioning {
 ```groovy
 import io.github.reactivecircus.appversioning.SemVer
 appVersioning {
-    overrideVersionCode { gitTag, providers ->
+    overrideVersionCode { gitTag, providers, variantInfo ->
         def buildNumber = providers
             .environmentVariable("BUILD_NUMBER")
             .getOrElse("0") as Integer
@@ -220,7 +220,6 @@ appVersioning {
 
 </details>
 
-
 `versionName` can be customized with the same approach:
 
 <details open><summary>Kotlin</summary>
@@ -228,7 +227,7 @@ appVersioning {
 ```kt
 import io.github.reactivecircus.appversioning.toSemVer
 appVersioning {
-    overrideVersionName { gitTag, providers ->
+    overrideVersionName { gitTag, providers, _ ->
         // a custom versionName combining the tag name, commitHash and an environment variable
         val buildNumber = providers
             .environmentVariable("BUILD_NUMBER")
@@ -244,12 +243,68 @@ appVersioning {
 
 ```groovy
 appVersioning {
-    overrideVersionName { gitTag, providers ->
+    overrideVersionName { gitTag, providers, variantInfo ->
         // a custom versionName combining the tag name, commitHash and an environment variable
         def buildNumber = providers
             .environmentVariable("BUILD_NUMBER")
             .getOrElse("0") as Integer
         "${gitTag.rawTagName} - #$buildNumber (${gitTag.commitHash})".toString()
+    }
+}
+```
+
+</details>
+
+#### Custom rules based on build variants
+
+Sometimes you might want to customize `versionCode` or `versionName` based on the build variants (product flavor, build type). To do this, use the `variantInfo`  lambda parameter to query the build variant information when generating custom `versionCode` or `verrsionName`:
+
+<details open><summary>Kotlin</summary>
+
+```kt
+import io.github.reactivecircus.appversioning.toSemVer
+appVersioning {
+    overrideVersionCode { gitTag, _, _ ->
+        // add 1 to the versionCode for builds with the "paid" product flavor
+        val offset = if (variantInfo.flavorName == "paid") 1 else 0
+        val semVer = gitTag.toSemVer()
+        semVer.major * 10000 + semVer.minor * 100 + semVer.patch + offset
+    }
+    overrideVersionName { gitTag, _, variantInfo ->
+        // append build variant to the versionName for debug builds
+        val suffix = if (variantInfo.isDebugBuild) " (${variantInfo.variantName})" else ""
+        gitTag.toString() + suffix
+    }
+}
+```
+
+</details>
+
+<details><summary>Groovy</summary>
+
+```groovy
+import io.github.reactivecircus.appversioning.SemVer
+appVersioning {
+    overrideVersionCode { gitTag, providers, variantInfo ->
+        // add 1 to the versionCode for builds with the "paid" product flavor
+        def offset
+        if (variantInfo.flavorName == "paid") {
+            offset = 1
+        } else {
+            offset = 0
+        }
+        def semVer = SemVer.fromGitTag(gitTag)
+        semVer.major * 10000 + semVer.minor * 100 + semVer.patch + offset
+    }
+    overrideVersionName { gitTag, providers, variantInfo ->
+        // append build variant to the versionName for debug builds
+        def suffix
+        if (variantInfo.debugBuild == true) {
+            suffix = " (" + variantInfo.variantName + ")"
+        } else {
+            suffix = ""
+        }
+        gitTag.toString() + suffix
     }
 }
 ```
