@@ -1,5 +1,18 @@
 # Change Log
 
+## 0.6.0
+
+### Added
+- Add `VariantInfo` lambda parameters to `overrideVersionVode` and `overrideVersionName` to support customizing `versionCode` and `versionName` based on build variants.
+
+### Changed
+- Change `AppVersioningPlugin` from `internal` to `public` to support type-safe plugin application in `buildSrc`.
+- AGP 4.2.0-alpha16.
+- Kotlin 1.4.20-RC.
+
+### Fixed
+- Disable IR to support applying the plugin from `buildSrc`.
+
 ## 0.5.0
 
 The plugin now requires the latest version of Android Gradle Plugin (currently `4.2.0-alpha13`) until the next variant APIs become stable.
