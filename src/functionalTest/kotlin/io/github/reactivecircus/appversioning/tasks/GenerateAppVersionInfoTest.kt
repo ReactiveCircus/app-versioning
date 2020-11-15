@@ -427,6 +427,167 @@ class GenerateAppVersionInfoTest {
     }
 
     @Test
+    fun `GenerateAppVersionInfo generates versionCode and versionName from the latest git tag matching the provided tagFilter pattern when a tagFilter pattern is provided`() {
+        val gitClient = GitClient.initialize(fixtureDir.root).apply {
+            commit(message = "Initial commit.")
+        }
+
+        val versionCodeFileAppA = File(fixtureDir.root, "app-a/build/outputs/app_versioning/release/version_code.txt")
+        val versionCodeFileAppB = File(fixtureDir.root, "app-b/build/outputs/app_versioning/release/version_code.txt")
+        val versionCodeFileAppC = File(fixtureDir.root, "app-c/build/outputs/app_versioning/release/version_code.txt")
+        val versionNameFileAppA = File(fixtureDir.root, "app-a/build/outputs/app_versioning/release/version_name.txt")
+        val versionNameFileAppB = File(fixtureDir.root, "app-b/build/outputs/app_versioning/release/version_name.txt")
+        val versionNameFileAppC = File(fixtureDir.root, "app-c/build/outputs/app_versioning/release/version_name.txt")
+
+        val tagFilterAppA = "[0-9]*.[0-9]*.[0-9]*+appA"
+        val tagFilterAppB = "[0-9]*.[0-9]*.[0-9]*+appB"
+        val tagFilterAppC = "[0-9]*.[0-9]*.[0-9]*+appC"
+
+        val extensionsAppA = """
+            appVersioning {
+                tagFilter.set("$tagFilterAppA")
+            }
+        """.trimIndent()
+
+        val extensionsAppB = """
+            appVersioning {
+                tagFilter.set("$tagFilterAppB")
+            }
+        """.trimIndent()
+
+        val extensionsAppC = """
+            appVersioning {
+                tagFilter.set("$tagFilterAppC")
+            }
+        """.trimIndent()
+
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(
+                AppProjectTemplate(
+                    projectName = "app-a",
+                    pluginExtension = extensionsAppA
+                ),
+                AppProjectTemplate(
+                    projectName = "app-b",
+                    pluginExtension = extensionsAppB
+                ),
+                AppProjectTemplate(
+                    projectName = "app-c",
+                    pluginExtension = extensionsAppC
+                )
+            )
+        )
+
+        // 1st appA release
+        val commitId = gitClient.commit(message = "appA release.")
+        gitClient.tag(name = "0.1.0+appA", message = "1st tag", commitId = commitId)
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertThat(task(":app-a:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFileAppA.readText()).isEqualTo("100")
+            assertThat(versionNameFileAppA.readText()).isEqualTo("0.1.0+appA")
+
+            assertThat(task(":app-b:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFileAppB.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_CODE_FALLBACK.toString())
+            assertThat(versionNameFileAppB.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_NAME_FALLBACK)
+
+            assertThat(task(":app-c:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFileAppC.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_CODE_FALLBACK.toString())
+            assertThat(versionNameFileAppC.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_NAME_FALLBACK)
+        }
+
+        gitClient.commit(message = "Commit a.")
+        gitClient.commit(message = "Commit b.")
+
+        // 1st appB release
+        val commitId2 = gitClient.commit(message = "appB release.")
+        gitClient.tag(name = "1.2.3-rc01+appB", message = "2nd tag", commitId = commitId2)
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertThat(task(":app-a:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFileAppA.readText()).isEqualTo("100")
+            assertThat(versionNameFileAppA.readText()).isEqualTo("0.1.0+appA")
+
+            assertThat(task(":app-b:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFileAppB.readText()).isEqualTo("10203")
+            assertThat(versionNameFileAppB.readText()).isEqualTo("1.2.3-rc01+appB")
+
+            assertThat(task(":app-c:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFileAppC.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_CODE_FALLBACK.toString())
+            assertThat(versionNameFileAppC.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_NAME_FALLBACK)
+        }
+
+        gitClient.commit(message = "Commit c.")
+
+        // 2nd appB release
+        val commitId3 = gitClient.commit(message = "appB release.")
+        gitClient.tag(name = "1.2.3-rc02+appB", message = "3rd tag", commitId = commitId3)
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertThat(task(":app-a:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFileAppA.readText()).isEqualTo("100")
+            assertThat(versionNameFileAppA.readText()).isEqualTo("0.1.0+appA")
+
+            assertThat(task(":app-b:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFileAppB.readText()).isEqualTo("10203")
+            assertThat(versionNameFileAppB.readText()).isEqualTo("1.2.3-rc02+appB")
+
+            assertThat(task(":app-c:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFileAppC.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_CODE_FALLBACK.toString())
+            assertThat(versionNameFileAppC.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_NAME_FALLBACK)
+        }
+
+        // 1st appC release
+        val commitId4 = gitClient.commit(message = "appC release.")
+        gitClient.tag(name = "10.3.5-alpha03+appC", message = "4th tag", commitId = commitId4)
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertThat(task(":app-a:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFileAppA.readText()).isEqualTo("100")
+            assertThat(versionNameFileAppA.readText()).isEqualTo("0.1.0+appA")
+
+            assertThat(task(":app-b:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFileAppB.readText()).isEqualTo("10203")
+            assertThat(versionNameFileAppB.readText()).isEqualTo("1.2.3-rc02+appB")
+
+            assertThat(task(":app-c:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFileAppC.readText()).isEqualTo("100305")
+            assertThat(versionNameFileAppC.readText()).isEqualTo("10.3.5-alpha03+appC")
+        }
+
+        gitClient.commit(message = "Commit d.")
+
+        // 2nd appA release
+        val commitId5 = gitClient.commit(message = "appA release.")
+        gitClient.tag(name = "0.2.1+appA", message = "4th tag", commitId = commitId5)
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertThat(task(":app-a:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFileAppA.readText()).isEqualTo("201")
+            assertThat(versionNameFileAppA.readText()).isEqualTo("0.2.1+appA")
+
+            assertThat(task(":app-b:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFileAppB.readText()).isEqualTo("10203")
+            assertThat(versionNameFileAppB.readText()).isEqualTo("1.2.3-rc02+appB")
+
+            assertThat(task(":app-c:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(versionCodeFileAppC.readText()).isEqualTo("100305")
+            assertThat(versionNameFileAppC.readText()).isEqualTo("10.3.5-alpha03+appC")
+        }
+    }
+
+    @Test
     fun `overrideVersionCode and overrideVersionName configurations work in groovy`() {
         GitClient.initialize(fixtureDir.root).apply {
             val commitId = commit(message = "1st commit.")

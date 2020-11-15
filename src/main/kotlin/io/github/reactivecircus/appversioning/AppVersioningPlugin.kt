@@ -77,6 +77,7 @@ class AppVersioningPlugin : Plugin<Project> {
         rootProjectDirectory.set(project.rootProject.rootDir)
         rootProjectDisplayName.set(project.rootProject.displayName)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
+        tagFilter.set(extension.tagFilter)
         kotlinVersionCodeCustomizer.set(extension.kotlinVersionCodeCustomizer)
         kotlinVersionNameCustomizer.set(extension.kotlinVersionNameCustomizer)
         groovyVersionCodeCustomizer.set(extension.groovyVersionCodeCustomizer)
@@ -109,6 +110,7 @@ class AppVersioningPlugin : Plugin<Project> {
             layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/$variantName/$VERSION_NAME_RESULT_FILE")
                 .flatMap { provider { if (it.asFile.exists()) it else null } }
         )
+        projectName.set(project.name)
         buildVariantName.set(variantName)
     }
 
