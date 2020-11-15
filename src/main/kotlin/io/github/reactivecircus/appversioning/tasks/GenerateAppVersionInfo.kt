@@ -57,6 +57,10 @@ abstract class GenerateAppVersionInfo @Inject constructor(
 
     @get:Optional
     @get:Input
+    abstract val tagFilter: Property<String>
+
+    @get:Optional
+    @get:Input
     abstract val kotlinVersionCodeCustomizer: Property<VersionCodeCustomizer>
 
     @get:Optional
@@ -87,6 +91,7 @@ abstract class GenerateAppVersionInfo @Inject constructor(
             rootProjectDirectory.set(this@GenerateAppVersionInfo.rootProjectDirectory)
             rootProjectDisplayName.set(this@GenerateAppVersionInfo.rootProjectDisplayName)
             fetchTagsWhenNoneExistsLocally.set(this@GenerateAppVersionInfo.fetchTagsWhenNoneExistsLocally)
+            tagFilter.set(this@GenerateAppVersionInfo.tagFilter)
             kotlinVersionCodeCustomizer.set(this@GenerateAppVersionInfo.kotlinVersionCodeCustomizer)
             kotlinVersionNameCustomizer.set(this@GenerateAppVersionInfo.kotlinVersionNameCustomizer)
             groovyVersionCodeCustomizer.set(this@GenerateAppVersionInfo.groovyVersionCodeCustomizer)
@@ -110,6 +115,7 @@ interface GenerateAppVersionInfoWorkParameters : WorkParameters {
     val rootProjectDirectory: DirectoryProperty
     val rootProjectDisplayName: Property<String>
     val fetchTagsWhenNoneExistsLocally: Property<Boolean>
+    val tagFilter: Property<String>
     val kotlinVersionCodeCustomizer: Property<VersionCodeCustomizer>
     val kotlinVersionNameCustomizer: Property<VersionNameCustomizer>
     val groovyVersionCodeCustomizer: Property<Closure<Int>>
@@ -130,6 +136,7 @@ abstract class GenerateAppVersionInfoWorkAction @Inject constructor(
         val rootProjectDirectory = parameters.rootProjectDirectory
         val rootProjectDisplayName = parameters.rootProjectDisplayName
         val fetchTagsWhenNoneExistsLocally = parameters.fetchTagsWhenNoneExistsLocally
+        val tagFilter = parameters.tagFilter
         val kotlinVersionCodeCustomizer = parameters.kotlinVersionCodeCustomizer
         val kotlinVersionNameCustomizer = parameters.kotlinVersionNameCustomizer
         val groovyVersionCodeCustomizer = parameters.groovyVersionCodeCustomizer
@@ -144,13 +151,13 @@ abstract class GenerateAppVersionInfoWorkAction @Inject constructor(
 
         val gitClient = GitClient.open(rootProjectDirectory.get().asFile)
 
-        val gitTag: GitTag = gitClient.describeLatestTag()?.toGitTag() ?: if (fetchTagsWhenNoneExistsLocally.get()) {
+        val gitTag: GitTag = gitClient.describeLatestTag(tagFilter.orNull)?.toGitTag() ?: if (fetchTagsWhenNoneExistsLocally.get()) {
             val tagsList = gitClient.listLocalTags()
             if (tagsList.isEmpty()) {
                 logger.warn("No git tags found. Fetching tags from remote.")
                 gitClient.fetchRemoteTags()
             }
-            gitClient.describeLatestTag()?.toGitTag()
+            gitClient.describeLatestTag(tagFilter.orNull)?.toGitTag()
         } else {
             null
         } ?: run {

@@ -35,6 +35,11 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     )
 
     /**
+     * Custom glob pattern for matching git tags.
+     */
+    val tagFilter = objects.property<String>().convention(null)
+
+    /**
      * Provides a custom rule for generating versionCode by implementing a [GitTag], [ProviderFactory], [VariantInfo] -> Int lambda.
      * [GitTag] is generated from latest git tag lazily by the plugin during task execution.
      * [ProviderFactory] can be used for fetching environment variables, Gradle and system properties.
