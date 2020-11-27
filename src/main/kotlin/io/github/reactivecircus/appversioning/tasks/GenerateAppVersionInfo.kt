@@ -18,6 +18,7 @@ import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.CacheableTask
+import org.gradle.api.tasks.IgnoreEmptyDirectories
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Internal
@@ -42,6 +43,7 @@ abstract class GenerateAppVersionInfo @Inject constructor(
     @get:Optional
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)
+    @get:IgnoreEmptyDirectories
     abstract val gitRefsDirectory: DirectoryProperty
 
     @get:Internal
