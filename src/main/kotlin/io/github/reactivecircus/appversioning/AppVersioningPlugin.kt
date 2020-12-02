@@ -1,6 +1,5 @@
 package io.github.reactivecircus.appversioning
 
-import android.databinding.tool.ext.capitalizeUS
 import com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
 import com.android.build.api.extension.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
@@ -68,7 +67,7 @@ class AppVersioningPlugin : Plugin<Project> {
         variant: ApplicationVariant,
         extension: AppVersioningExtension
     ): TaskProvider<GenerateAppVersionInfo> = tasks.register(
-        "${GenerateAppVersionInfo.TASK_NAME_PREFIX}For${variant.name.capitalizeUS()}",
+        "${GenerateAppVersionInfo.TASK_NAME_PREFIX}For${variant.name.capitalize()}",
         GenerateAppVersionInfo::class.java
     ) {
         group = APP_VERSIONING_TASK_GROUP
@@ -96,7 +95,7 @@ class AppVersioningPlugin : Plugin<Project> {
     private fun Project.registerPrintAppVersionInfoTask(
         variantName: String
     ): TaskProvider<PrintAppVersionInfo> = tasks.register(
-        "${PrintAppVersionInfo.TASK_NAME_PREFIX}For${variantName.capitalizeUS()}",
+        "${PrintAppVersionInfo.TASK_NAME_PREFIX}For${variantName.capitalize()}",
         PrintAppVersionInfo::class.java
     ) {
         group = APP_VERSIONING_TASK_GROUP
@@ -114,7 +113,7 @@ class AppVersioningPlugin : Plugin<Project> {
     }
 
     companion object {
-        const val MIN_AGP_VERSION = "4.2.0-alpha13"
+        const val MIN_AGP_VERSION = "7.0.0-alpha01"
     }
 }
 
