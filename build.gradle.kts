@@ -2,8 +2,8 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 @Suppress("ClassName")
 object versions {
-    const val agp = "7.0.0-alpha02"
-    const val agpCommon = "27.3.0-alpha02"
+    const val agp = "4.2.0-beta01"
+    const val agpCommon = "27.2.0-beta01"
     const val detekt = "1.14.2"
     const val junit = "4.13.1"
     const val truth = "1.1"
@@ -106,13 +106,20 @@ val test by tasks.getting(Test::class) {
     }
 }
 
+@Suppress("UnstableApiUsage")
+val fixtureAgpVersion = providers
+    .environmentVariable("AGP_VERSION")
+    .forUseAtConfigurationTime()
+    .orElse(providers.gradleProperty("AGP_VERSION").forUseAtConfigurationTime())
+    .getOrElse(versions.agp)
+
 dependencies {
     compileOnly("com.android.tools.build:gradle:${versions.agp}")
     compileOnly("com.android.tools:common:${versions.agpCommon}")
     testImplementation("junit:junit:${versions.junit}")
     testImplementation("com.google.truth:truth:${versions.truth}")
-    functionalTestImplementation("com.android.tools.build:gradle:${versions.agp}")
-    fixtureClasspath("com.android.tools.build:gradle:${versions.agp}")
+    functionalTestImplementation("com.android.tools.build:gradle:${fixtureAgpVersion}")
+    fixtureClasspath("com.android.tools.build:gradle:${fixtureAgpVersion}")
 }
 
 detekt {
