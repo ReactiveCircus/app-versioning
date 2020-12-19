@@ -4,7 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 object versions {
     const val agp = "4.2.0-beta02"
     const val agpCommon = "27.2.0-beta02"
-    const val detekt = "1.14.2"
+    const val detekt = "1.15.0"
     const val junit = "4.13.1"
     const val truth = "1.1"
 }
@@ -16,7 +16,7 @@ plugins {
     id("org.jetbrains.dokka") version "1.4.0"
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.vanniktech.maven.publish") version "0.13.0"
-    id("io.gitlab.arturbosch.detekt") version "1.14.2"
+    id("io.gitlab.arturbosch.detekt") version "1.15.0"
 }
 
 kotlinDslPluginOptions {
