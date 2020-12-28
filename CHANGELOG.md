@@ -1,5 +1,16 @@
 # Change Log
 
+## 0.8.0
+
+### Added
+- Support tag filtering with custom glob pattern.
+
+### Changed
+- Compile with AGP 4.2.0-beta02.
+- Target Java 11 bytecode.
+- Kotlin 1.4.21.
+- Gradle 6.8-rc-4.
+
 ## 0.7.0
 
 ### Changed
