@@ -35,6 +35,12 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     )
 
     /**
+     * Git root directory used for fetching git tags.
+     * Use this to explicitly set the git root directory when the root Gradle project is not the git root directory.
+     */
+    val gitRootDirectory = objects.directoryProperty().convention(null)
+
+    /**
      * Custom glob pattern for matching git tags.
      */
     val tagFilter = objects.property<String>().convention(null)

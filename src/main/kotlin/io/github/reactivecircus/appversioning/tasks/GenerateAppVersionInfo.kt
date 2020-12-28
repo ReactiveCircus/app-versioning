@@ -146,7 +146,7 @@ abstract class GenerateAppVersionInfoWorkAction @Inject constructor(
         val variantInfo = parameters.variantInfo
 
         check(gitRefsDirectory.isPresent) {
-            "Android App Versioning Gradle Plugin works with git tags but ${rootProjectDisplayName.get()} is not a valid git repository."
+            "Android App Versioning Gradle Plugin works with git tags but ${rootProjectDisplayName.get()} is not a git root directory, and a valid gitRootDirectory is not provided."
         }
 
         val gitClient = GitClient.open(rootProjectDirectory.get().asFile)

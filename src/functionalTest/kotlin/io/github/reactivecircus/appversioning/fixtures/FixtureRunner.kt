@@ -4,28 +4,38 @@ import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.util.GradleVersion
 import org.junit.rules.TemporaryFolder
+import java.io.File
 
 fun withFixtureRunner(
     fixtureDir: TemporaryFolder,
     subprojects: List<AndroidProjectTemplate>,
+    parentDirectoryName: String? = null,
     dryRun: Boolean = false
 ) = FixtureRunner(
     fixtureDir = fixtureDir,
     subprojects = subprojects,
+    parentDirectoryName = parentDirectoryName,
     dryRun = dryRun
 )
 
 class FixtureRunner(
-    private val fixtureDir: TemporaryFolder,
+    fixtureDir: TemporaryFolder,
     subprojects: List<AndroidProjectTemplate>,
+    parentDirectoryName: String?,
     private val dryRun: Boolean
 ) {
+    private val gradleRoot: File = if (parentDirectoryName.isNullOrBlank()) {
+        fixtureDir.root
+    } else {
+        fixtureDir.root.resolve(parentDirectoryName)
+    }
+
     init {
-        fixtureDir.buildFixture(subprojects)
+        fixtureDir.buildFixture(gradleRoot, subprojects)
     }
 
     fun runAndCheckResult(vararg commands: String, action: BuildResult.() -> Unit) {
-        val buildResult = runner.withProjectDir(fixtureDir.root)
+        val buildResult = runner.withProjectDir(gradleRoot)
             .withArguments(buildArguments(commands.toList()))
             .withPluginClasspath()
             .withGradleVersion(GradleVersion.current().version)
@@ -34,7 +44,7 @@ class FixtureRunner(
     }
 
     fun runAndExpectFailure(vararg commands: String, action: BuildResult.() -> Unit) {
-        val buildResult = runner.withProjectDir(fixtureDir.root)
+        val buildResult = runner.withProjectDir(gradleRoot)
             .withArguments(buildArguments(commands.toList()))
             .withPluginClasspath()
             .withGradleVersion(GradleVersion.current().version)
@@ -54,13 +64,13 @@ class FixtureRunner(
 
 private val runner = GradleRunner.create().withPluginClasspath()
 
-private fun TemporaryFolder.buildFixture(subprojects: List<AndroidProjectTemplate>) {
+private fun TemporaryFolder.buildFixture(gradleRoot: File, subprojects: List<AndroidProjectTemplate>) {
     // build.gradle
-    root.resolve("build.gradle").also { it.parentFile.mkdirs() }
+    gradleRoot.resolve("build.gradle").also { it.parentFile.mkdirs() }
         .writeText(rootBuildFileContent)
 
     // settings.gradle
-    root.resolve("settings.gradle").also { it.parentFile.mkdirs() }
+    gradleRoot.resolve("settings.gradle").also { it.parentFile.mkdirs() }
         .writeText(
             settingsFileContent(
                 localBuildCacheUri = newFolder("local-cache").toURI().toString(),
@@ -69,18 +79,18 @@ private fun TemporaryFolder.buildFixture(subprojects: List<AndroidProjectTemplat
         )
 
     // gradle.properties
-    root.resolve("gradle.properties").also { it.parentFile.mkdir() }
+    gradleRoot.resolve("gradle.properties").also { it.parentFile.mkdir() }
         .writeText(gradlePropertiesFileContent(enableConfigurationCache = false))
 
     // subprojects
     subprojects.forEach { subproject ->
         // build.gradle or build.gradle.kts
         val buildFileName = if (subproject.useKts) "build.gradle.kts" else "build.gradle"
-        root.resolve("${subproject.projectName}/$buildFileName").also { it.parentFile.mkdirs() }
+        gradleRoot.resolve("${subproject.projectName}/$buildFileName").also { it.parentFile.mkdirs() }
             .writeText(subproject.buildFileContent)
 
         // AndroidManifest.xml
-        root.resolve("${subproject.projectName}/src/main/AndroidManifest.xml").also { it.parentFile.mkdirs() }
+        gradleRoot.resolve("${subproject.projectName}/src/main/AndroidManifest.xml").also { it.parentFile.mkdirs() }
             .writeText(subproject.manifestFileContent)
     }
 }

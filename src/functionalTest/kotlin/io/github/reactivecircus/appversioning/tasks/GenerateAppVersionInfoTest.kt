@@ -18,7 +18,7 @@ class GenerateAppVersionInfoTest {
     val fixtureDir = TemporaryFolder()
 
     @Test
-    fun `GenerateAppVersionInfo fails when root project is not a git repository`() {
+    fun `GenerateAppVersionInfo fails when root Gradle project is not a git root directory and gitRootDirectory is not provided`() {
         withFixtureRunner(
             fixtureDir = fixtureDir,
             subprojects = listOf(AppProjectTemplate())
@@ -26,7 +26,55 @@ class GenerateAppVersionInfoTest {
             "generateAppVersionInfoForRelease"
         ) {
             assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.FAILED)
-            assertThat(output).contains("Android App Versioning Gradle Plugin works with git tags but root project 'app-versioning-fixture' is not a valid git repository.")
+            assertThat(output).contains("Android App Versioning Gradle Plugin works with git tags but root project 'app-versioning-fixture' is not a git root directory, and a valid gitRootDirectory is not provided.")
+        }
+    }
+
+    @Test
+    fun `GenerateAppVersionInfo fails when root Gradle project is not a git root directory and gitRootDirectory provided is not a git root directory`() {
+        val extensions = """
+            appVersioning {
+                gitRootDirectory.set(rootProject.file("../"))
+            }
+        """.trimIndent()
+
+        withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate(pluginExtension = extensions)),
+            parentDirectoryName = "android"
+        ).runAndExpectFailure(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.FAILED)
+            assertThat(output).contains("Android App Versioning Gradle Plugin works with git tags but root project 'app-versioning-fixture' is not a git root directory, and a valid gitRootDirectory is not provided.")
+        }
+    }
+
+    @Test
+    fun `GenerateAppVersionInfo generates versionCode and versionName when root Gradle project is not a git root directory but gitRootDirectory provided is a git root directory`() {
+        GitClient.initialize(fixtureDir.root).apply {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+        }
+
+        val versionCodeFile = File(fixtureDir.root, "android/app/build/outputs/app_versioning/release/version_code.txt")
+        val versionNameFile = File(fixtureDir.root, "android/app/build/outputs/app_versioning/release/version_name.txt")
+
+        val extensions = """
+            appVersioning {
+                gitRootDirectory.set(rootProject.file("../"))
+            }
+        """.trimIndent()
+
+        withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate(pluginExtension = extensions)),
+            parentDirectoryName = "android"
+        ).runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertThat(versionCodeFile.readText()).isEqualTo("10203")
+            assertThat(versionNameFile.readText()).isEqualTo("1.2.3")
         }
     }
 
