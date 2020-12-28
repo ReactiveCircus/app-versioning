@@ -401,6 +401,20 @@ appVersioning {
 }
 ```
 
+### Custom git root directory
+
+The plugin assumes the root Gradle project is the git root directory that contains `.git`. If your root Gradle project is not your git root, you can specify it explicitly:
+
+```kt
+appVersioning {
+    /**
+     * Git root directory used for fetching git tags.
+     * Use this to explicitly set the git root directory when the root Gradle project is not the git root directory.
+     */
+    gitRootDirectory.set(rootProject.file("../")) // if the .git directory is in the root Gradle project's parent directory.
+}
+```
+
 ## App versioning on CI
 
 For performance reason many CI providers only fetch a single commit by default when checking out the repository. For **app-versioning** to work we need to make sure Git tags are also fetched. Here's an example for doing this with [GutHub Actions](https://github.com/actions/checkout):

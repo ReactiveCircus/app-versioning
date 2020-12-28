@@ -73,7 +73,13 @@ class AppVersioningPlugin : Plugin<Project> {
         group = APP_VERSIONING_TASK_GROUP
         description = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the ${variant.name} variant."
 
-        gitRefsDirectory.set(project.rootProject.file(GIT_REFS_DIRECTORY).let { if (it.exists()) it else null })
+        gitRefsDirectory.set(project.rootProject.file(GIT_REFS_DIRECTORY).let { rootGradleProject ->
+            if (rootGradleProject.exists()) rootGradleProject else {
+                extension.gitRootDirectory.takeIf { it.isPresent }?.let { gitRootDirectory ->
+                    gitRootDirectory.asFile.orNull?.resolve(GIT_REFS_DIRECTORY)?.takeIf { it.exists() }
+                }
+            }
+        })
         rootProjectDirectory.set(project.rootProject.rootDir)
         rootProjectDisplayName.set(project.rootProject.displayName)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
