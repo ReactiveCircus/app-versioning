@@ -315,6 +315,34 @@ appVersioning {
 
 </details>
 
+### Tag filtering
+
+By default the plugin uses the latest tag in the current branch for `versionCode` and `versionName` generation.
+
+Sometimes it's useful to be able to use the latest tag that follows a specific glob pattern.
+
+For example a codebase might build and publish 3 different apps separately using the following tag pattern:
+
+`<maj>.<min>.<patch>[-<pre-release version>]+<app-identifier>`
+
+where `app-identifier` is the build metadata component in **SemVer**.
+
+Some of the possible tags are:
+
+```
+1.5.8+app-a
+2.29.0-rc01+app-b
+10.87.9-alpha04+app-c
+```
+
+To configure the plugin to generate version info specific to `app-b`:
+
+```kt
+appVersioning {
+    tagFilter.set("[0-9]*.[0-9]*.[0-9]*+app-b")
+}
+```
+
 ## More configurations
 
 ### Disabling the plugin
