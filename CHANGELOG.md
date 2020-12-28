@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.8.1
+
+### Added
+- Support setting git root directory explicitly when the root Gradle project is not the git root.
+
 ## 0.8.0
 
 ### Added
