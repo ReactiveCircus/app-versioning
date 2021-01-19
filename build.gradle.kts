@@ -12,7 +12,7 @@ object versions {
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
-    kotlin("jvm") version "1.4.21"
+    kotlin("jvm") version "1.4.30-RC"
     id("org.jetbrains.dokka") version "1.4.0"
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.vanniktech.maven.publish") version "0.13.0"
@@ -62,7 +62,7 @@ kotlin {
         compilations.all {
             kotlinOptions {
                 jvmTarget = "11"
-                freeCompilerArgs += listOf(
+                freeCompilerArgs = freeCompilerArgs + listOf(
                     "-Xjvm-default=all",
                     "-Xinline-classes",
                     "-Xopt-in=kotlin.Experimental"
