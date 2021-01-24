@@ -6,7 +6,7 @@ object versions {
     const val agpCommon = "27.2.0-beta03"
     const val detekt = "1.15.0"
     const val junit = "4.13.1"
-    const val truth = "1.1.1"
+    const val truth = "1.1.2"
 }
 
 plugins {
