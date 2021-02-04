@@ -63,7 +63,6 @@ kotlin {
                 useIR = true
                 jvmTarget = "11"
                 freeCompilerArgs = freeCompilerArgs + listOf(
-                    "-Xuse-ir",
                     "-Xjvm-default=all",
                     "-Xinline-classes",
                     "-Xopt-in=kotlin.Experimental"
