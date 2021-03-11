@@ -10,4 +10,8 @@ class VariantInfo(
 ) : Serializable {
     val isDebugBuild: Boolean get() = buildType == BuildType.DEBUG.name
     val isReleaseBuild: Boolean get() = buildType == BuildType.RELEASE.name
+
+    companion object {
+        const val serialVersionUID = 1L
+    }
 }

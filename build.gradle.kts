@@ -2,8 +2,8 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 @Suppress("ClassName")
 object versions {
-    const val agp = "4.2.0-beta04"
-    const val detekt = "1.15.0"
+    const val agp = "4.2.0-beta06"
+    const val detekt = "1.16.0"
     const val junit = "4.13.1"
     const val truth = "1.1.2"
 }
@@ -15,7 +15,7 @@ plugins {
     id("org.jetbrains.dokka") version "1.4.0"
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.vanniktech.maven.publish") version "0.13.0"
-    id("io.gitlab.arturbosch.detekt") version "1.15.0"
+    id("io.gitlab.arturbosch.detekt") version "1.16.0"
 }
 
 kotlinDslPluginOptions {
@@ -123,9 +123,9 @@ dependencies {
 
 detekt {
     input = files("src/")
-    failFast = true
     config = files("${project.rootDir}/detekt.yml")
     buildUponDefaultConfig = true
+    allRules = true
     reports {
         html.destination = file("${project.buildDir}/reports/detekt/${project.name}.html")
     }
