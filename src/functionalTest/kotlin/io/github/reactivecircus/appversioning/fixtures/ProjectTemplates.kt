@@ -30,7 +30,6 @@ fun gradlePropertiesFileContent(enableConfigurationCache: Boolean): String {
         """.trimIndent()
     } else ""
     return """
-        org.gradle.vfs.watch=true
         $configurationCacheProperties
     """.trimIndent()
 }
