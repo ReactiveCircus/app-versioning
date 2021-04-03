@@ -14,7 +14,7 @@ plugins {
     kotlin("jvm") version "1.5.0-M2"
     id("org.jetbrains.dokka") version "1.4.0"
     id("com.gradle.plugin-publish") version "0.12.0"
-    id("com.vanniktech.maven.publish") version "0.13.0"
+    id("com.vanniktech.maven.publish") version "0.14.2"
     id("io.gitlab.arturbosch.detekt") version "1.16.0"
 }
 
