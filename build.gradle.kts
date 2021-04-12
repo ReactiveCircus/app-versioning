@@ -18,10 +18,6 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.16.0"
 }
 
-kotlinDslPluginOptions {
-    experimentalWarning.set(false)
-}
-
 repositories {
     mavenCentral()
     google()
