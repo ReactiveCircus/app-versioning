@@ -56,7 +56,6 @@ kotlin {
     target {
         compilations.all {
             kotlinOptions {
-                useIR = true
                 jvmTarget = "11"
                 freeCompilerArgs = freeCompilerArgs + listOf(
                     "-Xjvm-default=all",
