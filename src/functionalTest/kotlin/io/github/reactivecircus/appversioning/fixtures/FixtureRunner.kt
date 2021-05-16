@@ -62,7 +62,9 @@ class FixtureRunner(
     }
 }
 
-private val runner = GradleRunner.create().withPluginClasspath()
+private val runner = GradleRunner.create()
+    .withPluginClasspath()
+    .withDebug(true)
 
 private fun TemporaryFolder.buildFixture(gradleRoot: File, subprojects: List<AndroidProjectTemplate>) {
     // build.gradle
