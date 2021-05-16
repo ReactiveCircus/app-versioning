@@ -22,7 +22,7 @@ jobs:
     name: Assemble
     runs-on: ubuntu-latest
     env:
-      JAVA_TOOL_OPTIONS: -Xmx4g
+      JAVA_TOOL_OPTIONS: -Xmx4g -XX:+UseParallelGC
 
     steps:
       - uses: actions/checkout@v2
@@ -46,7 +46,7 @@ jobs:
     name: Checks (unit tests and static analysis)
     runs-on: ubuntu-latest
     env:
-      JAVA_TOOL_OPTIONS: -Xmx4g
+      JAVA_TOOL_OPTIONS: -Xmx4g -XX:+UseParallelGC
 
     steps:
       - uses: actions/checkout@v2
@@ -70,7 +70,7 @@ jobs:
     name: Functional tests
     runs-on: ubuntu-latest
     env:
-      JAVA_TOOL_OPTIONS: -Xmx4g
+      JAVA_TOOL_OPTIONS: -Xmx4g -XX:+UseParallelGC
       AGP_VERSION: ${{ matrix.agp-version }}
     strategy:
       matrix:
@@ -104,7 +104,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
-      JAVA_TOOL_OPTIONS: -Xmx4g
+      JAVA_TOOL_OPTIONS: -Xmx4g -XX:+UseParallelGC
       ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
       ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
 
