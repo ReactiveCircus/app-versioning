@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 @Suppress("ClassName")
 object versions {
     const val agp = "4.2.1"
-    const val detekt = "1.17.0"
+    const val detekt = "1.17.1"
     const val junit = "4.13.1"
     const val truth = "1.1.2"
 }
@@ -15,7 +15,7 @@ plugins {
     id("org.jetbrains.dokka") version "1.4.0"
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.vanniktech.maven.publish") version "0.15.1"
-    id("io.gitlab.arturbosch.detekt") version "1.17.0"
+    id("io.gitlab.arturbosch.detekt") version "1.17.1"
 }
 
 repositories {
