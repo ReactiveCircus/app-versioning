@@ -16,6 +16,7 @@ plugins {
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.vanniktech.maven.publish") version "0.15.1"
     id("io.gitlab.arturbosch.detekt") version "1.17.1"
+    id("binary-compatibility-validator") version "0.5.0"
 }
 
 repositories {
