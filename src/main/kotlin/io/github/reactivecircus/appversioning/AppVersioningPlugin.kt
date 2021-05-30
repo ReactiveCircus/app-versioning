@@ -93,7 +93,7 @@ class AppVersioningPlugin : Plugin<Project> {
         variantInfo.set(
             VariantInfo(
                 buildType = variant.buildType,
-                flavorName = variant.flavorName,
+                flavorName = variant.flavorName.orEmpty(),
                 variantName = variant.name
             )
         )
@@ -121,7 +121,7 @@ class AppVersioningPlugin : Plugin<Project> {
     }
 
     companion object {
-        const val MIN_AGP_VERSION = "4.2.0-beta01"
+        const val MIN_AGP_VERSION = "4.2.1"
     }
 }
 

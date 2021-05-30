@@ -3,6 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 @Suppress("ClassName")
 object versions {
     const val agp = "7.0.0-beta03"
+    const val agpCommon = "30.0.0-beta03"
     const val detekt = "1.17.1"
     const val junit = "4.13.1"
     const val truth = "1.1.3"
@@ -111,6 +112,7 @@ val fixtureAgpVersion = providers
 
 dependencies {
     compileOnly("com.android.tools.build:gradle:${versions.agp}")
+    compileOnly("com.android.tools:common:${versions.agpCommon}")
     testImplementation("junit:junit:${versions.junit}")
     testImplementation("com.google.truth:truth:${versions.truth}")
     functionalTestImplementation("com.android.tools.build:gradle:${fixtureAgpVersion}")
