@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.9.1
+
+### Changed
+- Minimum Gradle version is **6.8**.
+
 ## 0.9.0
 
 ### Changed
