@@ -22,6 +22,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 @Suppress("UnstableApiUsage")
 class AppVersioningPlugin : Plugin<Project> {
     override fun apply(project: Project) {
+        val gradleVersion = VersionNumber.parse(project.gradle.gradleVersion)
+        check(gradleVersion >= VersionNumber.parse(MIN_GRADLE_VERSION)) {
+            "Android App Versioning Gradle Plugin requires Gradle $MIN_GRADLE_VERSION or later. Detected Gradle version is $gradleVersion."
+        }
         val agpVersion = VersionNumber.parse(ANDROID_GRADLE_PLUGIN_VERSION)
         check(agpVersion >= VersionNumber.parse(MIN_AGP_VERSION)) {
             "Android App Versioning Gradle Plugin requires Android Gradle Plugin $MIN_AGP_VERSION or later. Detected AGP version is $agpVersion."
@@ -121,7 +125,8 @@ class AppVersioningPlugin : Plugin<Project> {
     }
 
     companion object {
-        const val MIN_AGP_VERSION = "4.2.1"
+        private const val MIN_GRADLE_VERSION = "6.8"
+        private const val MIN_AGP_VERSION = "4.2.1"
     }
 }
 
