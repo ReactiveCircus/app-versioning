@@ -149,30 +149,6 @@ public abstract class io/github/reactivecircus/appversioning/tasks/GenerateAppVe
 public final class io/github/reactivecircus/appversioning/tasks/GenerateAppVersionInfo$Companion {
 }
 
-public abstract class io/github/reactivecircus/appversioning/tasks/GenerateAppVersionInfoWorkAction : org/gradle/workers/WorkAction {
-	public static final field Companion Lio/github/reactivecircus/appversioning/tasks/GenerateAppVersionInfoWorkAction$Companion;
-	public fun <init> (Lorg/gradle/api/provider/ProviderFactory;)V
-	public fun execute ()V
-}
-
-public final class io/github/reactivecircus/appversioning/tasks/GenerateAppVersionInfoWorkAction$Companion {
-}
-
-public abstract interface class io/github/reactivecircus/appversioning/tasks/GenerateAppVersionInfoWorkParameters : org/gradle/workers/WorkParameters {
-	public abstract fun getFetchTagsWhenNoneExistsLocally ()Lorg/gradle/api/provider/Property;
-	public abstract fun getGitRefsDirectory ()Lorg/gradle/api/file/DirectoryProperty;
-	public abstract fun getGroovyVersionCodeCustomizer ()Lorg/gradle/api/provider/Property;
-	public abstract fun getGroovyVersionNameCustomizer ()Lorg/gradle/api/provider/Property;
-	public abstract fun getKotlinVersionCodeCustomizer ()Lorg/gradle/api/provider/Property;
-	public abstract fun getKotlinVersionNameCustomizer ()Lorg/gradle/api/provider/Property;
-	public abstract fun getRootProjectDirectory ()Lorg/gradle/api/file/DirectoryProperty;
-	public abstract fun getRootProjectDisplayName ()Lorg/gradle/api/provider/Property;
-	public abstract fun getTagFilter ()Lorg/gradle/api/provider/Property;
-	public abstract fun getVariantInfo ()Lorg/gradle/api/provider/Property;
-	public abstract fun getVersionCodeFile ()Lorg/gradle/api/file/RegularFileProperty;
-	public abstract fun getVersionNameFile ()Lorg/gradle/api/file/RegularFileProperty;
-}
-
 public abstract class io/github/reactivecircus/appversioning/tasks/PrintAppVersionInfo : org/gradle/api/DefaultTask {
 	public static final field Companion Lio/github/reactivecircus/appversioning/tasks/PrintAppVersionInfo$Companion;
 	public static final field TASK_DESCRIPTION_PREFIX Ljava/lang/String;

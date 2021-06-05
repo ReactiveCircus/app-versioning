@@ -110,7 +110,7 @@ abstract class GenerateAppVersionInfo @Inject constructor(
     }
 }
 
-interface GenerateAppVersionInfoWorkParameters : WorkParameters {
+private interface GenerateAppVersionInfoWorkParameters : WorkParameters {
     val gitRefsDirectory: DirectoryProperty
     val rootProjectDirectory: DirectoryProperty
     val rootProjectDisplayName: Property<String>
@@ -125,7 +125,7 @@ interface GenerateAppVersionInfoWorkParameters : WorkParameters {
     val variantInfo: Property<VariantInfo>
 }
 
-abstract class GenerateAppVersionInfoWorkAction @Inject constructor(
+private abstract class GenerateAppVersionInfoWorkAction @Inject constructor(
     private val providers: ProviderFactory
 ) : WorkAction<GenerateAppVersionInfoWorkParameters> {
 
