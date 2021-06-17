@@ -113,6 +113,7 @@ val fixtureAgpVersion = providers
 dependencies {
     compileOnly("com.android.tools.build:gradle:${versions.agp}")
     compileOnly("com.android.tools:common:${versions.agpCommon}")
+    compileOnly("com.android.tools:sdk-common:${versions.agpCommon}")
     testImplementation("junit:junit:${versions.junit}")
     testImplementation("com.google.truth:truth:${versions.truth}")
     functionalTestImplementation("com.android.tools.build:gradle:${fixtureAgpVersion}")

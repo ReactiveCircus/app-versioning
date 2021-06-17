@@ -5,6 +5,7 @@ import com.android.build.api.extension.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.api.variant.VariantOutputConfiguration
 import com.android.build.gradle.AppPlugin
+import com.android.ide.common.repository.GradleVersion
 import io.github.reactivecircus.appversioning.tasks.GenerateAppVersionInfo
 import io.github.reactivecircus.appversioning.tasks.PrintAppVersionInfo
 import org.gradle.api.Plugin
@@ -13,7 +14,6 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.nativeplatform.internal.BuildType
-import org.gradle.util.VersionNumber
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -22,12 +22,12 @@ import java.util.concurrent.atomic.AtomicBoolean
 @Suppress("UnstableApiUsage")
 class AppVersioningPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        val gradleVersion = VersionNumber.parse(project.gradle.gradleVersion)
-        check(gradleVersion >= VersionNumber.parse(MIN_GRADLE_VERSION)) {
+        val gradleVersion = GradleVersion.parse(project.gradle.gradleVersion)
+        check(gradleVersion >= GradleVersion.parse(MIN_GRADLE_VERSION)) {
             "Android App Versioning Gradle Plugin requires Gradle $MIN_GRADLE_VERSION or later. Detected Gradle version is $gradleVersion."
         }
-        val agpVersion = VersionNumber.parse(ANDROID_GRADLE_PLUGIN_VERSION)
-        check(agpVersion >= VersionNumber.parse(MIN_AGP_VERSION)) {
+        val agpVersion = GradleVersion.parseAndroidGradlePluginVersion(ANDROID_GRADLE_PLUGIN_VERSION)
+        check(agpVersion >= GradleVersion.parseAndroidGradlePluginVersion(MIN_AGP_VERSION)) {
             "Android App Versioning Gradle Plugin requires Android Gradle Plugin $MIN_AGP_VERSION or later. Detected AGP version is $agpVersion."
         }
         val androidAppPluginApplied = AtomicBoolean(false)
