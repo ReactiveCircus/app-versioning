@@ -124,4 +124,4 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ github.job }}-
       - run: |
-          ./gradlew clean kotlinSourcesJar uploadArchives --no-daemon --no-parallel --no-configuration-cache
+          ./gradlew clean kotlinSourcesJar publish --no-daemon --no-parallel --no-configuration-cache
