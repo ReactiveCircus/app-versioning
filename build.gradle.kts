@@ -12,7 +12,7 @@ object versions {
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
-    kotlin("jvm") version "1.5.20"
+    kotlin("jvm") version "1.5.21"
     id("org.jetbrains.dokka") version "1.5.0"
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.vanniktech.maven.publish") version "0.17.0"
