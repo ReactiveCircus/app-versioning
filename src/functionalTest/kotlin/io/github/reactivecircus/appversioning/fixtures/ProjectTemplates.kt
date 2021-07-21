@@ -61,7 +61,6 @@ abstract class AndroidProjectTemplate {
 
                 android {
                     compileSdkVersion(31)
-                    buildToolsVersion("31.0.0")
                     defaultConfig {
                         minSdkVersion(21)
                         targetSdkVersion(31)
