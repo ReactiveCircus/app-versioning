@@ -1,7 +1,7 @@
 package io.github.reactivecircus.appversioning
 
 import com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
-import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.extension.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.api.variant.VariantOutputConfiguration
 import com.android.build.gradle.AppPlugin
