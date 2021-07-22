@@ -14,9 +14,7 @@ This [blogpost](https://dev.to/ychescale9/git-based-android-app-versioning-with-
 
 ## Android Gradle Plugin version compatibility
 
-The minimum version of Android Gradle Plugin required is **4.2.1**.
-
-All versions of **AGP 7.x** are supported.
+The minimum version of Android Gradle Plugin required is **7.0.0-beta04**.
 
 Version `0.4.0` of the plugin is the final version that's compatible with AGP **4.0** and **4.1**.
 

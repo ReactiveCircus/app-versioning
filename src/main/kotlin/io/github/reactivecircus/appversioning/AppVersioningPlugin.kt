@@ -1,7 +1,7 @@
 package io.github.reactivecircus.appversioning
 
 import com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
-import com.android.build.api.extension.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.api.variant.VariantOutputConfiguration
 import com.android.build.gradle.AppPlugin
@@ -126,7 +126,7 @@ class AppVersioningPlugin : Plugin<Project> {
 
     companion object {
         private const val MIN_GRADLE_VERSION = "6.8"
-        private const val MIN_AGP_VERSION = "4.2.1"
+        private const val MIN_AGP_VERSION = "7.0.0-beta04"
     }
 }
 
