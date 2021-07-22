@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.10.0
+
+This is the final release of the plugin that's compatible with **Android Gradle Plugin 4.2**.
+
+When AGP **7.0.0-beta01** was released, we thought all the APIs we use are stable and can therefore support **4.2.1** which have the same APIs we were using.
+Unfortunately **AGP 7.0.0-beta04** moved `ApplicationAndroidComponentsExtension` to a new package and deprecated the old one. In order to move to the new `ApplicationAndroidComponentsExtension`
+before our 1.0 release and avoid the overhead of publishing multiple artifacts, we decided to start requiring **AGP 7.0.0-beta04** in the next release.
+
+### Changed
+- Compile with AGP 7.1.0-rc01.
+- Compile with Kotlin 1.5.21.
+
 ## 0.9.1
 
 ### Changed
