@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.0.0-rc01
+
+### Changed
+- Minimum Android Gradle Plugin version is now **7.0.0-beta04**.
+
 ## 0.10.0
 
 This is the final release of the plugin that's compatible with **Android Gradle Plugin 4.2**.
