@@ -14,7 +14,7 @@ Unfortunately **AGP 7.0.0-beta04** moved `ApplicationAndroidComponentsExtension`
 before our 1.0 release and avoid the overhead of publishing multiple artifacts, we decided to start requiring **AGP 7.0.0-beta04** in the next release.
 
 ### Changed
-- Compile with AGP 7.1.0-rc01.
+- Compile with AGP 7.0.0-rc01.
 - Compile with Kotlin 1.5.21.
 
 ## 0.9.1
