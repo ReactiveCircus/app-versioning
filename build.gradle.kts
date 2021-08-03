@@ -103,7 +103,6 @@ val test by tasks.getting(Test::class) {
     }
 }
 
-@Suppress("UnstableApiUsage")
 val fixtureAgpVersion = providers
     .environmentVariable("AGP_VERSION")
     .forUseAtConfigurationTime()
