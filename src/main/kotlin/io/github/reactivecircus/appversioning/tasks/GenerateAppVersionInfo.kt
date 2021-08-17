@@ -27,6 +27,7 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.NormalizeLineEndings
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import org.gradle.workers.WorkerExecutor
@@ -44,6 +45,7 @@ abstract class GenerateAppVersionInfo @Inject constructor(
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)
     @get:IgnoreEmptyDirectories
+    @get:NormalizeLineEndings
     abstract val gitRefsDirectory: DirectoryProperty
 
     @get:Internal
