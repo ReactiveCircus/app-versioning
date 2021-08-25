@@ -64,6 +64,7 @@ kotlin {
                     "-Xinline-classes",
                     "-Xopt-in=kotlin.Experimental"
                 )
+                languageVersion = "1.6"
             }
         }
     }
