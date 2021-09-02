@@ -2,9 +2,9 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 @Suppress("ClassName")
 object versions {
-    const val agp = "7.0.1"
-    const val agpCommon = "30.0.0"
-    const val detekt = "1.18.0"
+    const val agp = "7.0.2"
+    const val agpCommon = "30.0.2"
+    const val detekt = "1.18.1"
     const val junit = "4.13.1"
     const val truth = "1.1.3"
 }
@@ -16,7 +16,7 @@ plugins {
     id("org.jetbrains.dokka") version "1.5.0"
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.vanniktech.maven.publish") version "0.17.0"
-    id("io.gitlab.arturbosch.detekt") version "1.18.0"
+    id("io.gitlab.arturbosch.detekt") version "1.18.1"
     id("binary-compatibility-validator") version "0.7.0"
 }
 
