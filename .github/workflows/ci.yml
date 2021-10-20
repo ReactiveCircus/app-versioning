@@ -74,7 +74,7 @@ jobs:
       AGP_VERSION: ${{ matrix.agp-version }}
     strategy:
       matrix:
-        agp-version: [ 7.0.3, 7.1.0-beta01, 7.2.0-alpha01 ]
+        agp-version: [ 7.0.3, 7.1.0-beta01, 7.2.0-alpha02 ]
 
     steps:
       - uses: actions/checkout@v2
