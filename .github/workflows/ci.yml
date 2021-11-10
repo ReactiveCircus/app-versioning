@@ -31,16 +31,9 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '15'
-      - uses: actions/cache@v2
+      - uses: gradle/gradle-build-action@v2
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ github.job }}-
-      - run: |
-          ./gradlew assemble
+          arguments: assemble
 
   checks:
     name: Checks (unit tests, static analysis, plugin validations and binary compatibility API check)
@@ -55,16 +48,9 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '15'
-      - uses: actions/cache@v2
+      - uses: gradle/gradle-build-action@v2
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ github.job }}-
-      - run: |
-          ./gradlew test detekt validatePlugins apiCheck
+          arguments: test detekt validatePlugins apiCheck
 
   functional-tests:
     name: Functional tests
@@ -87,16 +73,9 @@ jobs:
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-      - uses: actions/cache@v2
+      - uses: gradle/gradle-build-action@v2
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-${{ github.job }}-${{ matrix.agp-version }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ github.job }}-${{ matrix.agp-version }}-
-      - run: |
-          ./gradlew functionalTest
+          arguments: functionalTest
 
   deploy-snapshot:
     name: Deploy snapshot
@@ -115,13 +94,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '15'
-      - uses: actions/cache@v2
+      - uses: gradle/gradle-build-action@v2
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ github.job }}-
-      - run: |
-          ./gradlew clean kotlinSourcesJar publish --no-daemon --no-parallel --no-configuration-cache
+          arguments: clean kotlinSourcesJar publish --no-daemon --no-parallel --no-configuration-cache
