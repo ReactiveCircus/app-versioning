@@ -50,7 +50,7 @@ jobs:
           java-version: '15'
       - uses: gradle/gradle-build-action@v2
         with:
-          arguments: test detekt validatePlugins apiCheck
+          arguments: test detekt validatePlugins apiCheck --no-configuration-cache
 
   functional-tests:
     name: Functional tests
@@ -75,7 +75,7 @@ jobs:
           git config --global user.email "action@github.com"
       - uses: gradle/gradle-build-action@v2
         with:
-          arguments: functionalTest
+          arguments: functionalTest --no-configuration-cache
 
   deploy-snapshot:
     name: Deploy snapshot
