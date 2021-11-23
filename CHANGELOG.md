@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.1.0
+
+### Added
+- Support specifying **bare** git repository e.g. `app.git`.
+
+### Changed
+- Compile with AGP 7.0.0.
+
 ## 1.0.0
 
 This is our first stable release. Thanks everyone for trying out the plugin and sending bug reports and feature requests!
