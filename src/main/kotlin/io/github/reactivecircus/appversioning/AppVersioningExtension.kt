@@ -41,6 +41,13 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     val gitRootDirectory = objects.directoryProperty().convention(null)
 
     /**
+     * Bare Git repository directory.
+     * Use this to explicitly set the directory of a bare git repository (e.g. `app.git`) instead of the standard `.git`.
+     * Setting this will override the value of [gitRootDirectory] property.
+     */
+    val bareGitRepoDirectory = objects.directoryProperty().convention(null)
+
+    /**
      * Custom glob pattern for matching git tags.
      */
     val tagFilter = objects.property<String>().convention(null)
