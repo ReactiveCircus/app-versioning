@@ -33,7 +33,7 @@ jobs:
           java-version: '15'
       - uses: gradle/gradle-build-action@v2
         with:
-          arguments: assemble
+          arguments: assemble --no-configuration-cache
 
   checks:
     name: Checks (unit tests, static analysis, plugin validations and binary compatibility API check)
