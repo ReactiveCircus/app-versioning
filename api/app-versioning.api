@@ -1,5 +1,6 @@
 public class io/github/reactivecircus/appversioning/AppVersioningExtension {
 	public static final field Companion Lio/github/reactivecircus/appversioning/AppVersioningExtension$Companion;
+	public final fun getBareGitRepoDirectory ()Lorg/gradle/api/file/DirectoryProperty;
 	public final fun getEnabled ()Lorg/gradle/api/provider/Property;
 	public final fun getFetchTagsWhenNoneExistsLocally ()Lorg/gradle/api/provider/Property;
 	public final fun getGitRootDirectory ()Lorg/gradle/api/file/DirectoryProperty;

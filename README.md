@@ -411,6 +411,21 @@ appVersioning {
 }
 ```
 
+### Bare git repository
+
+If your `.git` is a symbolic link to a **bare** git repository, you need to explicitly specify the directory of the bare git repository:
+
+```kt
+appVersioning {
+    /**
+     * Bare Git repository directory.
+     * Use this to explicitly set the directory of a bare git repository (e.g. `app.git`) instead of the standard `.git`.
+     * Setting this will override the value of [gitRootDirectory] property.
+     */
+    bareGitRepoDirectory.set(rootProject.file("../.repo/projects/app.git")) // if the .git directory in the Gradle project root is a symlink to app.git.
+}
+```
+
 ## App versioning on CI
 
 For performance reason many CI providers only fetch a single commit by default when checking out the repository. For **app-versioning** to work we need to make sure Git tags are also fetched. Here's an example for doing this with [GutHub Actions](https://github.com/actions/checkout):

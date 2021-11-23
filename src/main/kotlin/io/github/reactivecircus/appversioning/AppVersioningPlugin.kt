@@ -14,6 +14,7 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.nativeplatform.internal.BuildType
+import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -68,21 +69,14 @@ class AppVersioningPlugin : Plugin<Project> {
 
     private fun Project.registerGenerateAppVersionInfoTask(
         variant: ApplicationVariant,
-        extension: AppVersioningExtension
+        extension: AppVersioningExtension,
     ): TaskProvider<GenerateAppVersionInfo> = tasks.register(
         "${GenerateAppVersionInfo.TASK_NAME_PREFIX}For${variant.name.capitalize()}",
         GenerateAppVersionInfo::class.java
     ) {
         group = APP_VERSIONING_TASK_GROUP
         description = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the ${variant.name} variant."
-
-        gitRefsDirectory.set(project.rootProject.file(GIT_REFS_DIRECTORY).let { rootGradleProject ->
-            if (rootGradleProject.exists()) rootGradleProject else {
-                extension.gitRootDirectory.takeIf { it.isPresent }?.let { gitRootDirectory ->
-                    gitRootDirectory.asFile.orNull?.resolve(GIT_REFS_DIRECTORY)?.takeIf { it.exists() }
-                }
-            }
-        })
+        gitRefsDirectory.set(findGitRefsDirectory(extension))
         rootProjectDirectory.set(project.rootProject.rootDir)
         rootProjectDisplayName.set(project.rootProject.displayName)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
@@ -123,14 +117,31 @@ class AppVersioningPlugin : Plugin<Project> {
         buildVariantName.set(variantName)
     }
 
+    private fun Project.findGitRefsDirectory(extension: AppVersioningExtension): File? {
+        return when {
+            extension.bareGitRepoDirectory.isPresent -> {
+                extension.bareGitRepoDirectory.let { bareGitRepoDirectory ->
+                    bareGitRepoDirectory.asFile.orNull?.resolve(REFS_DIRECTORY)?.takeIf { it.exists() }
+                }
+            }
+            extension.gitRootDirectory.isPresent -> {
+                extension.gitRootDirectory.let { gitRootDirectory ->
+                    gitRootDirectory.asFile.orNull?.resolve(STANDARD_GIT_REFS_DIRECTORY)?.takeIf { it.exists() }
+                }
+            }
+            else -> project.rootProject.file(STANDARD_GIT_REFS_DIRECTORY).takeIf { it.exists() }
+        }
+    }
+
     companion object {
         private const val MIN_GRADLE_VERSION = "6.8"
         private const val MIN_AGP_VERSION = "7.0.0-beta04"
     }
 }
 
-internal const val APP_VERSIONING_TASK_GROUP = "versioning"
-internal const val APP_VERSIONING_TASK_OUTPUT_DIR = "outputs/app_versioning"
-internal const val GIT_REFS_DIRECTORY = ".git/refs"
-internal const val VERSION_CODE_RESULT_FILE = "version_code.txt"
-internal const val VERSION_NAME_RESULT_FILE = "version_name.txt"
+private const val APP_VERSIONING_TASK_GROUP = "versioning"
+private const val APP_VERSIONING_TASK_OUTPUT_DIR = "outputs/app_versioning"
+private const val REFS_DIRECTORY = "refs"
+private const val STANDARD_GIT_REFS_DIRECTORY = ".git/$REFS_DIRECTORY"
+private const val VERSION_CODE_RESULT_FILE = "version_code.txt"
+private const val VERSION_NAME_RESULT_FILE = "version_name.txt"
