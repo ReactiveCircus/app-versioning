@@ -6,7 +6,7 @@
 - Support specifying **bare** git repository e.g. `app.git`.
 
 ### Changed
-- Compile with AGP 7.0.0.
+- Compile with AGP 7.0.3.
 
 ## 1.0.0
 
