@@ -4,7 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 object versions {
     const val agp = "7.0.3"
     const val agpCommon = "30.0.3"
-    const val detekt = "1.18.1"
+    const val detekt = "1.19.0"
     const val junit = "4.13.1"
     const val truth = "1.1.3"
 }
@@ -15,7 +15,7 @@ plugins {
     kotlin("jvm") version "1.6.0"
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.vanniktech.maven.publish") version "0.17.0"
-    id("io.gitlab.arturbosch.detekt") version "1.18.1"
+    id("io.gitlab.arturbosch.detekt") version "1.19.0"
     id("binary-compatibility-validator") version "0.8.0"
 }
 
@@ -124,8 +124,11 @@ detekt {
     config = files("${project.rootDir}/detekt.yml")
     buildUponDefaultConfig = true
     allRules = true
+}
+
+tasks.detektMain {
     reports {
-        html.destination = file("${project.buildDir}/reports/detekt/${project.name}.html")
+        html.outputLocation.set(file("build/reports/detekt/${project.name}.html"))
     }
 }
 

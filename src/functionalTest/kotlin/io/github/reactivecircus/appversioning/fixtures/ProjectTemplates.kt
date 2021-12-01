@@ -21,7 +21,7 @@ fun settingsFileContent(
     rootProject.name='app-versioning-fixture'
 
     ${subprojects.map { it.projectName }.joinToString("\n") { "include ':$it'" }}
-    """.trimIndent()
+""".trimIndent()
 
 fun gradlePropertiesFileContent(enableConfigurationCache: Boolean): String {
     val configurationCacheProperties = if (enableConfigurationCache) {
