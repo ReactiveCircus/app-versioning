@@ -1,3 +1,4 @@
+import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 @Suppress("ClassName")
@@ -37,6 +38,10 @@ pluginBundle {
         groupId = property("GROUP") as String
         artifactId = property("POM_ARTIFACT_ID") as String
     }
+}
+
+mavenPublish {
+    sonatypeHost = SonatypeHost.S01
 }
 
 gradlePlugin {
