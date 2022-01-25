@@ -60,10 +60,10 @@ abstract class AndroidProjectTemplate {
                 ${pluginExtension ?: ""}
 
                 android {
-                    compileSdkVersion(31)
+                    compileSdkVersion(32)
                     defaultConfig {
                         minSdkVersion(21)
-                        targetSdkVersion(31)
+                        targetSdkVersion(32)
                     }
 
                     lintOptions.isCheckReleaseBuilds = false
@@ -90,10 +90,10 @@ abstract class AndroidProjectTemplate {
                 ${pluginExtension ?: ""}
 
                 android {
-                    compileSdkVersion 30
+                    compileSdkVersion 32
                     defaultConfig {
                         minSdkVersion 21
-                        targetSdkVersion 30
+                        targetSdkVersion 32
                     }
 
                     lintOptions {
