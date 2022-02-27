@@ -32,8 +32,8 @@ jobs:
           distribution: 'zulu'
           java-version: '15'
       - uses: gradle/gradle-build-action@v2
-        with:
-          arguments: assemble --no-configuration-cache
+      - name: Assemble
+        run: ./gradlew assemble --no-configuration-cache
 
   checks:
     name: Checks (unit tests, static analysis, plugin validations and binary compatibility API check)
@@ -49,8 +49,8 @@ jobs:
           distribution: 'zulu'
           java-version: '15'
       - uses: gradle/gradle-build-action@v2
-        with:
-          arguments: test detekt validatePlugins apiCheck --no-configuration-cache
+      - name: Checks
+        run: ./gradlew test detekt validatePlugins apiCheck --no-configuration-cache
 
   functional-tests:
     name: Functional tests
@@ -74,8 +74,8 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
       - uses: gradle/gradle-build-action@v2
-        with:
-          arguments: functionalTest --no-configuration-cache
+      - name: Functional tests
+        run: ./gradlew functionalTest --no-configuration-cache
 
   deploy-snapshot:
     name: Deploy snapshot
@@ -95,5 +95,5 @@ jobs:
           distribution: 'zulu'
           java-version: '15'
       - uses: gradle/gradle-build-action@v2
-        with:
-          arguments: clean kotlinSourcesJar publish --no-daemon --no-parallel --no-configuration-cache
+      - name: Deploy snapshot
+        run: ./gradlew clean kotlinSourcesJar publish --no-daemon --no-parallel --no-configuration-cache

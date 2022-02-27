@@ -15,7 +15,7 @@ plugins {
     `kotlin-dsl`
     kotlin("jvm") version "1.6.10"
     id("com.gradle.plugin-publish") version "0.12.0"
-    id("com.vanniktech.maven.publish") version "0.17.0"
+    id("com.vanniktech.maven.publish") version "0.19.0"
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
     id("binary-compatibility-validator") version "0.8.0"
 }
