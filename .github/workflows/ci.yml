@@ -30,7 +30,7 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
-          java-version: '15'
+          java-version: '17'
       - uses: gradle/gradle-build-action@v2
       - name: Assemble
         run: ./gradlew assemble --no-configuration-cache
@@ -47,7 +47,7 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
-          java-version: '15'
+          java-version: '17'
       - uses: gradle/gradle-build-action@v2
       - name: Checks
         run: ./gradlew test detekt validatePlugins apiCheck --no-configuration-cache
@@ -68,7 +68,7 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
-          java-version: '15'
+          java-version: '17'
       - name: Configure git user
         run: |
           git config --global user.name "GitHub Action"
@@ -93,7 +93,7 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
-          java-version: '15'
+          java-version: '17'
       - uses: gradle/gradle-build-action@v2
       - name: Deploy snapshot
         run: ./gradlew clean kotlinSourcesJar publish --no-daemon --no-parallel --no-configuration-cache
