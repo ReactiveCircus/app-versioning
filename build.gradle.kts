@@ -20,13 +20,6 @@ plugins {
     id("binary-compatibility-validator") version "0.8.0"
 }
 
-repositories {
-    mavenCentral()
-    google()
-    gradlePluginPortal()
-    maven("https://dl.bintray.com/kotlin/kotlin-eap")
-}
-
 group = property("GROUP") as String
 version = property("VERSION_NAME") as String
 

@@ -1,5 +1,13 @@
 rootProject.name = "app-versioning"
 
+@Suppress("UnstableApiUsage")
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        google()
+    }
+}
+
 pluginManagement {
     repositories {
         mavenCentral()
