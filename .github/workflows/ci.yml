@@ -33,7 +33,7 @@ jobs:
           java-version: '17'
       - uses: gradle/gradle-build-action@v2
       - name: Assemble
-        run: ./gradlew assemble --no-configuration-cache
+        run: ./gradlew assemble
 
   checks:
     name: Checks (unit tests, static analysis, plugin validations and binary compatibility API check)
@@ -50,7 +50,7 @@ jobs:
           java-version: '17'
       - uses: gradle/gradle-build-action@v2
       - name: Checks
-        run: ./gradlew test detekt validatePlugins apiCheck --no-configuration-cache
+        run: ./gradlew test detekt validatePlugins apiCheck
 
   functional-tests:
     name: Functional tests
@@ -75,7 +75,7 @@ jobs:
           git config --global user.email "action@github.com"
       - uses: gradle/gradle-build-action@v2
       - name: Functional tests
-        run: ./gradlew functionalTest --no-configuration-cache
+        run: ./gradlew functionalTest
 
   deploy-snapshot:
     name: Deploy snapshot
@@ -96,4 +96,4 @@ jobs:
           java-version: '17'
       - uses: gradle/gradle-build-action@v2
       - name: Deploy snapshot
-        run: ./gradlew clean kotlinSourcesJar publish --no-daemon --no-parallel --no-configuration-cache
+        run: ./gradlew clean kotlinSourcesJar publish --no-daemon --no-parallel
