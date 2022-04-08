@@ -3,8 +3,8 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 @Suppress("ClassName")
 object versions {
-    const val agp = "7.1.2"
-    const val agpCommon = "30.1.0"
+    const val agp = "7.1.3"
+    const val agpCommon = "30.1.3"
     const val detekt = "1.19.0"
     const val junit = "4.13.1"
     const val truth = "1.1.3"
