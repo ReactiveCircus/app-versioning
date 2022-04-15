@@ -59,7 +59,7 @@ kotlin {
                 freeCompilerArgs = freeCompilerArgs + listOf(
                     "-Xjvm-default=all",
                     "-Xinline-classes",
-                    "-Xopt-in=kotlin.Experimental"
+                    "-opt-in=kotlin.Experimental"
                 )
                 languageVersion = "1.6"
             }
