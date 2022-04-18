@@ -17,7 +17,7 @@ plugins {
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.vanniktech.maven.publish") version "0.19.0"
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
-    id("binary-compatibility-validator") version "0.8.0"
+    id("binary-compatibility-validator") version "0.9.0"
 }
 
 group = property("GROUP") as String
