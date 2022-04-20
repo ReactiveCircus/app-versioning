@@ -21,6 +21,7 @@ import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.IgnoreEmptyDirectories
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
@@ -47,6 +48,12 @@ abstract class GenerateAppVersionInfo @Inject constructor(
     @get:IgnoreEmptyDirectories
     @get:NormalizeLineEndings
     abstract val gitRefsDirectory: DirectoryProperty
+
+    @get:Optional
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    @get:NormalizeLineEndings
+    abstract val gitHead: RegularFileProperty
 
     @get:Internal
     abstract val rootProjectDirectory: DirectoryProperty
@@ -90,6 +97,7 @@ abstract class GenerateAppVersionInfo @Inject constructor(
     fun generate() {
         workerExecutor.noIsolation().submit(GenerateAppVersionInfoWorkAction::class.java) {
             gitRefsDirectory.set(this@GenerateAppVersionInfo.gitRefsDirectory)
+            gitHead.set(this@GenerateAppVersionInfo.gitHead)
             rootProjectDirectory.set(this@GenerateAppVersionInfo.rootProjectDirectory)
             rootProjectDisplayName.set(this@GenerateAppVersionInfo.rootProjectDisplayName)
             fetchTagsWhenNoneExistsLocally.set(this@GenerateAppVersionInfo.fetchTagsWhenNoneExistsLocally)
@@ -114,6 +122,7 @@ abstract class GenerateAppVersionInfo @Inject constructor(
 
 private interface GenerateAppVersionInfoWorkParameters : WorkParameters {
     val gitRefsDirectory: DirectoryProperty
+    val gitHead: RegularFileProperty
     val rootProjectDirectory: DirectoryProperty
     val rootProjectDisplayName: Property<String>
     val fetchTagsWhenNoneExistsLocally: Property<Boolean>
@@ -135,6 +144,7 @@ private abstract class GenerateAppVersionInfoWorkAction @Inject constructor(
 
     override fun execute() {
         val gitRefsDirectory = parameters.gitRefsDirectory
+        val gitHead = parameters.gitHead
         val rootProjectDirectory = parameters.rootProjectDirectory
         val rootProjectDisplayName = parameters.rootProjectDisplayName
         val fetchTagsWhenNoneExistsLocally = parameters.fetchTagsWhenNoneExistsLocally
@@ -147,7 +157,7 @@ private abstract class GenerateAppVersionInfoWorkAction @Inject constructor(
         val versionNameFile = parameters.versionNameFile
         val variantInfo = parameters.variantInfo
 
-        check(gitRefsDirectory.isPresent) {
+        check(gitRefsDirectory.isPresent && gitHead.isPresent) {
             "Android App Versioning Gradle Plugin works with git tags but ${rootProjectDisplayName.get()} is not a git root directory, and a valid gitRootDirectory is not provided."
         }
 
