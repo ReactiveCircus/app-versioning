@@ -1,5 +1,18 @@
 # Change Log
 
+## 1.1.2
+
+### Fixed
+- Fix an issue where changing git HEAD does not invalidate task cache - [#28](https://github.com/ReactiveCircus/app-versioning/pull/28)
+
+### Changed
+- Compile with AGP 7.1.3.
+- Compile with Kotlin 1.6.21.
+
+## 1.1.1
+
+Same as 1.1.0.
+
 ## 1.1.0
 
 ### Added
