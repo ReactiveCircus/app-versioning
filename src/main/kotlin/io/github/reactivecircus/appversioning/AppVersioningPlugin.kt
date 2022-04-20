@@ -77,6 +77,7 @@ class AppVersioningPlugin : Plugin<Project> {
         group = APP_VERSIONING_TASK_GROUP
         description = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the ${variant.name} variant."
         gitRefsDirectory.set(findGitRefsDirectory(extension))
+        gitHead.set(findGitHeadFile(extension))
         rootProjectDirectory.set(project.rootProject.rootDir)
         rootProjectDisplayName.set(project.rootProject.displayName)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
@@ -133,6 +134,22 @@ class AppVersioningPlugin : Plugin<Project> {
         }
     }
 
+    private fun Project.findGitHeadFile(extension: AppVersioningExtension): File? {
+        return when {
+            extension.bareGitRepoDirectory.isPresent -> {
+                extension.bareGitRepoDirectory.let { bareGitRepoDirectory ->
+                    bareGitRepoDirectory.asFile.orNull?.resolve(HEAD_FILE)?.takeIf { it.exists() }
+                }
+            }
+            extension.gitRootDirectory.isPresent -> {
+                extension.gitRootDirectory.let { gitRootDirectory ->
+                    gitRootDirectory.asFile.orNull?.resolve(STANDARD_GIT_HEAD_FILE)?.takeIf { it.exists() }
+                }
+            }
+            else -> project.rootProject.file(STANDARD_GIT_HEAD_FILE).takeIf { it.exists() }
+        }
+    }
+
     companion object {
         private const val MIN_GRADLE_VERSION = "6.8"
         private const val MIN_AGP_VERSION = "7.0.0-beta04"
@@ -142,6 +159,8 @@ class AppVersioningPlugin : Plugin<Project> {
 private const val APP_VERSIONING_TASK_GROUP = "versioning"
 private const val APP_VERSIONING_TASK_OUTPUT_DIR = "outputs/app_versioning"
 private const val REFS_DIRECTORY = "refs"
+private const val HEAD_FILE = "HEAD"
 private const val STANDARD_GIT_REFS_DIRECTORY = ".git/$REFS_DIRECTORY"
+private const val STANDARD_GIT_HEAD_FILE = ".git/$HEAD_FILE"
 private const val VERSION_CODE_RESULT_FILE = "version_code.txt"
 private const val VERSION_NAME_RESULT_FILE = "version_name.txt"

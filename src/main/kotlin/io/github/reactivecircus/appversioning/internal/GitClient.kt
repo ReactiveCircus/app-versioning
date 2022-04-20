@@ -59,6 +59,15 @@ class GitClient private constructor(private val projectDir: File) {
         command.execute(projectDir)
     }
 
+    fun checkoutTag(tag: String) {
+        val commitCommand = buildList {
+            add("git")
+            add("checkout")
+            add(tag)
+        }
+        commitCommand.execute(projectDir)
+    }
+
     companion object {
 
         fun initialize(projectDir: File): GitClient {

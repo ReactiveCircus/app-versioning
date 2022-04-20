@@ -105,6 +105,7 @@ public final class io/github/reactivecircus/appversioning/internal/CommitId {
 public final class io/github/reactivecircus/appversioning/internal/GitClient {
 	public static final field Companion Lio/github/reactivecircus/appversioning/internal/GitClient$Companion;
 	public synthetic fun <init> (Ljava/io/File;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun checkoutTag (Ljava/lang/String;)V
 	public final fun commit-HhBVPuw (Ljava/lang/String;Z)Ljava/lang/String;
 	public static synthetic fun commit-HhBVPuw$default (Lio/github/reactivecircus/appversioning/internal/GitClient;Ljava/lang/String;ZILjava/lang/Object;)Ljava/lang/String;
 	public final fun describeLatestTag (Ljava/lang/String;)Ljava/lang/String;
@@ -129,6 +130,7 @@ public abstract class io/github/reactivecircus/appversioning/tasks/GenerateAppVe
 	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
 	public final fun generate ()V
 	public abstract fun getFetchTagsWhenNoneExistsLocally ()Lorg/gradle/api/provider/Property;
+	public abstract fun getGitHead ()Lorg/gradle/api/file/RegularFileProperty;
 	public abstract fun getGitRefsDirectory ()Lorg/gradle/api/file/DirectoryProperty;
 	public abstract fun getGroovyVersionCodeCustomizer ()Lorg/gradle/api/provider/Property;
 	public abstract fun getGroovyVersionNameCustomizer ()Lorg/gradle/api/provider/Property;
