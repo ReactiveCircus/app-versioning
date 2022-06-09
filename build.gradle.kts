@@ -13,7 +13,7 @@ object versions {
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.7.0"
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.vanniktech.maven.publish") version "0.20.0"
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
@@ -63,7 +63,7 @@ kotlin {
                     "-Xinline-classes",
                     "-opt-in=kotlin.Experimental"
                 )
-                languageVersion = "1.6"
+                languageVersion = "1.7"
             }
         }
     }
