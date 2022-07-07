@@ -105,8 +105,7 @@ val test by tasks.getting(Test::class) {
 
 val fixtureAgpVersion = providers
     .environmentVariable("AGP_VERSION")
-    .forUseAtConfigurationTime()
-    .orElse(providers.gradleProperty("AGP_VERSION").forUseAtConfigurationTime())
+    .orElse(providers.gradleProperty("AGP_VERSION"))
     .getOrElse(versions.agp)
 
 dependencies {
