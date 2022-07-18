@@ -5,7 +5,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 object versions {
     const val agp = "7.2.1"
     const val agpCommon = "30.2.1"
-    const val detekt = "1.20.0"
+    const val detekt = "1.21.0"
     const val junit = "4.13.1"
     const val truth = "1.1.3"
 }
