@@ -61,7 +61,8 @@ kotlin {
                 freeCompilerArgs = freeCompilerArgs + listOf(
                     "-Xjvm-default=all",
                     "-Xinline-classes",
-                    "-opt-in=kotlin.Experimental"
+                    "-opt-in=kotlin.Experimental",
+                    "-Xbackend-threads=0",
                 )
                 languageVersion = "1.7"
             }
