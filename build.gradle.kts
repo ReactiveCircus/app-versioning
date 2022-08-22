@@ -99,6 +99,7 @@ val check by tasks.getting(Task::class) {
 }
 
 val test by tasks.getting(Test::class) {
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
     testLogging {
         events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
     }
