@@ -15,7 +15,7 @@ plugins {
     `kotlin-dsl`
     kotlin("jvm") version "1.7.10"
     id("com.gradle.plugin-publish") version "0.12.0"
-    id("com.vanniktech.maven.publish") version "0.21.0"
+    id("com.vanniktech.maven.publish") version "0.22.0"
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
     id("binary-compatibility-validator") version "0.11.1"
 }
@@ -33,9 +33,8 @@ pluginBundle {
     }
 }
 
-@Suppress("UnstableApiUsage")
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.S01)
+    publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
     signAllPublications()
 }
 
