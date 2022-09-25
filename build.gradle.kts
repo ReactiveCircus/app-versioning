@@ -18,6 +18,7 @@ plugins {
     id("com.vanniktech.maven.publish") version "0.22.0"
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
     id("binary-compatibility-validator") version "0.11.1"
+    id("com.autonomousapps.plugin-best-practices-plugin") version "0.2"
 }
 
 group = property("GROUP") as String
