@@ -76,6 +76,13 @@ jobs:
       - uses: gradle/gradle-build-action@v2
       - name: Functional tests
         run: ./gradlew functionalTest
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-outputs
+          path: build/reports/tests/functionalTest
+          retention-days: 3
 
   deploy-snapshot:
     name: Deploy snapshot
