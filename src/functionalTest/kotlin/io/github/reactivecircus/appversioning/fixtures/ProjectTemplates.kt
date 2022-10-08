@@ -61,6 +61,7 @@ abstract class AndroidProjectTemplate {
                 ${pluginExtension ?: ""}
 
                 android {
+                    namespace = "$DEFAULT_PACKAGE_NAME.$projectName"
                     compileSdkVersion(33)
                     defaultConfig {
                         minSdkVersion(21)
@@ -91,6 +92,7 @@ abstract class AndroidProjectTemplate {
                 ${pluginExtension ?: ""}
 
                 android {
+                    namespace '$DEFAULT_PACKAGE_NAME.$projectName'
                     compileSdkVersion 33
                     defaultConfig {
                         minSdkVersion 21

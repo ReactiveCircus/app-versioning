@@ -80,7 +80,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: build-outputs
+          name: test-reports
           path: build/reports/tests/functionalTest
           retention-days: 3
 
