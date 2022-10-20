@@ -6,7 +6,7 @@ object versions {
     const val agp = "7.3.1"
     const val agpCommon = "30.3.1"
     const val detekt = "1.21.0"
-    const val junit = "4.13.1"
+    const val junit = "4.13.2"
     const val truth = "1.1.3"
 }
 
@@ -113,7 +113,6 @@ val fixtureAgpVersion = providers
 dependencies {
     compileOnly("com.android.tools.build:gradle:${versions.agp}")
     compileOnly("com.android.tools:common:${versions.agpCommon}")
-    compileOnly("com.android.tools:sdk-common:${versions.agpCommon}")
     testImplementation("junit:junit:${versions.junit}")
     testImplementation("com.google.truth:truth:${versions.truth}")
     functionalTestImplementation("com.android.tools.build:gradle:${fixtureAgpVersion}")

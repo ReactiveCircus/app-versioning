@@ -5,7 +5,6 @@ import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.api.variant.VariantOutputConfiguration
 import com.android.build.gradle.AppPlugin
-import com.android.ide.common.repository.GradleVersion
 import io.github.reactivecircus.appversioning.tasks.GenerateAppVersionInfo
 import io.github.reactivecircus.appversioning.tasks.PrintAppVersionInfo
 import org.gradle.api.Plugin
@@ -15,19 +14,21 @@ import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.nativeplatform.internal.BuildType
 import java.io.File
+import java.lang.module.ModuleDescriptor.Version
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * A plugin that generates and sets the version code and version name for an Android app using the latest git tag.
  */
 class AppVersioningPlugin : Plugin<Project> {
+
     override fun apply(project: Project) {
-        val gradleVersion = GradleVersion.parse(project.gradle.gradleVersion)
-        check(gradleVersion >= GradleVersion.parse(MIN_GRADLE_VERSION)) {
+        val gradleVersion = Version.parse(project.gradle.gradleVersion)
+        check(gradleVersion >= Version.parse(MIN_GRADLE_VERSION)) {
             "Android App Versioning Gradle Plugin requires Gradle $MIN_GRADLE_VERSION or later. Detected Gradle version is $gradleVersion."
         }
-        val agpVersion = GradleVersion.parseAndroidGradlePluginVersion(ANDROID_GRADLE_PLUGIN_VERSION)
-        check(agpVersion >= GradleVersion.parseAndroidGradlePluginVersion(MIN_AGP_VERSION)) {
+        val agpVersion = Version.parse(ANDROID_GRADLE_PLUGIN_VERSION)
+        check(agpVersion >= Version.parse(MIN_AGP_VERSION)) {
             "Android App Versioning Gradle Plugin requires Android Gradle Plugin $MIN_AGP_VERSION or later. Detected AGP version is $agpVersion."
         }
         val androidAppPluginApplied = AtomicBoolean(false)
