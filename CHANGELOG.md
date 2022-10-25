@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.2.0
+
+### Fixed
+- Stop depending on `com.android.tools:sdk-common` to support AGP 8.
+
+### Changed
+- Compile with AGP 7.3.1.
+- Compile with Kotlin 1.7.20.
+
 ## 1.1.2
 
 ### Fixed
