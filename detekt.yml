@@ -9,7 +9,11 @@ complexity:
 formatting:
   MaximumLineLength:
     active: false
-  TrailingComma:
+  TrailingCommaOnCallSite:
+    active: false
+  TrailingCommaOnDeclarationSite:
+    active: false
+  FunctionSignature:
     active: false
 
 naming:
