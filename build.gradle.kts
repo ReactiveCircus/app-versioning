@@ -1,5 +1,8 @@
 import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 @Suppress("ClassName")
 object versions {
@@ -15,7 +18,7 @@ plugins {
     `kotlin-dsl`
     kotlin("jvm") version "1.8.0"
     id("com.gradle.plugin-publish") version "0.12.0"
-    id("com.vanniktech.maven.publish") version "0.23.0"
+    id("com.vanniktech.maven.publish") version "0.23.1"
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
     id("binary-compatibility-validator") version "0.12.1"
     id("com.autonomousapps.plugin-best-practices-plugin") version "0.2"
@@ -53,20 +56,16 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
-kotlin {
-    target {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "11"
-                freeCompilerArgs = freeCompilerArgs + listOf(
-                    "-Xjvm-default=all",
-                    "-Xinline-classes",
-                    "-opt-in=kotlin.Experimental",
-                    "-Xbackend-threads=0",
-                )
-                languageVersion = "1.8"
-            }
-        }
+tasks.withType<KotlinCompile> {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_11)
+        languageVersion.set(KotlinVersion.KOTLIN_1_8)
+        freeCompilerArgs.addAll(
+            "-Xjvm-default=all",
+            "-Xinline-classes",
+            "-opt-in=kotlin.Experimental",
+            "-Xbackend-threads=0",
+        )
     }
 }
 
