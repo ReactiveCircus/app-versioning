@@ -58,7 +58,7 @@ kotlin {
     }
 }
 
-tasks.withType<KotlinCompile> {
+tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_11)
         languageVersion.set(KotlinVersion.KOTLIN_1_8)
