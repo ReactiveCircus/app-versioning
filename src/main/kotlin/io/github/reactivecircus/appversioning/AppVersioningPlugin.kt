@@ -36,7 +36,8 @@ class AppVersioningPlugin : Plugin<Project> {
         val appVersioningExtension = project.extensions.create("appVersioning", AppVersioningExtension::class.java)
         project.plugins.withType<AppPlugin> {
             androidAppPluginApplied.set(true)
-            project.extensions.getByType<ApplicationAndroidComponentsExtension>().onVariants { variant ->
+            val extension = project.extensions.getByType<ApplicationAndroidComponentsExtension>()
+            extension.onVariants(selector = extension.selector().all()) { variant ->
                 if (pluginDisabled.get()) return@onVariants
                 if (!appVersioningExtension.enabled.get()) {
                     project.logger.quiet("Android App Versioning plugin is disabled.")
