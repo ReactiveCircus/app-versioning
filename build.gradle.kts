@@ -1,6 +1,5 @@
 import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -53,19 +52,19 @@ gradlePlugin {
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(18))
+        languageVersion.set(JavaLanguageVersion.of(11))
         vendor.set(JvmVendorSpec.AZUL)
     }
 }
 
 tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_11)
         languageVersion.set(KotlinVersion.KOTLIN_1_8)
         freeCompilerArgs.addAll(
             "-Xjvm-default=all",
             "-Xinline-classes",
             "-opt-in=kotlin.Experimental",
+            "-opt-in=kotlin.RequiresOptIn",
             "-Xbackend-threads=0",
         )
     }
