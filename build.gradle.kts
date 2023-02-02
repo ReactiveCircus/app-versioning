@@ -15,7 +15,7 @@ object versions {
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm") version "1.8.10"
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.vanniktech.maven.publish") version "0.23.2"
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
