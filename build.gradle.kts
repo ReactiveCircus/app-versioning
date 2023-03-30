@@ -1,6 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.vanniktech.maven.publish.SonatypeHost
+import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
@@ -125,7 +126,7 @@ detekt {
     allRules = true
 }
 
-tasks.detektMain {
+tasks.withType<Detekt>().configureEach {
     jvmTarget = JvmTarget.JVM_11.target
     reports {
         html.outputLocation.set(file("build/reports/detekt/${project.name}.html"))
