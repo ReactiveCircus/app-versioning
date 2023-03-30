@@ -3,7 +3,6 @@ package io.github.reactivecircus.appversioning.internal
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-@OptIn(ExperimentalStdlibApi::class)
 class GitClient private constructor(private val projectDir: File) {
 
     fun listLocalTags(): List<String> {
@@ -83,13 +82,15 @@ class GitClient private constructor(private val projectDir: File) {
     }
 }
 
-inline class CommitId(val value: String)
+@JvmInline
+value class CommitId(val value: String)
 
 private val File.isInValidGitRepo: Boolean
     get() = runCatching {
         listOf("git", "rev-parse", "--is-inside-work-tree").execute(this).toBoolean()
     }.getOrDefault(false)
 
+@Suppress("UseCheckOrError")
 private fun List<String>.execute(workingDir: File, timeoutInSeconds: Long = DEFAULT_COMMAND_TIMEOUT_SECONDS): String {
     val process = ProcessBuilder(this)
         .directory(workingDir)

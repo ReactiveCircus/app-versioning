@@ -26,7 +26,9 @@ class GenerateAppVersionInfoTest {
             "generateAppVersionInfoForRelease"
         ) {
             assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.FAILED)
-            assertThat(output).contains("Android App Versioning Gradle Plugin works with git tags but root project 'app-versioning-fixture' is not a git root directory, and a valid gitRootDirectory is not provided.")
+            assertThat(output).contains(
+                "Android App Versioning Gradle Plugin works with git tags but root project 'app-versioning-fixture' is not a git root directory, and a valid gitRootDirectory is not provided."
+            )
         }
     }
 
@@ -46,7 +48,9 @@ class GenerateAppVersionInfoTest {
             "generateAppVersionInfoForRelease"
         ) {
             assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.FAILED)
-            assertThat(output).contains("Android App Versioning Gradle Plugin works with git tags but root project 'app-versioning-fixture' is not a git root directory, and a valid gitRootDirectory is not provided.")
+            assertThat(output).contains(
+                "Android App Versioning Gradle Plugin works with git tags but root project 'app-versioning-fixture' is not a git root directory, and a valid gitRootDirectory is not provided."
+            )
         }
     }
 
@@ -371,10 +375,22 @@ class GenerateAppVersionInfoTest {
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
 
-        val versionCodeFileForFreeDebug = File(fixtureDir.root, "app/build/outputs/app_versioning/freeDebug/version_code.txt")
-        val versionCodeFileForFreeRelease = File(fixtureDir.root, "app/build/outputs/app_versioning/freeRelease/version_code.txt")
-        val versionCodeFileForPaidDebug = File(fixtureDir.root, "app/build/outputs/app_versioning/paidDebug/version_code.txt")
-        val versionCodeFileForPaidRelease = File(fixtureDir.root, "app/build/outputs/app_versioning/paidRelease/version_code.txt")
+        val versionCodeFileForFreeDebug = File(
+            fixtureDir.root,
+            "app/build/outputs/app_versioning/freeDebug/version_code.txt"
+        )
+        val versionCodeFileForFreeRelease = File(
+            fixtureDir.root,
+            "app/build/outputs/app_versioning/freeRelease/version_code.txt"
+        )
+        val versionCodeFileForPaidDebug = File(
+            fixtureDir.root,
+            "app/build/outputs/app_versioning/paidDebug/version_code.txt"
+        )
+        val versionCodeFileForPaidRelease = File(
+            fixtureDir.root,
+            "app/build/outputs/app_versioning/paidRelease/version_code.txt"
+        )
 
         val extensions = """
             import io.github.reactivecircus.appversioning.toSemVer
@@ -425,10 +441,22 @@ class GenerateAppVersionInfoTest {
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
 
-        val versionNameFileForFreeDebug = File(fixtureDir.root, "app/build/outputs/app_versioning/freeDebug/version_name.txt")
-        val versionNameFileForFreeRelease = File(fixtureDir.root, "app/build/outputs/app_versioning/freeRelease/version_name.txt")
-        val versionNameFileForPaidDebug = File(fixtureDir.root, "app/build/outputs/app_versioning/paidDebug/version_name.txt")
-        val versionNameFileForPaidRelease = File(fixtureDir.root, "app/build/outputs/app_versioning/paidRelease/version_name.txt")
+        val versionNameFileForFreeDebug = File(
+            fixtureDir.root,
+            "app/build/outputs/app_versioning/freeDebug/version_name.txt"
+        )
+        val versionNameFileForFreeRelease = File(
+            fixtureDir.root,
+            "app/build/outputs/app_versioning/freeRelease/version_name.txt"
+        )
+        val versionNameFileForPaidDebug = File(
+            fixtureDir.root,
+            "app/build/outputs/app_versioning/paidDebug/version_name.txt"
+        )
+        val versionNameFileForPaidRelease = File(
+            fixtureDir.root,
+            "app/build/outputs/app_versioning/paidRelease/version_name.txt"
+        )
 
         val extensions = """
             appVersioning {
@@ -539,11 +567,15 @@ class GenerateAppVersionInfoTest {
             assertThat(versionNameFileAppA.readText()).isEqualTo("0.1.0+appA")
 
             assertThat(task(":app-b:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
-            assertThat(versionCodeFileAppB.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_CODE_FALLBACK.toString())
+            assertThat(versionCodeFileAppB.readText()).isEqualTo(
+                GenerateAppVersionInfo.VERSION_CODE_FALLBACK.toString()
+            )
             assertThat(versionNameFileAppB.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_NAME_FALLBACK)
 
             assertThat(task(":app-c:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
-            assertThat(versionCodeFileAppC.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_CODE_FALLBACK.toString())
+            assertThat(versionCodeFileAppC.readText()).isEqualTo(
+                GenerateAppVersionInfo.VERSION_CODE_FALLBACK.toString()
+            )
             assertThat(versionNameFileAppC.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_NAME_FALLBACK)
         }
 
@@ -566,7 +598,9 @@ class GenerateAppVersionInfoTest {
             assertThat(versionNameFileAppB.readText()).isEqualTo("1.2.3-rc01+appB")
 
             assertThat(task(":app-c:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
-            assertThat(versionCodeFileAppC.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_CODE_FALLBACK.toString())
+            assertThat(versionCodeFileAppC.readText()).isEqualTo(
+                GenerateAppVersionInfo.VERSION_CODE_FALLBACK.toString()
+            )
             assertThat(versionNameFileAppC.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_NAME_FALLBACK)
         }
 
@@ -588,7 +622,9 @@ class GenerateAppVersionInfoTest {
             assertThat(versionNameFileAppB.readText()).isEqualTo("1.2.3-rc02+appB")
 
             assertThat(task(":app-c:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
-            assertThat(versionCodeFileAppC.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_CODE_FALLBACK.toString())
+            assertThat(versionCodeFileAppC.readText()).isEqualTo(
+                GenerateAppVersionInfo.VERSION_CODE_FALLBACK.toString()
+            )
             assertThat(versionNameFileAppC.readText()).isEqualTo(GenerateAppVersionInfo.VERSION_NAME_FALLBACK)
         }
 
@@ -645,8 +681,14 @@ class GenerateAppVersionInfoTest {
 
         val versionCodeFileForDebug = File(fixtureDir.root, "app/build/outputs/app_versioning/debug/version_code.txt")
         val versionNameFileForDebug = File(fixtureDir.root, "app/build/outputs/app_versioning/debug/version_name.txt")
-        val versionCodeFileForRelease = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_code.txt")
-        val versionNameFileForRelease = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt")
+        val versionCodeFileForRelease = File(
+            fixtureDir.root,
+            "app/build/outputs/app_versioning/release/version_code.txt"
+        )
+        val versionNameFileForRelease = File(
+            fixtureDir.root,
+            "app/build/outputs/app_versioning/release/version_name.txt"
+        )
 
         val extensions = """
             import io.github.reactivecircus.appversioning.SemVer

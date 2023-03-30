@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
@@ -5,8 +7,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 @Suppress("ClassName")
 object versions {
-    const val agp = "7.4.1"
-    const val agpCommon = "30.4.1"
+    const val agp = "7.4.2"
+    const val agpCommon = "30.4.2"
     const val detekt = "1.22.0"
     const val junit = "4.13.2"
     const val truth = "1.1.3"
@@ -15,26 +17,15 @@ object versions {
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
-    kotlin("jvm") version "1.8.10"
-    id("com.gradle.plugin-publish") version "0.12.0"
-    id("com.vanniktech.maven.publish") version "0.23.2"
-    id("io.gitlab.arturbosch.detekt") version "1.19.0"
-    id("binary-compatibility-validator") version "0.12.1"
-    id("com.autonomousapps.plugin-best-practices-plugin") version "0.2"
+    kotlin("jvm") version "1.8.20"
+    id("com.gradle.plugin-publish") version "1.1.0"
+    id("com.vanniktech.maven.publish") version "0.25.1"
+    id("io.gitlab.arturbosch.detekt") version "1.22.0"
+    id("binary-compatibility-validator") version "0.13.0"
 }
 
 group = property("GROUP") as String
 version = property("VERSION_NAME") as String
-
-pluginBundle {
-    website = property("POM_URL") as String
-    vcsUrl = property("POM_SCM_URL") as String
-    tags = listOf("gradle", "android", "versioning")
-    mavenCoordinates {
-        groupId = property("GROUP") as String
-        artifactId = property("POM_ARTIFACT_ID") as String
-    }
-}
 
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
@@ -42,10 +33,13 @@ mavenPublishing {
 }
 
 gradlePlugin {
+    website.set(property("POM_URL") as String)
+    vcsUrl.set(property("POM_SCM_URL") as String)
     plugins.create("appVersioning") {
         id = "io.github.reactivecircus.app-versioning"
         displayName = "Android App Versioning Gradle Plugin."
         description = "Gradle plugin for lazily generating Android app's versionCode & versionName from Git tags."
+        tags.set(listOf("gradle", "android", "versioning"))
         implementationClass = "io.github.reactivecircus.appversioning.AppVersioningPlugin"
     }
 }
@@ -62,8 +56,6 @@ tasks.withType<KotlinCompile>().configureEach {
         languageVersion.set(KotlinVersion.KOTLIN_1_8)
         freeCompilerArgs.addAll(
             "-Xjvm-default=all",
-            "-Xinline-classes",
-            "-opt-in=kotlin.Experimental",
             "-opt-in=kotlin.RequiresOptIn",
             "-Xbackend-threads=0",
         )

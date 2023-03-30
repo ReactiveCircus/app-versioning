@@ -29,7 +29,9 @@ fun gradlePropertiesFileContent(enableConfigurationCache: Boolean): String {
             org.gradle.unsafe.configuration-cache=true
             org.gradle.unsafe.isolated-projects=true
         """.trimIndent()
-    } else ""
+    } else {
+        ""
+    }
     return """
         $configurationCacheProperties
     """.trimIndent()
@@ -46,12 +48,16 @@ abstract class AndroidProjectTemplate {
 
     private val ktsBuildFileContent: String
         get() {
-            val flavorConfigs = if (flavors.isNotEmpty()) """
+            val flavorConfigs = if (flavors.isNotEmpty()) {
+                """
                 flavorDimensions("environment")
                 productFlavors {
                     ${flavors.joinToString("\n") { "register(\"$it\") {}" }}
                 }
-            """.trimIndent() else ""
+                """.trimIndent()
+            } else {
+                ""
+            }
             return """
                 plugins {
                     id("com.android.${if (isAppProject) "application" else "library"}")
@@ -77,12 +83,16 @@ abstract class AndroidProjectTemplate {
 
     private val groovyBuildFileContent: String
         get() {
-            val flavorConfigs = if (flavors.isNotEmpty()) """
+            val flavorConfigs = if (flavors.isNotEmpty()) {
+                """
                 flavorDimensions "environment"
                 productFlavors {
                     ${flavors.joinToString("\n") { "$it {}" }}
                 }
-            """.trimIndent() else ""
+                """.trimIndent()
+            } else {
+                ""
+            }
             return """
                 plugins {
                     id 'com.android.${if (isAppProject) "application" else "library"}'

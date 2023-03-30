@@ -49,6 +49,7 @@ internal fun SemVer.toInt(maxDigitsPerComponent: Int): Int {
  * @param allowPrefixV whether prefixing a semantic version with a “v” is allowed.
  * @throws [IllegalArgumentException] when the `rawTagName` of the [GitTag] is not a valid [SemVer].
  */
+@Suppress("DestructuringDeclarationWithTooManyEntries")
 fun GitTag.toSemVer(allowPrefixV: Boolean = true): SemVer {
     val result = requireNotNull(SEM_VER_REGEX.toRegex().matchEntire(rawTagName)) {
         "\"$rawTagName\" is not a valid SemVer."

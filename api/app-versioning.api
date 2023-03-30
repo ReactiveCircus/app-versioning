@@ -25,6 +25,11 @@ public final class io/github/reactivecircus/appversioning/AppVersioningPlugin : 
 public final class io/github/reactivecircus/appversioning/AppVersioningPlugin$Companion {
 }
 
+public final class io/github/reactivecircus/appversioning/AppVersioningPlugin$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
 public final class io/github/reactivecircus/appversioning/GitTag {
 	public fun <init> (Ljava/lang/String;ILjava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;

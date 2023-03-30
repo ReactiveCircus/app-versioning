@@ -15,6 +15,7 @@ import org.gradle.kotlin.dsl.withType
 import org.gradle.language.nativeplatform.internal.BuildType
 import java.io.File
 import java.lang.module.ModuleDescriptor.Version
+import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -88,8 +89,12 @@ class AppVersioningPlugin : Plugin<Project> {
         kotlinVersionNameCustomizer.set(extension.kotlinVersionNameCustomizer)
         groovyVersionCodeCustomizer.set(extension.groovyVersionCodeCustomizer)
         groovyVersionNameCustomizer.set(extension.groovyVersionNameCustomizer)
-        versionCodeFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/${variant.name}/$VERSION_CODE_RESULT_FILE"))
-        versionNameFile.set(layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/${variant.name}/$VERSION_NAME_RESULT_FILE"))
+        versionCodeFile.set(
+            layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/${variant.name}/$VERSION_CODE_RESULT_FILE")
+        )
+        versionNameFile.set(
+            layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/${variant.name}/$VERSION_NAME_RESULT_FILE")
+        )
         variantInfo.set(
             VariantInfo(
                 buildType = variant.buildType,
@@ -150,6 +155,10 @@ class AppVersioningPlugin : Plugin<Project> {
             }
             else -> project.rootProject.file(STANDARD_GIT_HEAD_FILE).takeIf { it.exists() }
         }
+    }
+
+    private fun String.capitalize(): String {
+        return replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
 
     companion object {
