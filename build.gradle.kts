@@ -9,8 +9,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 @Suppress("ClassName")
 object versions {
-    const val agp = "7.4.2"
-    const val agpCommon = "30.4.2"
+    const val agp = "8.0.0"
+    const val agpCommon = "31.0.0"
     const val detekt = "1.22.0"
     const val junit = "4.13.2"
     const val truth = "1.1.3"
@@ -20,7 +20,7 @@ plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     kotlin("jvm") version "1.8.20"
-    id("com.gradle.plugin-publish") version "1.1.0"
+    id("com.gradle.plugin-publish") version "1.2.0"
     id("com.vanniktech.maven.publish") version "0.25.1"
     id("io.gitlab.arturbosch.detekt") version "1.22.0"
     id("binary-compatibility-validator") version "0.13.0"
