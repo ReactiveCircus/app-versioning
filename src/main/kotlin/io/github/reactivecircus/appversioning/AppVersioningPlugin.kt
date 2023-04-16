@@ -51,8 +51,8 @@ class AppVersioningPlugin : Plugin<Project> {
                         extension = appVersioningExtension
                     )
 
-                    val generatedVersionCode = generateAppVersionInfo.map { it.versionCodeFile.asFile.get().readText().trim().toInt() }
-                    val generatedVersionName = generateAppVersionInfo.map { it.versionNameFile.asFile.get().readText().trim() }
+                    val generatedVersionCode = generateAppVersionInfo.flatMap { it.versionCodeFile.map { it.asFile.readText().trim().toInt() } }
+                    val generatedVersionName = generateAppVersionInfo.flatMap { it.versionNameFile.map { it.asFile.readText().trim() } }
 
                     project.registerPrintAppVersionInfoTask(variantName = variant.name)
 
