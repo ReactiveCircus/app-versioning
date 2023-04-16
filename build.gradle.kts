@@ -41,7 +41,7 @@ gradlePlugin {
         id = "io.github.reactivecircus.app-versioning"
         displayName = "Android App Versioning Gradle Plugin."
         description = "Gradle plugin for lazily generating Android app's versionCode & versionName from Git tags."
-        tags.set(listOf("gradle", "android", "versioning"))
+        tags.set(listOf("android", "versioning"))
         implementationClass = "io.github.reactivecircus.appversioning.AppVersioningPlugin"
     }
 }
