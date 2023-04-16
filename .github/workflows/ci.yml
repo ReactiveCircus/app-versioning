@@ -30,7 +30,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: '18'
+          java-version: '19'
       - uses: gradle/gradle-build-action@v2
       - name: Assemble
         run: ./gradlew assemble
@@ -47,7 +47,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: '18'
+          java-version: '19'
       - uses: gradle/gradle-build-action@v2
       - name: Checks
         run: ./gradlew test detekt validatePlugins apiCheck
@@ -68,7 +68,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: '18'
+          java-version: '19'
       - name: Configure git user
         run: |
           git config --global user.name "GitHub Action"
@@ -100,7 +100,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: '18'
+          java-version: '19'
       - uses: gradle/gradle-build-action@v2
       - name: Deploy snapshot
-        run: ./gradlew clean kotlinSourcesJar publish
+        run: ./gradlew publish
