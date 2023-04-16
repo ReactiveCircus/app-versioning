@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.3.1
+
+### Fixed
+- Fix an issue where the version info files cannot be found when configuration cache is on - [#30](https://github.com/ReactiveCircus/app-versioning/pull/30)
+
 ## 1.3.0
 
 ### Changed
