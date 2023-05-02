@@ -9,8 +9,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 @Suppress("ClassName")
 object versions {
-    const val agp = "8.0.0"
-    const val agpCommon = "31.0.0"
+    const val agp = "8.0.1"
+    const val agpCommon = "31.0.1"
     const val detekt = "1.22.0"
     const val junit = "4.13.2"
     const val truth = "1.1.3"
