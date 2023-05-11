@@ -80,9 +80,6 @@ jobs:
       - uses: gradle/gradle-build-action@v2
         with:
           gradle-home-cache-cleanup: true
-      # TODO remove
-      - name: Accept build-tools 34.0.0 license
-        run: echo "y" | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;34.0.0-rc3"
       - name: Functional tests
         run: ./gradlew functionalTest
       - name: Upload test reports
