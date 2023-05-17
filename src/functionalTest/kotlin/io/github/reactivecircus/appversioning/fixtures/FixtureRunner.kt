@@ -67,12 +67,8 @@ private val runner = GradleRunner.create()
     .withDebug(true)
 
 private fun TemporaryFolder.buildFixture(gradleRoot: File, subprojects: List<AndroidProjectTemplate>) {
-    // build.gradle
-    gradleRoot.resolve("build.gradle").also { it.parentFile.mkdirs() }
-        .writeText(rootBuildFileContent)
-
     // settings.gradle
-    gradleRoot.resolve("settings.gradle").also { it.parentFile.mkdirs() }
+    gradleRoot.resolve("settings.gradle.kts").also { it.parentFile.mkdirs() }
         .writeText(
             settingsFileContent(
                 localBuildCacheUri = newFolder("local-cache").toURI().toString(),

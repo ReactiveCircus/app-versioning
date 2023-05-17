@@ -1,26 +1,30 @@
 package io.github.reactivecircus.appversioning.fixtures
 
-val rootBuildFileContent = """
-    allprojects {
-        repositories {
-            google()
-        }
-    }
-""".trimIndent()
-
 fun settingsFileContent(
     localBuildCacheUri: String,
     subprojects: List<AndroidProjectTemplate>
 ) = """
-    buildCache {
-        local {
-            directory '$localBuildCacheUri'
+    dependencyResolutionManagement {
+        repositories {
+            google()
         }
     }
 
-    rootProject.name='app-versioning-fixture'
+    pluginManagement {
+        repositories {
+            google()
+        }
+    }
 
-    ${subprojects.map { it.projectName }.joinToString("\n") { "include ':$it'" }}
+    buildCache {
+        local {
+            directory = "$localBuildCacheUri"
+        }
+    }
+
+    rootProject.name = "app-versioning-fixture"
+
+    ${subprojects.map { it.projectName }.joinToString("\n") { "include(\":$it\")" }}
 """.trimIndent()
 
 fun gradlePropertiesFileContent(enableConfigurationCache: Boolean): String {
