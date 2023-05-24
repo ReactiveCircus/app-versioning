@@ -12,6 +12,6 @@ class VariantInfo(
     val isReleaseBuild: Boolean get() = buildType == BuildType.RELEASE.name
 
     companion object {
-        const val serialVersionUID = 1L
+        private const val serialVersionUID = 1L
     }
 }

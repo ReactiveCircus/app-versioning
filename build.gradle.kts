@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 object versions {
     const val agp = "8.0.1"
     const val agpCommon = "31.0.1"
-    const val detekt = "1.22.0"
+    const val detekt = "1.23.0"
     const val junit = "4.13.2"
     const val truth = "1.1.3"
 }
@@ -22,7 +22,7 @@ plugins {
     kotlin("jvm") version "1.8.21"
     id("com.gradle.plugin-publish") version "1.2.0"
     id("com.vanniktech.maven.publish") version "0.25.2"
-    id("io.gitlab.arturbosch.detekt") version "1.22.0"
+    id("io.gitlab.arturbosch.detekt") version "1.23.0"
     id("binary-compatibility-validator") version "0.13.0"
 }
 
@@ -74,12 +74,12 @@ tasks.pluginUnderTestMetadata {
     pluginClasspath.from(fixtureClasspath)
 }
 
-val functionalTestSourceSet = sourceSets.create("functionalTest") {
+val functionalTestSourceSet: SourceSet = sourceSets.create("functionalTest") {
     compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
     runtimeClasspath += output + compileClasspath
 }
 
-val functionalTestImplementation = configurations.getByName("functionalTestImplementation")
+val functionalTestImplementation: Configuration = configurations.getByName("functionalTestImplementation")
     .extendsFrom(configurations.getByName("testImplementation"))
 
 gradlePlugin.testSourceSets(functionalTestSourceSet)

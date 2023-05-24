@@ -81,7 +81,6 @@ public final class io/github/reactivecircus/appversioning/SemVerKt {
 
 public final class io/github/reactivecircus/appversioning/VariantInfo : java/io/Serializable {
 	public static final field Companion Lio/github/reactivecircus/appversioning/VariantInfo$Companion;
-	public static final field serialVersionUID J
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 	public final fun getBuildType ()Ljava/lang/String;
 	public final fun getFlavorName ()Ljava/lang/String;
