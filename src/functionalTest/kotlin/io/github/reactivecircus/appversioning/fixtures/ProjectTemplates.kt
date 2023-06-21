@@ -72,7 +72,8 @@ abstract class AndroidProjectTemplate {
 
                 android {
                     namespace = "$DEFAULT_PACKAGE_NAME.$projectName"
-                    compileSdkVersion(33)
+                    compileSdkVersion(34)
+                    buildToolsVersion = "34.0.0"
                     defaultConfig {
                         minSdkVersion(21)
                         targetSdkVersion(33)
@@ -107,7 +108,8 @@ abstract class AndroidProjectTemplate {
 
                 android {
                     namespace '$DEFAULT_PACKAGE_NAME.$projectName'
-                    compileSdkVersion 33
+                    compileSdkVersion 34
+                    buildToolsVersion "34.0.0"
                     defaultConfig {
                         minSdkVersion 21
                         targetSdkVersion 33
