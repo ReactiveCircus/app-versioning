@@ -56,7 +56,7 @@ kotlin {
 tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_11)
-        languageVersion.set(KotlinVersion.KOTLIN_2_0)
+        languageVersion.set(KotlinVersion.KOTLIN_1_9)
         freeCompilerArgs.addAll(
             "-Xjvm-default=all",
             "-opt-in=kotlin.RequiresOptIn",
