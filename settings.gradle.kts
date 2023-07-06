@@ -1,5 +1,27 @@
 rootProject.name = "app-versioning"
 
+pluginManagement {
+    repositories {
+        gradlePluginPortal {
+            content {
+                includeGroupByRegex("org.gradle.*")
+            }
+        }
+        mavenCentral()
+    }
+
+    val toolchainsResolverVersion = file("$rootDir/gradle/libs.versions.toml")
+        .readLines()
+        .first { it.contains("toolchainsResolver") }
+        .substringAfter("=")
+        .trim()
+        .removeSurrounding("\"")
+
+    plugins {
+        id("org.gradle.toolchains.foojay-resolver-convention") version toolchainsResolverVersion
+    }
+}
+
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
     repositories {
@@ -8,22 +30,6 @@ dependencyResolutionManagement {
     }
 }
 
-pluginManagement {
-    repositories {
-        mavenCentral()
-        google()
-        maven("https://dl.bintray.com/kotlin/kotlin-eap")
-    }
-
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.id == "binary-compatibility-validator") {
-                useModule("org.jetbrains.kotlinx:binary-compatibility-validator:${requested.version}")
-            }
-        }
-    }
-}
-
 plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0"
+    id("org.gradle.toolchains.foojay-resolver-convention")
 }

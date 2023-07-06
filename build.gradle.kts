@@ -7,23 +7,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-@Suppress("ClassName")
-object versions {
-    const val agp = "8.0.2"
-    const val agpCommon = "31.0.1"
-    const val detekt = "1.23.0"
-    const val junit = "4.13.2"
-    const val truth = "1.1.3"
-}
-
 plugins {
-    `java-gradle-plugin`
     `kotlin-dsl`
-    kotlin("jvm") version "1.9.0"
-    id("com.gradle.plugin-publish") version "1.2.0"
-    id("com.vanniktech.maven.publish") version "0.25.3"
-    id("io.gitlab.arturbosch.detekt") version "1.23.0"
-    id("binary-compatibility-validator") version "0.13.2"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.binaryCompatibilityValidator)
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.mavenPublish)
 }
 
 group = property("GROUP") as String
@@ -104,17 +93,21 @@ val test by tasks.getting(Test::class) {
     }
 }
 
-val fixtureAgpVersion = providers
+val fixtureAgpVersion: Provider<String> = providers
     .environmentVariable("AGP_VERSION")
     .orElse(providers.gradleProperty("AGP_VERSION"))
-    .getOrElse(versions.agp)
+    .orElse(libs.versions.agp.asProvider())
 
 dependencies {
-    compileOnly("com.android.tools.build:gradle:${versions.agp}")
-    compileOnly("com.android.tools:common:${versions.agpCommon}")
-    testImplementation("junit:junit:${versions.junit}")
-    testImplementation("com.google.truth:truth:${versions.truth}")
-    fixtureClasspath("com.android.tools.build:gradle:${fixtureAgpVersion}")
+    compileOnly(libs.agp.build)
+    compileOnly(libs.agp.common)
+    testImplementation(libs.junit)
+    testImplementation(libs.truth)
+    fixtureClasspath(libs.agp.build.flatMap { dependency ->
+        fixtureAgpVersion.map { version ->
+            "${dependency.group}:${dependency.name}:$version"
+        }
+    })
 }
 
 detekt {
@@ -131,4 +124,6 @@ tasks.withType<Detekt>().configureEach {
     }
 }
 
-dependencies.add("detektPlugins", "io.gitlab.arturbosch.detekt:detekt-formatting:${versions.detekt}")
+val detektFormatting = libs.plugin.detektFormatting.get()
+
+dependencies.add("detektPlugins", detektFormatting)
