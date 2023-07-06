@@ -22,14 +22,24 @@ Version `0.10.0` of the plugin is the final version that's compatible with AGP *
 
 ## Installation
 
-The **Android App Versioning Gradle Plugin** is available from both [Maven Central](https://search.maven.org/artifact/io.github.reactivecircus.appversioning/app-versioning-gradle-plugin) and [Gradle Plugin Portal](https://plugins.gradle.org/plugin/io.github.reactivecircus.app-versioning). Make sure your top-level `build.gradle` has **either** `mavenCentral()` or `gradlePluginPortal()` defined in the `buildscript` block:
+The **Android App Versioning Gradle Plugin** is available from both [Maven Central](https://search.maven.org/artifact/io.github.reactivecircus.appversioning/app-versioning-gradle-plugin). Make sure you have added `mavenCentral()` to the plugin `repositories`:
 
 ```kt
+// in settings.gradle.kts
+pluginManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+```
+
+or
+
+```kt
+// in root build.gradle.kts
 buildscript {
     repositories {
-        // add either one of the following repositories
         mavenCentral()
-        gradlePluginPortal()
     }
 }
 ```
