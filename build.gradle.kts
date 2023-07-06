@@ -19,11 +19,11 @@ object versions {
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
-    kotlin("jvm") version "1.8.21"
+    kotlin("jvm") version "1.9.0"
     id("com.gradle.plugin-publish") version "1.2.0"
-    id("com.vanniktech.maven.publish") version "0.25.2"
+    id("com.vanniktech.maven.publish") version "0.25.3"
     id("io.gitlab.arturbosch.detekt") version "1.23.0"
-    id("binary-compatibility-validator") version "0.13.0"
+    id("binary-compatibility-validator") version "0.13.2"
 }
 
 group = property("GROUP") as String
