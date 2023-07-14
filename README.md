@@ -438,7 +438,7 @@ appVersioning {
 
 ## App versioning on CI
 
-For performance reason many CI providers only fetch a single commit by default when checking out the repository. For **app-versioning** to work we need to make sure Git tags are also fetched. Here's an example for doing this with [GutHub Actions](https://github.com/actions/checkout):
+For performance reason many CI providers only fetch a single commit by default when checking out the repository. For **app-versioning** to work we need to make sure Git tags are also fetched. Here's an example for doing this with [GitHub Actions](https://github.com/actions/checkout):
 
 ```
 - uses: actions/checkout@v3
