@@ -1,8 +1,8 @@
 [versions]
-kotlin = "1.9.0"
+kotlin = "1.9.10"
 binaryCompabilityValidator = "0.13.2"
 agp = "8.1.1"
-agp-common = "31.1.0"
+agp-common = "31.1.1"
 detekt = "1.23.1"
 mavenPublish = "0.25.3"
 junit = "4.13.2"
