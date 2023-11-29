@@ -6,12 +6,14 @@ fun settingsFileContent(
 ) = """
     dependencyResolutionManagement {
         repositories {
+            mavenCentral()
             google()
         }
     }
 
     pluginManagement {
         repositories {
+            mavenCentral()
             google()
         }
     }
