@@ -31,9 +31,10 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '21'
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/gradle-build-action@v3-beta
         with:
           gradle-home-cache-cleanup: true
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
       - name: Assemble
         run: ./gradlew assemble
 
@@ -50,9 +51,10 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '21'
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/gradle-build-action@v3-beta
         with:
           gradle-home-cache-cleanup: true
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
       - name: Checks
         run: ./gradlew test detekt validatePlugins apiCheck
 
@@ -77,9 +79,10 @@ jobs:
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/gradle-build-action@v3-beta
         with:
           gradle-home-cache-cleanup: true
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
       - name: Functional tests
         run: ./gradlew functionalTest
       - name: Upload test reports
@@ -107,8 +110,9 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '21'
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/gradle-build-action@v3-beta
         with:
           gradle-home-cache-cleanup: true
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
       - name: Deploy snapshot
         run: ./gradlew publish
