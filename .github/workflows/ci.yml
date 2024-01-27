@@ -31,7 +31,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '21'
-      - uses: gradle/gradle-build-action@v3-beta
+      - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-home-cache-cleanup: true
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
@@ -51,7 +51,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '21'
-      - uses: gradle/gradle-build-action@v3-beta
+      - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-home-cache-cleanup: true
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
@@ -79,7 +79,7 @@ jobs:
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-      - uses: gradle/gradle-build-action@v3-beta
+      - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-home-cache-cleanup: true
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
@@ -110,7 +110,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '21'
-      - uses: gradle/gradle-build-action@v3-beta
+      - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-home-cache-cleanup: true
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
