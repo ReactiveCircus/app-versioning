@@ -25,8 +25,8 @@ jobs:
       JAVA_TOOL_OPTIONS: -Xmx4g -XX:+UseParallelGC
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: gradle/wrapper-validation-action@v1
+      - uses: actions/checkout@v4
+      - uses: gradle/wrapper-validation-action@v2
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
@@ -45,8 +45,8 @@ jobs:
       JAVA_TOOL_OPTIONS: -Xmx4g -XX:+UseParallelGC
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: gradle/wrapper-validation-action@v1
+      - uses: actions/checkout@v4
+      - uses: gradle/wrapper-validation-action@v2
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
@@ -69,8 +69,8 @@ jobs:
         agp-version: [ 7.3.1, 7.4.2, 8.0.2, 8.1.4, 8.2.2, 8.3.0-beta02, 8.4.0-alpha07 ]
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: gradle/wrapper-validation-action@v1
+      - uses: actions/checkout@v4
+      - uses: gradle/wrapper-validation-action@v2
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
@@ -104,8 +104,8 @@ jobs:
       ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: gradle/wrapper-validation-action@v1
+      - uses: actions/checkout@v4
+      - uses: gradle/wrapper-validation-action@v2
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
