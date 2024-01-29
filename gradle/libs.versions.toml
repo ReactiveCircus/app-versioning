@@ -1,6 +1,6 @@
 [versions]
 kotlin = "1.9.22"
-binaryCompabilityValidator = "0.13.2"
+binaryCompabilityValidator = "0.14.0"
 agp = "8.2.2"
 agp-common = "31.2.2"
 detekt = "1.23.3"
