@@ -73,7 +73,7 @@ abstract class AndroidProjectTemplate {
                 ${pluginExtension ?: ""}
 
                 android {
-                    namespace = "$DEFAULT_PACKAGE_NAME.$projectName"
+                    namespace = "$DEFAULT_PACKAGE_NAME.${projectName.replace("-", ".")}"
                     compileSdkVersion(34)
                     buildToolsVersion = "34.0.0"
                     defaultConfig {
@@ -109,7 +109,7 @@ abstract class AndroidProjectTemplate {
                 ${pluginExtension ?: ""}
 
                 android {
-                    namespace '$DEFAULT_PACKAGE_NAME.$projectName'
+                    namespace '$DEFAULT_PACKAGE_NAME.${projectName.replace("-", ".")}'
                     compileSdkVersion 34
                     buildToolsVersion "34.0.0"
                     defaultConfig {
@@ -129,7 +129,7 @@ abstract class AndroidProjectTemplate {
     val manifestFileContent: String
         get() = """
             <?xml version="1.0" encoding="utf-8"?>
-            <manifest package="$DEFAULT_PACKAGE_NAME.$projectName" />
+            <manifest />
         """.trimIndent()
 
     companion object {
