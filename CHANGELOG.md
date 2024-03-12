@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.3.2
+
+### Changed
+- Compile with AGP 8.3.0.
+- Compile with Kotlin 1.9.23.
+
 ## 1.3.1
 
 ### Fixed
