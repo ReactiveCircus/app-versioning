@@ -89,7 +89,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-reports
+          name: test-reports-${{ strategy.job-index }}
           path: build/reports/tests/functionalTest
           retention-days: 3
 
