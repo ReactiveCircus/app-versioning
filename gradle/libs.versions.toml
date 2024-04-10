@@ -1,7 +1,7 @@
 [versions]
 kotlin = "1.9.23"
 binaryCompabilityValidator = "0.14.0"
-agp = "8.3.1"
+agp = "8.3.2"
 agp-common = "31.3.1"
 detekt = "1.23.6"
 mavenPublish = "0.28.0"
