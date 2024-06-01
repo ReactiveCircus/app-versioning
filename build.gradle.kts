@@ -37,14 +37,14 @@ gradlePlugin {
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(22))
         vendor.set(JvmVendorSpec.AZUL)
     }
 }
 
 tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_11)
+        jvmTarget.set(JvmTarget.JVM_17)
         languageVersion.set(KotlinVersion.KOTLIN_1_9)
         freeCompilerArgs.addAll(
             "-Xjvm-default=all",
@@ -118,7 +118,7 @@ detekt {
 }
 
 tasks.withType<Detekt>().configureEach {
-    jvmTarget = JvmTarget.JVM_11.target
+    jvmTarget = JvmTarget.JVM_21.target
     reports {
         html.outputLocation.set(file("build/reports/detekt/${project.name}.html"))
     }
