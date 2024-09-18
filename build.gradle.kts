@@ -37,7 +37,7 @@ gradlePlugin {
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(22))
+        languageVersion.set(JavaLanguageVersion.of(23))
         vendor.set(JvmVendorSpec.AZUL)
     }
 }
@@ -116,7 +116,7 @@ detekt {
 }
 
 tasks.withType<Detekt>().configureEach {
-    jvmTarget = JvmTarget.JVM_21.target
+    jvmTarget = JvmTarget.JVM_22.target
     reports {
         html.outputLocation.set(file("build/reports/detekt/${project.name}.html"))
     }
