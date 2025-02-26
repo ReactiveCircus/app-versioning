@@ -4,7 +4,6 @@ import com.vanniktech.maven.publish.SonatypeHost
 import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -32,13 +31,6 @@ gradlePlugin {
         description = "Gradle plugin for lazily generating Android app's versionCode & versionName from Git tags."
         tags.set(listOf("android", "versioning"))
         implementationClass = "io.github.reactivecircus.appversioning.AppVersioningPlugin"
-    }
-}
-
-kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(23))
-        vendor.set(JvmVendorSpec.AZUL)
     }
 }
 
