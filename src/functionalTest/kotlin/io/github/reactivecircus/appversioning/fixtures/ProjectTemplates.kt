@@ -74,11 +74,11 @@ abstract class AndroidProjectTemplate {
 
                 android {
                     namespace = "$DEFAULT_PACKAGE_NAME.${projectName.replace("-", ".")}"
-                    compileSdkVersion(34)
-                    buildToolsVersion = "34.0.0"
+                    compileSdkVersion(36)
+                    buildToolsVersion = "36.0.0"
                     defaultConfig {
                         minSdkVersion(21)
-                        targetSdkVersion(34)
+                        targetSdkVersion(36)
                     }
 
                     lintOptions.isCheckReleaseBuilds = false
@@ -110,11 +110,11 @@ abstract class AndroidProjectTemplate {
 
                 android {
                     namespace '$DEFAULT_PACKAGE_NAME.${projectName.replace("-", ".")}'
-                    compileSdkVersion 34
-                    buildToolsVersion "34.0.0"
+                    compileSdkVersion 36
+                    buildToolsVersion "36.0.0"
                     defaultConfig {
                         minSdkVersion 21
-                        targetSdkVersion 34
+                        targetSdkVersion 36
                     }
 
                     lintOptions {
