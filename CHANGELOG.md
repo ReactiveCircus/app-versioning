@@ -1,5 +1,9 @@
 # Change Log
 
+## Unreleased
+
+- Support Splits/Multi-APKs and universal APK modes.
+
 ## 1.3.2
 
 ### Changed

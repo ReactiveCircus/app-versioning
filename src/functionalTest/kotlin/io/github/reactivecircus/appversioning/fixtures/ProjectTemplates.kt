@@ -43,14 +43,15 @@ fun gradlePropertiesFileContent(enableConfigurationCache: Boolean): String {
     """.trimIndent()
 }
 
-abstract class AndroidProjectTemplate {
+sealed class AndroidProjectTemplate {
     abstract val projectName: String
     abstract val pluginExtension: String?
     abstract val useKts: Boolean
     abstract val flavors: List<String>
-    abstract val isAppProject: Boolean
 
     val buildFileContent: String get() = if (useKts) ktsBuildFileContent else groovyBuildFileContent
+
+    private val isAppProject = this is AppProjectTemplate
 
     private val ktsBuildFileContent: String
         get() {
@@ -61,6 +62,24 @@ abstract class AndroidProjectTemplate {
                     ${flavors.joinToString("\n") { "register(\"$it\") {}" }}
                 }
                 """.trimIndent()
+            } else {
+                ""
+            }
+            val abiConfigs = if (this is AppProjectTemplate) {
+                if (splitsApks) {
+                    """
+                    splits {
+                        abi {
+                            isEnable = true
+                            reset()
+                            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+                            isUniversalApk = $universalApk
+                        }
+                    }
+                    """.trimIndent()
+                } else {
+                    ""
+                }
             } else {
                 ""
             }
@@ -84,6 +103,8 @@ abstract class AndroidProjectTemplate {
                     lintOptions.isCheckReleaseBuilds = false
 
                     $flavorConfigs
+
+                    $abiConfigs
                 }
             """.trimIndent()
         }
@@ -97,6 +118,24 @@ abstract class AndroidProjectTemplate {
                     ${flavors.joinToString("\n") { "$it {}" }}
                 }
                 """.trimIndent()
+            } else {
+                ""
+            }
+            val abiConfigs = if (this is AppProjectTemplate) {
+                if (splitsApks) {
+                    """
+                    splits {
+                        abi {
+                            enable true
+                            reset()
+                            include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+                            universalApk $universalApk
+                        }
+                    }
+                    """.trimIndent()
+                } else {
+                    ""
+                }
             } else {
                 ""
             }
@@ -122,6 +161,8 @@ abstract class AndroidProjectTemplate {
                     }
 
                     $flavorConfigs
+
+                    $abiConfigs
                 }
             """.trimIndent()
         }
@@ -141,16 +182,14 @@ class AppProjectTemplate(
     override val projectName: String = "app",
     override val pluginExtension: String? = null,
     override val useKts: Boolean = true,
-    override val flavors: List<String> = emptyList()
-) : AndroidProjectTemplate() {
-    override val isAppProject: Boolean = true
-}
+    override val flavors: List<String> = emptyList(),
+    val splitsApks: Boolean = false,
+    val universalApk: Boolean = false,
+) : AndroidProjectTemplate()
 
 class LibraryProjectTemplate(
     override val projectName: String = "library",
     override val pluginExtension: String? = null,
     override val useKts: Boolean = true,
     override val flavors: List<String> = emptyList()
-) : AndroidProjectTemplate() {
-    override val isAppProject: Boolean = false
-}
+) : AndroidProjectTemplate()

@@ -3,7 +3,6 @@ package io.github.reactivecircus.appversioning
 import com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
-import com.android.build.api.variant.VariantOutputConfiguration
 import com.android.build.gradle.AppPlugin
 import io.github.reactivecircus.appversioning.tasks.GenerateAppVersionInfo
 import io.github.reactivecircus.appversioning.tasks.PrintAppVersionInfo
@@ -60,9 +59,10 @@ class AppVersioningPlugin : Plugin<Project> {
 
                     project.registerPrintAppVersionInfoTask(variantName = variant.name)
 
-                    val mainOutput = variant.outputs.single { it.outputType == VariantOutputConfiguration.OutputType.SINGLE }
-                    mainOutput.versionCode.set(generatedVersionCode)
-                    mainOutput.versionName.set(generatedVersionName)
+                    variant.outputs.forEach { output ->
+                        output.versionCode.set(generatedVersionCode)
+                        output.versionName.set(generatedVersionName)
+                    }
                 }
             }
         }

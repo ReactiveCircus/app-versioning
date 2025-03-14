@@ -93,6 +93,7 @@ dependencies {
     compileOnly(libs.agp.common)
     testImplementation(libs.junit)
     testImplementation(libs.truth)
+    testImplementation(libs.testParameterInjector)
     fixtureClasspath(libs.agp.build.flatMap { dependency ->
         fixtureAgpVersion.map { version ->
             "${dependency.group}:${dependency.name}:$version"

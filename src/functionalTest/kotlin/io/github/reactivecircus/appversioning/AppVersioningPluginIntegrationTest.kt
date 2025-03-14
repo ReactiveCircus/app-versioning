@@ -3,6 +3,8 @@
 package io.github.reactivecircus.appversioning
 
 import com.google.common.truth.Truth.assertThat
+import com.google.testing.junit.testparameterinjector.TestParameter
+import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import io.github.reactivecircus.appversioning.fixtures.AppProjectTemplate
 import io.github.reactivecircus.appversioning.fixtures.LibraryProjectTemplate
 import io.github.reactivecircus.appversioning.fixtures.withFixtureRunner
@@ -13,8 +15,10 @@ import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import org.junit.runner.RunWith
 import java.io.File
 
+@RunWith(TestParameterInjector::class)
 class AppVersioningPluginIntegrationTest {
 
     @get:Rule
@@ -65,13 +69,15 @@ class AppVersioningPluginIntegrationTest {
     }
 
     @Test
-    fun `plugin tasks are registered for Android App project with product flavors`() {
+    fun `plugin tasks are registered for Android App project with product flavors`(
+        @TestParameter useKts: Boolean
+    ) {
         GitClient.initialize(fixtureDir.root)
 
         val flavors = listOf("mock", "prod")
         withFixtureRunner(
             fixtureDir = fixtureDir,
-            subprojects = listOf(AppProjectTemplate(flavors = flavors))
+            subprojects = listOf(AppProjectTemplate(useKts = useKts, flavors = flavors))
         ).runAndCheckResult(
             "tasks",
             "--group=versioning"
@@ -199,7 +205,9 @@ class AppVersioningPluginIntegrationTest {
     }
 
     @Test
-    fun `plugin generates versionCode and versionName for the assembled APK when assemble task is run`() {
+    fun `plugin generates versionCode and versionName for the assembled APK when assemble task is run`(
+        @TestParameter useKts: Boolean
+    ) {
         GitClient.initialize(fixtureDir.root).apply {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
@@ -207,7 +215,77 @@ class AppVersioningPluginIntegrationTest {
 
         withFixtureRunner(
             fixtureDir = fixtureDir,
-            subprojects = listOf(AppProjectTemplate())
+            subprojects = listOf(AppProjectTemplate(useKts = useKts))
+        ).runAndCheckResult(
+            "assembleRelease"
+        ) {
+            val versionCodeFileContent = File(
+                fixtureDir.root,
+                "app/build/outputs/app_versioning/release/version_code.txt"
+            ).readText()
+            val versionNameFileContent = File(
+                fixtureDir.root,
+                "app/build/outputs/app_versioning/release/version_name.txt"
+            ).readText()
+
+            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(task(":app:assembleRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+
+            assertThat(output).contains("Generated app version code: 10203.")
+            assertThat(output).contains("Generated app version name: \"1.2.3\".")
+
+            assertThat(versionCodeFileContent).isEqualTo("10203")
+            assertThat(versionNameFileContent).isEqualTo("1.2.3")
+        }
+    }
+
+    @Test
+    fun `plugin generates versionCode and versionName for the assembled APKs when splits-APKs is enabled`(
+        @TestParameter useKts: Boolean
+    ) {
+        GitClient.initialize(fixtureDir.root).apply {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+        }
+
+        withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate(useKts = useKts, splitsApks = true))
+        ).runAndCheckResult(
+            "assembleRelease"
+        ) {
+            val versionCodeFileContent = File(
+                fixtureDir.root,
+                "app/build/outputs/app_versioning/release/version_code.txt"
+            ).readText()
+            val versionNameFileContent = File(
+                fixtureDir.root,
+                "app/build/outputs/app_versioning/release/version_name.txt"
+            ).readText()
+
+            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertThat(task(":app:assembleRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+
+            assertThat(output).contains("Generated app version code: 10203.")
+            assertThat(output).contains("Generated app version name: \"1.2.3\".")
+
+            assertThat(versionCodeFileContent).isEqualTo("10203")
+            assertThat(versionNameFileContent).isEqualTo("1.2.3")
+        }
+    }
+
+    @Test
+    fun `plugin generates versionCode and versionName for the assembled APKs when splits-APKs is enabled and universal mode is on`(
+        @TestParameter useKts: Boolean
+    ) {
+        GitClient.initialize(fixtureDir.root).apply {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+        }
+
+        withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate(useKts = useKts, splitsApks = true, universalApk = true))
         ).runAndCheckResult(
             "assembleRelease"
         ) {
