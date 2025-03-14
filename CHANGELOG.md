@@ -2,7 +2,16 @@
 
 ## Unreleased
 
+No changes yet.
+
+## 1.4.0
+
+### Added
 - Support Splits/Multi-APKs and universal APK modes.
+
+### Changed
+- Compile with AGP 8.9.0.
+- Compile with Kotlin 2.1.0.
 
 ## 1.3.2
 
