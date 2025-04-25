@@ -8,7 +8,7 @@ mavenPublish = "0.31.0"
 junit = "4.13.2"
 truth = "1.1.3"
 testParameterInjector = "1.18"
-toolchainsResolver = "0.9.0"
+toolchainsResolver = "0.10.0"
 
 [libraries]
 plugin-detektFormatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
