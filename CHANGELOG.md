@@ -2,7 +2,9 @@
 
 ## Unreleased
 
-No changes yet.
+### Changed
+- Minimum Android Gradle Plugin version is now **8.0.0**.
+- Remove `compileOnly` dependency on `com.android.tools:common` to support future version of AGP.
 
 ## 1.4.0
 
