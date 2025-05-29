@@ -12,7 +12,6 @@ import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.nativeplatform.internal.BuildType
 import java.io.File
-import java.lang.module.ModuleDescriptor.Version
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -28,17 +27,6 @@ class AppVersioningPlugin : Plugin<Project> {
         project.plugins.withType<AppPlugin> {
             androidAppPluginApplied.set(true)
             val extension = project.extensions.getByType<ApplicationAndroidComponentsExtension>()
-
-            val gradleVersion = Version.parse(project.gradle.gradleVersion)
-            check(gradleVersion >= Version.parse(MIN_GRADLE_VERSION)) {
-                "Android App Versioning Gradle Plugin requires Gradle $MIN_GRADLE_VERSION or later. Detected Gradle version is $gradleVersion."
-            }
-
-            val agpVersion = Version.parse(extension.pluginVersion.version)
-            check(agpVersion >= Version.parse(MIN_AGP_VERSION)) {
-                "Android App Versioning Gradle Plugin requires Android Gradle Plugin $MIN_AGP_VERSION or later. Detected AGP version is $agpVersion."
-            }
-
             extension.onVariants(selector = extension.selector().all()) { variant ->
                 if (pluginDisabled.get()) return@onVariants
                 if (!appVersioningExtension.enabled.get()) {
@@ -159,10 +147,7 @@ class AppVersioningPlugin : Plugin<Project> {
         return replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
 
-    companion object {
-        private const val MIN_GRADLE_VERSION = "6.8"
-        private const val MIN_AGP_VERSION = "7.0.0-beta04"
-    }
+    companion object
 }
 
 private const val APP_VERSIONING_TASK_GROUP = "versioning"
