@@ -86,11 +86,10 @@ val test by tasks.getting(Test::class) {
 val fixtureAgpVersion: Provider<String> = providers
     .environmentVariable("AGP_VERSION")
     .orElse(providers.gradleProperty("AGP_VERSION"))
-    .orElse(libs.versions.agp.asProvider())
+    .orElse(libs.versions.agp)
 
 dependencies {
     compileOnly(libs.agp.build)
-    compileOnly(libs.agp.common)
     testImplementation(libs.junit)
     testImplementation(libs.truth)
     testImplementation(libs.testParameterInjector)

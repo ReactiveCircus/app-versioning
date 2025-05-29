@@ -1,6 +1,5 @@
 package io.github.reactivecircus.appversioning
 
-import com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.AppPlugin
@@ -23,20 +22,23 @@ import java.util.concurrent.atomic.AtomicBoolean
 class AppVersioningPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
-        val gradleVersion = Version.parse(project.gradle.gradleVersion)
-        check(gradleVersion >= Version.parse(MIN_GRADLE_VERSION)) {
-            "Android App Versioning Gradle Plugin requires Gradle $MIN_GRADLE_VERSION or later. Detected Gradle version is $gradleVersion."
-        }
-        val agpVersion = Version.parse(ANDROID_GRADLE_PLUGIN_VERSION)
-        check(agpVersion >= Version.parse(MIN_AGP_VERSION)) {
-            "Android App Versioning Gradle Plugin requires Android Gradle Plugin $MIN_AGP_VERSION or later. Detected AGP version is $agpVersion."
-        }
         val androidAppPluginApplied = AtomicBoolean(false)
         val pluginDisabled = AtomicBoolean(false)
         val appVersioningExtension = project.extensions.create("appVersioning", AppVersioningExtension::class.java)
         project.plugins.withType<AppPlugin> {
             androidAppPluginApplied.set(true)
             val extension = project.extensions.getByType<ApplicationAndroidComponentsExtension>()
+
+            val gradleVersion = Version.parse(project.gradle.gradleVersion)
+            check(gradleVersion >= Version.parse(MIN_GRADLE_VERSION)) {
+                "Android App Versioning Gradle Plugin requires Gradle $MIN_GRADLE_VERSION or later. Detected Gradle version is $gradleVersion."
+            }
+
+            val agpVersion = Version.parse(extension.pluginVersion.version)
+            check(agpVersion >= Version.parse(MIN_AGP_VERSION)) {
+                "Android App Versioning Gradle Plugin requires Android Gradle Plugin $MIN_AGP_VERSION or later. Detected AGP version is $agpVersion."
+            }
+
             extension.onVariants(selector = extension.selector().all()) { variant ->
                 if (pluginDisabled.get()) return@onVariants
                 if (!appVersioningExtension.enabled.get()) {

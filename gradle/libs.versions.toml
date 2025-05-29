@@ -2,7 +2,6 @@
 kotlin = "2.1.20"
 binaryCompabilityValidator = "0.15.1"
 agp = "8.10.1"
-agp-common = "31.10.1"
 detekt = "1.23.7"
 mavenPublish = "0.31.0"
 junit = "4.13.2"
@@ -14,7 +13,6 @@ toolchainsResolver = "0.10.0"
 plugin-detektFormatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 
 agp-build = { module = "com.android.tools.build:gradle", version.ref = "agp" }
-agp-common = { module = "com.android.tools:common", version.ref = "agp-common" }
 junit = { module = "junit:junit", version.ref = "junit" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
 testParameterInjector = { group = "com.google.testparameterinjector", name = "test-parameter-injector", version.ref = "testParameterInjector" }
