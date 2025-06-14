@@ -18,7 +18,7 @@ group = property("GROUP") as String
 version = property("VERSION_NAME") as String
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
     signAllPublications()
 }
 

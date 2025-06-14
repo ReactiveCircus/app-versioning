@@ -5,6 +5,7 @@
 ### Changed
 - Minimum Android Gradle Plugin version is now **8.0.0**.
 - Remove `compileOnly` dependency on `com.android.tools:common` to support future version of AGP.
+- Migrate to Sonatype Central Portal.
 
 ## 1.4.0
 
