@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.1.20"
+kotlin = "2.2.0"
 binaryCompabilityValidator = "0.15.1"
 agp = "8.10.1"
 detekt = "1.23.7"
