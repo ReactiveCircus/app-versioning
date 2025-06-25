@@ -2,7 +2,9 @@
 
 ## Unreleased
 
-No changes yet.
+### Changed
+- Compile with AGP 8.11.0.
+- Compile with Kotlin 2.2.0.
 
 ## 1.5.0
 
