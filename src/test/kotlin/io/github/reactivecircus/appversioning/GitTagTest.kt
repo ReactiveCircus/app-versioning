@@ -1,7 +1,7 @@
 package io.github.reactivecircus.appversioning
 
 import com.google.common.truth.Truth.assertThat
-import org.gradle.internal.impldep.org.junit.Assert.assertThrows
+import org.junit.Assert.assertThrows
 import org.junit.Test
 
 class GitTagTest {
