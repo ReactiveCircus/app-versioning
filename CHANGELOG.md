@@ -3,7 +3,8 @@
 ## Unreleased
 
 ### Changed
-- Compile with AGP 8.11.0.
+- Minimum Android Gradle Plugin version is now **8.2.2**.
+- Compile with AGP 8.12.0.
 - Compile with Kotlin 2.2.0.
 
 ## 1.5.0
