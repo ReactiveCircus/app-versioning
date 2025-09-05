@@ -2,7 +2,6 @@
 
 package io.github.reactivecircus.appversioning
 
-import com.google.common.truth.Truth.assertThat
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import io.github.reactivecircus.appversioning.fixtures.AppProjectTemplate
@@ -17,6 +16,10 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import java.io.File
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @RunWith(TestParameterInjector::class)
 class AppVersioningPluginIntegrationTest {
@@ -34,9 +37,11 @@ class AppVersioningPluginIntegrationTest {
         ).runAndExpectFailure(
             "help"
         ) {
-            assertThat(task("help")?.outcome).isNull()
-            assertThat(output).contains(
-                "Android App Versioning plugin should only be applied to an Android Application project but project ':library' doesn't have the 'com.android.application' plugin applied."
+            assertNull(task("help")?.outcome)
+            assertTrue(
+                output.contains(
+                    "Android App Versioning plugin should only be applied to an Android Application project but project ':library' doesn't have the 'com.android.application' plugin applied."
+                )
             )
         }
     }
@@ -52,18 +57,26 @@ class AppVersioningPluginIntegrationTest {
             "tasks",
             "--group=versioning"
         ) {
-            assertThat(output).contains("Versioning tasks")
-            assertThat(output).contains(
-                "generateAppVersionInfoForDebug - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the debug variant."
+            assertTrue(output.contains("Versioning tasks"))
+            assertTrue(
+                output.contains(
+                    "generateAppVersionInfoForDebug - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the debug variant."
+                )
             )
-            assertThat(output).contains(
-                "generateAppVersionInfoForRelease - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the release variant."
+            assertTrue(
+                output.contains(
+                    "generateAppVersionInfoForRelease - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the release variant."
+                )
             )
-            assertThat(output).contains(
-                "printAppVersionInfoForDebug - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the debug variant."
+            assertTrue(
+                output.contains(
+                    "printAppVersionInfoForDebug - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the debug variant."
+                )
             )
-            assertThat(output).contains(
-                "printAppVersionInfoForRelease - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the release variant."
+            assertTrue(
+                output.contains(
+                    "printAppVersionInfoForRelease - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the release variant."
+                )
             )
         }
     }
@@ -82,30 +95,46 @@ class AppVersioningPluginIntegrationTest {
             "tasks",
             "--group=versioning"
         ) {
-            assertThat(output).contains("Versioning tasks")
-            assertThat(output).contains(
-                "generateAppVersionInfoForMockDebug - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockDebug variant."
+            assertTrue(output.contains("Versioning tasks"))
+            assertTrue(
+                output.contains(
+                    "generateAppVersionInfoForMockDebug - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockDebug variant."
+                )
             )
-            assertThat(output).contains(
-                "generateAppVersionInfoForProdDebug - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodDebug variant."
+            assertTrue(
+                output.contains(
+                    "generateAppVersionInfoForProdDebug - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodDebug variant."
+                )
             )
-            assertThat(output).contains(
-                "generateAppVersionInfoForMockRelease - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockRelease variant."
+            assertTrue(
+                output.contains(
+                    "generateAppVersionInfoForMockRelease - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockRelease variant."
+                )
             )
-            assertThat(output).contains(
-                "generateAppVersionInfoForProdRelease - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodRelease variant."
+            assertTrue(
+                output.contains(
+                    "generateAppVersionInfoForProdRelease - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodRelease variant."
+                )
             )
-            assertThat(output).contains(
-                "printAppVersionInfoForMockDebug - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockDebug variant."
+            assertTrue(
+                output.contains(
+                    "printAppVersionInfoForMockDebug - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockDebug variant."
+                )
             )
-            assertThat(output).contains(
-                "printAppVersionInfoForProdDebug - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodDebug variant."
+            assertTrue(
+                output.contains(
+                    "printAppVersionInfoForProdDebug - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodDebug variant."
+                )
             )
-            assertThat(output).contains(
-                "printAppVersionInfoForMockRelease - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockRelease variant."
+            assertTrue(
+                output.contains(
+                    "printAppVersionInfoForMockRelease - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the mockRelease variant."
+                )
             )
-            assertThat(output).contains(
-                "printAppVersionInfoForProdRelease - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodRelease variant."
+            assertTrue(
+                output.contains(
+                    "printAppVersionInfoForProdRelease - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the prodRelease variant."
+                )
             )
         }
     }
@@ -126,8 +155,8 @@ class AppVersioningPluginIntegrationTest {
             "tasks",
             "--group=versioning"
         ) {
-            assertThat(output).doesNotContain("generateAppVersionInfoForDebug")
-            assertThat(output).doesNotContain("printAppVersionInfoForDebug")
+            assertFalse(output.contains("generateAppVersionInfoForDebug"))
+            assertFalse(output.contains("printAppVersionInfoForDebug"))
         }
     }
 
@@ -147,11 +176,15 @@ class AppVersioningPluginIntegrationTest {
             "tasks",
             "--group=versioning"
         ) {
-            assertThat(output).contains(
-                "generateAppVersionInfoForDebug - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the debug variant."
+            assertTrue(
+                output.contains(
+                    "generateAppVersionInfoForDebug - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the debug variant."
+                )
             )
-            assertThat(output).contains(
-                "printAppVersionInfoForDebug - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the debug variant."
+            assertTrue(
+                output.contains(
+                    "printAppVersionInfoForDebug - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the debug variant."
+                )
             )
         }
     }
@@ -172,12 +205,16 @@ class AppVersioningPluginIntegrationTest {
             "tasks",
             "--group=versioning"
         ) {
-            assertThat(output).contains("Versioning tasks")
-            assertThat(output).contains(
-                "generateAppVersionInfoForRelease - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the release variant."
+            assertTrue(output.contains("Versioning tasks"))
+            assertTrue(
+                output.contains(
+                    "generateAppVersionInfoForRelease - ${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the release variant."
+                )
             )
-            assertThat(output).contains(
-                "printAppVersionInfoForRelease - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the release variant."
+            assertTrue(
+                output.contains(
+                    "printAppVersionInfoForRelease - ${PrintAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the release variant."
+                )
             )
         }
     }
@@ -198,9 +235,9 @@ class AppVersioningPluginIntegrationTest {
             "tasks",
             "--group=versioning"
         ) {
-            assertThat(output).doesNotContain("Versioning tasks")
-            assertThat(output).contains("No tasks")
-            assertThat(output).contains("Android App Versioning plugin is disabled.")
+            assertFalse(output.contains("Versioning tasks"))
+            assertTrue(output.contains("No tasks"))
+            assertTrue(output.contains("Android App Versioning plugin is disabled."))
         }
     }
 
@@ -228,14 +265,14 @@ class AppVersioningPluginIntegrationTest {
                 "app/build/outputs/app_versioning/release/version_name.txt"
             ).readText()
 
-            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
-            assertThat(task(":app:assembleRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals(TaskOutcome.SUCCESS, task(":app:assembleRelease")?.outcome)
 
-            assertThat(output).contains("Generated app version code: 10203.")
-            assertThat(output).contains("Generated app version name: \"1.2.3\".")
+            assertTrue(output.contains("Generated app version code: 10203."))
+            assertTrue(output.contains("Generated app version name: \"1.2.3\"."))
 
-            assertThat(versionCodeFileContent).isEqualTo("10203")
-            assertThat(versionNameFileContent).isEqualTo("1.2.3")
+            assertEquals("10203", versionCodeFileContent)
+            assertEquals("1.2.3", versionNameFileContent)
         }
     }
 
@@ -263,14 +300,14 @@ class AppVersioningPluginIntegrationTest {
                 "app/build/outputs/app_versioning/release/version_name.txt"
             ).readText()
 
-            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
-            assertThat(task(":app:assembleRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals(TaskOutcome.SUCCESS, task(":app:assembleRelease")?.outcome)
 
-            assertThat(output).contains("Generated app version code: 10203.")
-            assertThat(output).contains("Generated app version name: \"1.2.3\".")
+            assertTrue(output.contains("Generated app version code: 10203."))
+            assertTrue(output.contains("Generated app version name: \"1.2.3\"."))
 
-            assertThat(versionCodeFileContent).isEqualTo("10203")
-            assertThat(versionNameFileContent).isEqualTo("1.2.3")
+            assertEquals("10203", versionCodeFileContent)
+            assertEquals("1.2.3", versionNameFileContent)
         }
     }
 
@@ -298,14 +335,14 @@ class AppVersioningPluginIntegrationTest {
                 "app/build/outputs/app_versioning/release/version_name.txt"
             ).readText()
 
-            assertThat(task(":app:generateAppVersionInfoForRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
-            assertThat(task(":app:assembleRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals(TaskOutcome.SUCCESS, task(":app:assembleRelease")?.outcome)
 
-            assertThat(output).contains("Generated app version code: 10203.")
-            assertThat(output).contains("Generated app version name: \"1.2.3\".")
+            assertTrue(output.contains("Generated app version code: 10203."))
+            assertTrue(output.contains("Generated app version name: \"1.2.3\"."))
 
-            assertThat(versionCodeFileContent).isEqualTo("10203")
-            assertThat(versionNameFileContent).isEqualTo("1.2.3")
+            assertEquals("10203", versionCodeFileContent)
+            assertEquals("1.2.3", versionNameFileContent)
         }
     }
 
@@ -336,13 +373,13 @@ class AppVersioningPluginIntegrationTest {
                 "app/build/outputs/app_versioning/release/version_name.txt"
             )
 
-            assertThat(task(":app:assembleRelease")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+            assertEquals(TaskOutcome.SUCCESS, task(":app:assembleRelease")?.outcome)
 
-            assertThat(output).doesNotContain("Generated app version code")
-            assertThat(output).doesNotContain("Generated app version name")
+            assertFalse(output.contains("Generated app version code"))
+            assertFalse(output.contains("Generated app version name"))
 
-            assertThat(versionCodeFile.exists()).isFalse()
-            assertThat(versionNameFile.exists()).isFalse()
+            assertFalse(versionCodeFile.exists())
+            assertFalse(versionNameFile.exists())
         }
     }
 }

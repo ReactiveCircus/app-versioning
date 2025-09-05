@@ -1,77 +1,78 @@
 package io.github.reactivecircus.appversioning
 
-import com.google.common.truth.Truth.assertThat
 import org.junit.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class VariantInfoTest {
 
     @Test
     fun `VariantInfo#isDebugBuild returns true when builtType is 'debug'`() {
-        assertThat(
+        assertTrue(
             VariantInfo(
                 buildType = "debug",
                 flavorName = "",
                 variantName = "debug"
             ).isDebugBuild
-        ).isTrue()
+        )
 
-        assertThat(
+        assertFalse(
             VariantInfo(
                 buildType = "release",
                 flavorName = "",
                 variantName = "release"
             ).isDebugBuild
-        ).isFalse()
+        )
 
-        assertThat(
+        assertFalse(
             VariantInfo(
                 buildType = null,
                 flavorName = "",
                 variantName = ""
             ).isDebugBuild
-        ).isFalse()
+        )
 
-        assertThat(
+        assertFalse(
             VariantInfo(
                 buildType = "DEBUG",
                 flavorName = "prod",
                 variantName = "prodDebug"
             ).isDebugBuild
-        ).isFalse()
+        )
     }
 
     @Test
     fun `VariantInfo#isReleaseBuild returns true when builtType is 'release'`() {
-        assertThat(
+        assertTrue(
             VariantInfo(
                 buildType = "release",
                 flavorName = "",
                 variantName = "release"
             ).isReleaseBuild
-        ).isTrue()
+        )
 
-        assertThat(
+        assertFalse(
             VariantInfo(
                 buildType = "debug",
                 flavorName = "",
                 variantName = "debug"
             ).isReleaseBuild
-        ).isFalse()
+        )
 
-        assertThat(
+        assertFalse(
             VariantInfo(
                 buildType = null,
                 flavorName = "",
                 variantName = ""
             ).isReleaseBuild
-        ).isFalse()
+        )
 
-        assertThat(
+        assertFalse(
             VariantInfo(
                 buildType = "RELEASE",
                 flavorName = "prod",
                 variantName = "prodRelease"
             ).isDebugBuild
-        ).isFalse()
+        )
     }
 }

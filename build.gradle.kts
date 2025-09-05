@@ -89,8 +89,7 @@ val fixtureAgpVersion: Provider<String> = providers
 
 dependencies {
     compileOnly(libs.agp.build.api)
-    testImplementation(libs.junit)
-    testImplementation(libs.truth)
+    testImplementation(kotlin("test"))
     testImplementation(libs.testParameterInjector)
     fixtureClasspath(libs.agp.build.gradle.flatMap { dependency ->
         fixtureAgpVersion.map { version ->
