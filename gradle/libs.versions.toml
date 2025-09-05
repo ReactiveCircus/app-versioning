@@ -12,7 +12,8 @@ toolchainsResolver = "0.10.0"
 [libraries]
 plugin-detektFormatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 
-agp-build = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+agp-build-gradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+agp-build-api = { module = "com.android.tools.build:gradle-api", version.ref = "agp" }
 junit = { module = "junit:junit", version.ref = "junit" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
 testParameterInjector = { group = "com.google.testparameterinjector", name = "test-parameter-injector", version.ref = "testParameterInjector" }
