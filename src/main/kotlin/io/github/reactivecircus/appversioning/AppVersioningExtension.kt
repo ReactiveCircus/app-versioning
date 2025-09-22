@@ -2,13 +2,13 @@ package io.github.reactivecircus.appversioning
 
 import groovy.lang.Closure
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
-import org.gradle.kotlin.dsl.property
 
 /**
  * Extension for [AppVersioningPlugin].
  */
-@Suppress("UnstableApiUsage", "unused")
+@Suppress("unused")
 open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
 
     /**
@@ -124,6 +124,8 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
         internal const val DEFAULT_FETCH_TAGS_WHEN_NONE_EXISTS_LOCALLY = false
     }
 }
+
+private inline fun <reified T : Any> ObjectFactory.property(): Property<T> = property(T::class.java)
 
 internal typealias VersionCodeCustomizer = (GitTag, ProviderFactory, VariantInfo) -> Int
 internal typealias VersionNameCustomizer = (GitTag, ProviderFactory, VariantInfo) -> String

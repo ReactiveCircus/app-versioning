@@ -16,6 +16,7 @@ testParameterInjector = { group = "com.google.testparameterinjector", name = "te
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-gradle-samWithReceiver = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
 binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binaryCompabilityValidator" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
