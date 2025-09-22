@@ -41,7 +41,6 @@ import javax.inject.Inject
 abstract class GenerateAppVersionInfo @Inject constructor(
     private val workerExecutor: WorkerExecutor
 ) : DefaultTask() {
-
     @get:Optional
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -139,7 +138,6 @@ private interface GenerateAppVersionInfoWorkParameters : WorkParameters {
 private abstract class GenerateAppVersionInfoWorkAction @Inject constructor(
     private val providers: ProviderFactory
 ) : WorkAction<GenerateAppVersionInfoWorkParameters> {
-
     private val logger = Logging.getLogger(GenerateAppVersionInfo::class.java)
 
     @Suppress("LongMethod")
@@ -164,7 +162,9 @@ private abstract class GenerateAppVersionInfoWorkAction @Inject constructor(
 
         val gitClient = GitClient.open(rootProjectDirectory.get().asFile)
 
-        val gitTag: GitTag = gitClient.describeLatestTag(tagFilter.orNull)?.toGitTag() ?: if (fetchTagsWhenNoneExistsLocally.get()) {
+        val gitTag: GitTag = gitClient.describeLatestTag(
+            tagFilter.orNull
+        )?.toGitTag() ?: if (fetchTagsWhenNoneExistsLocally.get()) {
             val tagsList = gitClient.listLocalTags()
             if (tagsList.isEmpty()) {
                 logger.warn("No git tags found. Fetching tags from remote.")

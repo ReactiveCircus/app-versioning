@@ -4,7 +4,6 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 class GitClient private constructor(private val projectDir: File) {
-
     fun listLocalTags(): List<String> {
         return listOf("git", "tag", "--list").execute(projectDir).lines()
     }
@@ -68,7 +67,6 @@ class GitClient private constructor(private val projectDir: File) {
     }
 
     companion object {
-
         fun initialize(projectDir: File): GitClient {
             return GitClient(projectDir).apply {
                 listOf("git", "init").execute(projectDir)

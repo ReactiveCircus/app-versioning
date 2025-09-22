@@ -5,7 +5,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class VariantInfoTest {
-
     @Test
     fun `VariantInfo#isDebugBuild returns true when builtType is 'debug'`() {
         assertTrue(
