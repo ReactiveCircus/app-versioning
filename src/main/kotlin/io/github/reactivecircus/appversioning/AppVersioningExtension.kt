@@ -10,7 +10,6 @@ import org.gradle.api.provider.ProviderFactory
  */
 @Suppress("unused")
 open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
-
     /**
      * Whether to enable the plugin.
      *

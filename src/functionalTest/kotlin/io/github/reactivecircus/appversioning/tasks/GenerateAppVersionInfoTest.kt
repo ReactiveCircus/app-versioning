@@ -14,7 +14,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class GenerateAppVersionInfoTest {
-
     @get:Rule
     val fixtureDir = TemporaryFolder()
 

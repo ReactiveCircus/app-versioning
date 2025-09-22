@@ -1,6 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-import io.gitlab.arturbosch.detekt.Detekt
+import dev.detekt.gradle.Detekt
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -107,16 +107,17 @@ detekt {
     source.from(files("src/"))
     config.from(files("${project.rootDir}/detekt.yml"))
     buildUponDefaultConfig = true
-    allRules = true
 }
 
 tasks.withType<Detekt>().configureEach {
     jvmTarget = JvmTarget.JVM_22.target
     reports {
+        xml.required.set(false)
+        sarif.required.set(false)
+        md.required.set(false)
         html.outputLocation.set(file("build/reports/detekt/${project.name}.html"))
     }
 }
 
-val detektFormatting = libs.plugin.detektFormatting.get()
 
-dependencies.add("detektPlugins", detektFormatting)
+dependencies.add("detektPlugins", libs.plugin.detektKtlintWrapper.get())

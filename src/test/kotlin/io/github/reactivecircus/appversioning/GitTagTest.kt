@@ -5,7 +5,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class GitTagTest {
-
     @Test
     fun `valid tag description can be converted to a GitTag`() {
         assertEquals(GitTag("0.1.0", 3, "9c28ad3"), "0.1.0-3-g9c28ad3".toGitTag())

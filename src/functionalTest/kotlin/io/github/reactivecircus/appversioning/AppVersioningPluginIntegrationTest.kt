@@ -23,7 +23,6 @@ import kotlin.test.assertTrue
 
 @RunWith(TestParameterInjector::class)
 class AppVersioningPluginIntegrationTest {
-
     @get:Rule
     val fixtureDir = TemporaryFolder()
 

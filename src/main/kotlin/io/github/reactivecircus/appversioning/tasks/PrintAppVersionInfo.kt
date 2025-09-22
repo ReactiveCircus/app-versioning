@@ -12,7 +12,6 @@ import org.gradle.api.tasks.TaskAction
  * Note that these might not be the final versionCode and versionName used in the merged manifest file in the APK.
  */
 abstract class PrintAppVersionInfo : DefaultTask() {
-
     @get:Internal
     abstract val versionCodeFile: RegularFileProperty
 

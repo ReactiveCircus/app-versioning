@@ -13,7 +13,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class PrintAppVersionInfoTest {
-
     @get:Rule
     val fixtureDir = TemporaryFolder()
 

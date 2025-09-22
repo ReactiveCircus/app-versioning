@@ -2,13 +2,13 @@
 kotlin = "2.2.20"
 binaryCompabilityValidator = "0.18.0"
 agp = "8.13.0"
-detekt = "1.23.7"
+detekt = "2.0.0-alpha.0"
 mavenPublish = "0.34.0"
 testParameterInjector = "1.18"
 toolchainsResolver = "0.10.0"
 
 [libraries]
-plugin-detektFormatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+plugin-detektKtlintWrapper = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt"}
 
 agp-build-gradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 agp-build-api = { module = "com.android.tools.build:gradle-api", version.ref = "agp" }
@@ -18,5 +18,5 @@ testParameterInjector = { group = "com.google.testparameterinjector", name = "te
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-gradle-samWithReceiver = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
 binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binaryCompabilityValidator" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }

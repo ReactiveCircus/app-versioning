@@ -6,18 +6,24 @@ complexity:
   LargeClass:
     excludes: ["**/test/**","**/functionalTest/**"]
 
-formatting:
+ktlint:
+  ChainMethodContinuation:
+    active: false
+  ClassSignature:
+    active: false
+  FunctionExpressionBody:
+    active: false
+  FunctionSignature:
+    active: false
+  MultilineExpressionWrapping:
+    active: false
   MaximumLineLength:
+    active: false
+  StringTemplateIndent:
     active: false
   TrailingCommaOnCallSite:
     active: false
   TrailingCommaOnDeclarationSite:
-    active: false
-  FunctionSignature:
-    active: false
-
-naming:
-  FunctionMaxLength:
     active: false
 
 style:

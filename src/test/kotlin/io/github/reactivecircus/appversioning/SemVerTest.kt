@@ -5,7 +5,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class SemVerTest {
-
     @Test
     fun `SemVer can be converted to integer representation using positional notation`() {
         assertEquals(3, SemVer(0, 0, 3).toInt(maxDigitsPerComponent = 2))
