@@ -83,7 +83,11 @@ private fun TemporaryFolder.buildFixture(gradleRoot: File, subprojects: List<And
     // subprojects
     subprojects.forEach { subproject ->
         // build.gradle or build.gradle.kts
-        val buildFileName = if (subproject.useKts) "build.gradle.kts" else "build.gradle"
+        val buildFileName = if (subproject.buildScriptLanguage == BuildScriptLanguage.Kts) {
+            "build.gradle.kts"
+        } else {
+            "build.gradle"
+        }
         gradleRoot.resolve("${subproject.projectName}/$buildFileName").also { it.parentFile.mkdirs() }
             .writeText(subproject.buildFileContent)
 

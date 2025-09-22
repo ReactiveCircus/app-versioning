@@ -43,13 +43,22 @@ fun gradlePropertiesFileContent(enableConfigurationCache: Boolean): String {
     """.trimIndent()
 }
 
+enum class BuildScriptLanguage {
+    Kts,
+    Groovy,
+}
+
 sealed class AndroidProjectTemplate {
     abstract val projectName: String
     abstract val pluginExtension: String?
-    abstract val useKts: Boolean
+    abstract val buildScriptLanguage: BuildScriptLanguage
     abstract val flavors: List<String>
 
-    val buildFileContent: String get() = if (useKts) ktsBuildFileContent else groovyBuildFileContent
+    val buildFileContent: String get() = if (buildScriptLanguage == BuildScriptLanguage.Kts) {
+        ktsBuildFileContent
+    } else {
+        groovyBuildFileContent
+    }
 
     private val isAppProject = this is AppProjectTemplate
 
@@ -181,7 +190,7 @@ sealed class AndroidProjectTemplate {
 class AppProjectTemplate(
     override val projectName: String = "app",
     override val pluginExtension: String? = null,
-    override val useKts: Boolean = true,
+    override val buildScriptLanguage: BuildScriptLanguage = BuildScriptLanguage.Kts,
     override val flavors: List<String> = emptyList(),
     val splitsApks: Boolean = false,
     val universalApk: Boolean = false,
@@ -190,6 +199,6 @@ class AppProjectTemplate(
 class LibraryProjectTemplate(
     override val projectName: String = "library",
     override val pluginExtension: String? = null,
-    override val useKts: Boolean = true,
+    override val buildScriptLanguage: BuildScriptLanguage = BuildScriptLanguage.Kts,
     override val flavors: List<String> = emptyList()
 ) : AndroidProjectTemplate()

@@ -1,10 +1,10 @@
-@file:Suppress("FunctionName")
+@file:Suppress("FunctionName", "JUnitMalformedDeclaration")
 
 package io.github.reactivecircus.appversioning
 
-import com.google.testing.junit.testparameterinjector.TestParameter
-import com.google.testing.junit.testparameterinjector.TestParameterInjector
+import app.cash.burst.Burst
 import io.github.reactivecircus.appversioning.fixtures.AppProjectTemplate
+import io.github.reactivecircus.appversioning.fixtures.BuildScriptLanguage
 import io.github.reactivecircus.appversioning.fixtures.LibraryProjectTemplate
 import io.github.reactivecircus.appversioning.fixtures.withFixtureRunner
 import io.github.reactivecircus.appversioning.internal.GitClient
@@ -14,15 +14,14 @@ import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import org.junit.runner.RunWith
 import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@RunWith(TestParameterInjector::class)
-class AppVersioningPluginIntegrationTest {
+@Burst
+class AppVersioningPluginIntegrationTest(private val buildScriptLanguage: BuildScriptLanguage) {
     @get:Rule
     val fixtureDir = TemporaryFolder()
 
@@ -81,15 +80,13 @@ class AppVersioningPluginIntegrationTest {
     }
 
     @Test
-    fun `plugin tasks are registered for Android App project with product flavors`(
-        @TestParameter useKts: Boolean
-    ) {
+    fun `plugin tasks are registered for Android App project with product flavors`() {
         GitClient.initialize(fixtureDir.root)
 
         val flavors = listOf("mock", "prod")
         withFixtureRunner(
             fixtureDir = fixtureDir,
-            subprojects = listOf(AppProjectTemplate(useKts = useKts, flavors = flavors))
+            subprojects = listOf(AppProjectTemplate(buildScriptLanguage = buildScriptLanguage, flavors = flavors))
         ).runAndCheckResult(
             "tasks",
             "--group=versioning"
@@ -241,9 +238,7 @@ class AppVersioningPluginIntegrationTest {
     }
 
     @Test
-    fun `plugin generates versionCode and versionName for the assembled APK when assemble task is run`(
-        @TestParameter useKts: Boolean
-    ) {
+    fun `plugin generates versionCode and versionName for the assembled APK when assemble task is run`() {
         GitClient.initialize(fixtureDir.root).apply {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
@@ -251,7 +246,7 @@ class AppVersioningPluginIntegrationTest {
 
         withFixtureRunner(
             fixtureDir = fixtureDir,
-            subprojects = listOf(AppProjectTemplate(useKts = useKts))
+            subprojects = listOf(AppProjectTemplate(buildScriptLanguage = buildScriptLanguage))
         ).runAndCheckResult(
             "assembleRelease"
         ) {
@@ -276,9 +271,7 @@ class AppVersioningPluginIntegrationTest {
     }
 
     @Test
-    fun `plugin generates versionCode and versionName for the assembled APKs when splits-APKs is enabled`(
-        @TestParameter useKts: Boolean
-    ) {
+    fun `plugin generates versionCode and versionName for the assembled APKs when splits-APKs is enabled`() {
         GitClient.initialize(fixtureDir.root).apply {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
@@ -286,7 +279,7 @@ class AppVersioningPluginIntegrationTest {
 
         withFixtureRunner(
             fixtureDir = fixtureDir,
-            subprojects = listOf(AppProjectTemplate(useKts = useKts, splitsApks = true))
+            subprojects = listOf(AppProjectTemplate(buildScriptLanguage = buildScriptLanguage, splitsApks = true))
         ).runAndCheckResult(
             "assembleRelease"
         ) {
@@ -311,9 +304,7 @@ class AppVersioningPluginIntegrationTest {
     }
 
     @Test
-    fun `plugin generates versionCode and versionName for the assembled APKs when splits-APKs is enabled and universal mode is on`(
-        @TestParameter useKts: Boolean
-    ) {
+    fun `plugin generates versionCode and versionName for the assembled APKs when splits-APKs is enabled and universal mode is on`() {
         GitClient.initialize(fixtureDir.root).apply {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
@@ -321,7 +312,13 @@ class AppVersioningPluginIntegrationTest {
 
         withFixtureRunner(
             fixtureDir = fixtureDir,
-            subprojects = listOf(AppProjectTemplate(useKts = useKts, splitsApks = true, universalApk = true))
+            subprojects = listOf(
+                AppProjectTemplate(
+                    buildScriptLanguage = buildScriptLanguage,
+                    splitsApks = true,
+                    universalApk = true,
+                )
+            )
         ).runAndCheckResult(
             "assembleRelease"
         ) {
@@ -359,7 +356,12 @@ class AppVersioningPluginIntegrationTest {
         """.trimIndent()
         withFixtureRunner(
             fixtureDir = fixtureDir,
-            subprojects = listOf(AppProjectTemplate(pluginExtension = extension))
+            subprojects = listOf(
+                AppProjectTemplate(
+                    buildScriptLanguage = buildScriptLanguage,
+                    pluginExtension = extension,
+                )
+            )
         ).runAndCheckResult(
             "assembleRelease"
         ) {

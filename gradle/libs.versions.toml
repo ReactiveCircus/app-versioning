@@ -4,7 +4,7 @@ binaryCompabilityValidator = "0.18.0"
 agp = "8.13.0"
 detekt = "2.0.0-alpha.0"
 mavenPublish = "0.34.0"
-testParameterInjector = "1.18"
+burst = "2.9.0"
 toolchainsResolver = "1.0.0"
 
 [libraries]
@@ -12,7 +12,6 @@ plugin-detektKtlintWrapper = { module = "dev.detekt:detekt-rules-ktlint-wrapper"
 
 agp-build-gradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 agp-build-api = { module = "com.android.tools.build:gradle-api", version.ref = "agp" }
-testParameterInjector = { group = "com.google.testparameterinjector", name = "test-parameter-injector", version.ref = "testParameterInjector" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -20,3 +19,4 @@ kotlin-gradle-samWithReceiver = { id = "org.jetbrains.kotlin.plugin.sam.with.rec
 binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binaryCompabilityValidator" }
 detekt = { id = "dev.detekt", version.ref = "detekt" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
+burst = { id = "app.cash.burst", version.ref = "burst" }

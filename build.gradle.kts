@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.binaryCompatibilityValidator)
     alias(libs.plugins.detekt)
     alias(libs.plugins.mavenPublish)
+    alias(libs.plugins.burst)
 }
 
 group = property("GROUP") as String
@@ -95,7 +96,6 @@ val fixtureAgpVersion: Provider<String> = providers
 dependencies {
     compileOnly(libs.agp.build.api)
     testImplementation(kotlin("test"))
-    testImplementation(libs.testParameterInjector)
     fixtureClasspath(libs.agp.build.gradle.flatMap { dependency ->
         fixtureAgpVersion.map { version ->
             "${dependency.group}:${dependency.name}:$version"

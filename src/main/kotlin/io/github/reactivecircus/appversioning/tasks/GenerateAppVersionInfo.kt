@@ -1,5 +1,3 @@
-@file:Suppress("DuplicatedCode")
-
 package io.github.reactivecircus.appversioning.tasks
 
 import groovy.lang.Closure

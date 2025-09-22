@@ -3,6 +3,7 @@
 package io.github.reactivecircus.appversioning.tasks
 
 import io.github.reactivecircus.appversioning.fixtures.AppProjectTemplate
+import io.github.reactivecircus.appversioning.fixtures.BuildScriptLanguage
 import io.github.reactivecircus.appversioning.fixtures.withFixtureRunner
 import io.github.reactivecircus.appversioning.internal.GitClient
 import org.gradle.testkit.runner.TaskOutcome
@@ -713,7 +714,12 @@ class GenerateAppVersionInfoTest {
 
         val runner = withFixtureRunner(
             fixtureDir = fixtureDir,
-            subprojects = listOf(AppProjectTemplate(pluginExtension = extensions, useKts = false))
+            subprojects = listOf(
+                AppProjectTemplate(
+                    pluginExtension = extensions,
+                    buildScriptLanguage = BuildScriptLanguage.Groovy,
+                )
+            )
         )
 
         runner.runAndCheckResult(
