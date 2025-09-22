@@ -110,7 +110,7 @@ detekt {
 }
 
 tasks.withType<Detekt>().configureEach {
-    jvmTarget = JvmTarget.JVM_22.target
+    jvmTarget = JvmTarget.JVM_17.target
     reports {
         xml.required.set(false)
         sarif.required.set(false)
