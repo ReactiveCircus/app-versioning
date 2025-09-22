@@ -8,8 +8,6 @@ import io.github.reactivecircus.appversioning.tasks.PrintAppVersionInfo
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.withType
 import org.gradle.language.nativeplatform.internal.BuildType
 import java.io.File
 import java.util.Locale
@@ -24,9 +22,9 @@ class AppVersioningPlugin : Plugin<Project> {
         val androidAppPluginApplied = AtomicBoolean(false)
         val pluginDisabled = AtomicBoolean(false)
         val appVersioningExtension = project.extensions.create("appVersioning", AppVersioningExtension::class.java)
-        project.plugins.withType<AppPlugin> {
+        project.plugins.withType(AppPlugin::class.java) {
             androidAppPluginApplied.set(true)
-            val extension = project.extensions.getByType<ApplicationAndroidComponentsExtension>()
+            val extension = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
             extension.onVariants(selector = extension.selector().all()) { variant ->
                 if (pluginDisabled.get()) return@onVariants
                 if (!appVersioningExtension.enabled.get()) {

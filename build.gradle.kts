@@ -6,7 +6,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    `kotlin-dsl`
+    `java-gradle-plugin`
+    alias(libs.plugins.kotlin.gradle.samWithReceiver)
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.binaryCompatibilityValidator)
     alias(libs.plugins.detekt)
@@ -19,6 +20,10 @@ version = property("VERSION_NAME") as String
 mavenPublishing {
     publishToMavenCentral(automaticRelease = true)
     signAllPublications()
+}
+
+samWithReceiver {
+    annotation(HasImplicitReceiver::class.qualifiedName!!)
 }
 
 gradlePlugin {

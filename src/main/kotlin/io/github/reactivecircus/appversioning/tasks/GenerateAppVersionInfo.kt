@@ -1,4 +1,4 @@
-@file:Suppress("UnstableApiUsage", "DuplicatedCode")
+@file:Suppress("DuplicatedCode")
 
 package io.github.reactivecircus.appversioning.tasks
 
