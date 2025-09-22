@@ -5,7 +5,7 @@ agp = "8.13.0"
 detekt = "2.0.0-alpha.0"
 mavenPublish = "0.34.0"
 testParameterInjector = "1.18"
-toolchainsResolver = "0.10.0"
+toolchainsResolver = "1.0.0"
 
 [libraries]
 plugin-detektKtlintWrapper = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt"}
