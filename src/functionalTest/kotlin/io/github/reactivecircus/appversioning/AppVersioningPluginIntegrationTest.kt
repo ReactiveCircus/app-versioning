@@ -21,7 +21,9 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @Burst
-class AppVersioningPluginIntegrationTest(private val buildScriptLanguage: BuildScriptLanguage) {
+class AppVersioningPluginIntegrationTest(
+    private val buildScriptLanguage: BuildScriptLanguage = BuildScriptLanguage.Kts,
+) {
     @get:Rule
     val fixtureDir = TemporaryFolder()
 

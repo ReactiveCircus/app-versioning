@@ -66,7 +66,7 @@ sealed class AndroidProjectTemplate {
         get() {
             val flavorConfigs = if (flavors.isNotEmpty()) {
                 """
-                flavorDimensions("environment")
+                flavorDimensions.add("environment")
                 productFlavors {
                     ${flavors.joinToString("\n") { "register(\"$it\") {}" }}
                 }
@@ -102,14 +102,14 @@ sealed class AndroidProjectTemplate {
 
                 android {
                     namespace = "$DEFAULT_PACKAGE_NAME.${projectName.replace("-", ".")}"
-                    compileSdkVersion(34)
-                    buildToolsVersion = "34.0.0"
+                    compileSdk = 36
+                    buildToolsVersion = "36.0.0"
                     defaultConfig {
-                        minSdkVersion(21)
-                        targetSdkVersion(34)
+                        minSdk = 21
+                        ${if (isAppProject) "targetSdk = 36" else ""}
                     }
 
-                    lintOptions.isCheckReleaseBuilds = false
+                    lint.checkReleaseBuilds = false
 
                     $flavorConfigs
 
@@ -158,14 +158,14 @@ sealed class AndroidProjectTemplate {
 
                 android {
                     namespace '$DEFAULT_PACKAGE_NAME.${projectName.replace("-", ".")}'
-                    compileSdkVersion 34
-                    buildToolsVersion "34.0.0"
+                    compileSdk 36
+                    buildToolsVersion "36.0.0"
                     defaultConfig {
-                        minSdkVersion 21
-                        targetSdkVersion 34
+                        minSdk 21
+                        ${if (isAppProject) "targetSdk 36" else ""}
                     }
 
-                    lintOptions {
+                    lint {
                         checkReleaseBuilds false
                     }
 
