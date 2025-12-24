@@ -1,7 +1,7 @@
 [versions]
 kotlin = "2.3.0"
 binaryCompabilityValidator = "0.18.0"
-agp = "8.13.1"
+agp = "8.13.2"
 detekt = "2.0.0-alpha.1"
 mavenPublish = "0.35.0"
 burst = "2.11.0"
