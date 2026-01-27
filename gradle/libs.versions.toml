@@ -2,7 +2,7 @@
 kotlin = "2.3.0"
 binaryCompabilityValidator = "0.18.0"
 agp = "9.0.0"
-detekt = "2.0.0-alpha.1"
+detekt = "2.0.0-alpha.2"
 mavenPublish = "0.35.0"
 burst = "2.11.0"
 toolchainsResolver = "1.0.0"

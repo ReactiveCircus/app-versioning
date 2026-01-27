@@ -121,9 +121,11 @@ class AppVersioningPlugin : Plugin<Project> {
             extension.bareGitRepoDirectory.isPresent -> extension.bareGitRepoDirectory.let { bareGitRepoDirectory ->
                 bareGitRepoDirectory.asFile.orNull?.resolve(REFS_DIRECTORY)?.takeIf { it.exists() }
             }
+
             extension.gitRootDirectory.isPresent -> extension.gitRootDirectory.let { gitRootDirectory ->
                 gitRootDirectory.asFile.orNull?.resolve(STANDARD_GIT_REFS_DIRECTORY)?.takeIf { it.exists() }
             }
+
             else -> project.rootProject.file(STANDARD_GIT_REFS_DIRECTORY).takeIf { it.exists() }
         }
     }
@@ -133,9 +135,11 @@ class AppVersioningPlugin : Plugin<Project> {
             extension.bareGitRepoDirectory.isPresent -> extension.bareGitRepoDirectory.let { bareGitRepoDirectory ->
                 bareGitRepoDirectory.asFile.orNull?.resolve(HEAD_FILE)?.takeIf { it.exists() }
             }
+
             extension.gitRootDirectory.isPresent -> extension.gitRootDirectory.let { gitRootDirectory ->
                 gitRootDirectory.asFile.orNull?.resolve(STANDARD_GIT_HEAD_FILE)?.takeIf { it.exists() }
             }
+
             else -> project.rootProject.file(STANDARD_GIT_HEAD_FILE).takeIf { it.exists() }
         }
     }

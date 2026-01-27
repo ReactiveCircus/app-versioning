@@ -201,11 +201,13 @@ private abstract class GenerateAppVersionInfoWorkAction @Inject constructor(
                 providers,
                 variantInfo.get()
             )
+
             groovyVersionNameCustomizer.isPresent -> groovyVersionNameCustomizer.get().call(
                 gitTag,
                 providers,
                 variantInfo.get()
             )
+
             else -> gitTag.toString()
         }
         versionNameFile.get().asFile.writeText(versionName)
@@ -223,11 +225,13 @@ private abstract class GenerateAppVersionInfoWorkAction @Inject constructor(
             providers,
             variantInfo.get()
         )
+
         groovyVersionCodeCustomizer.isPresent -> groovyVersionCodeCustomizer.get().call(
             gitTag,
             providers,
             variantInfo.get()
         )
+
         else -> {
             // no custom rule for generating versionCode has been provided, attempt calculation based on SemVer
             val semVer = runCatching {
