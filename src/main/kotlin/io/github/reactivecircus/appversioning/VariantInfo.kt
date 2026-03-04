@@ -1,6 +1,5 @@
 package io.github.reactivecircus.appversioning
 
-import org.gradle.language.nativeplatform.internal.BuildType
 import java.io.Serializable
 
 class VariantInfo(
@@ -8,8 +7,8 @@ class VariantInfo(
     val flavorName: String,
     val variantName: String
 ) : Serializable {
-    val isDebugBuild: Boolean get() = buildType == BuildType.DEBUG.name
-    val isReleaseBuild: Boolean get() = buildType == BuildType.RELEASE.name
+    val isDebugBuild: Boolean get() = buildType == "debug"
+    val isReleaseBuild: Boolean get() = buildType == "release"
 
     companion object {
         private const val serialVersionUID = 1L
