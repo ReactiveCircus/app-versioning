@@ -24,7 +24,7 @@ jobs:
       JAVA_TOOL_OPTIONS: -Xmx4g -XX:+UseParallelGC
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
@@ -42,7 +42,7 @@ jobs:
       JAVA_TOOL_OPTIONS: -Xmx4g -XX:+UseParallelGC
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
@@ -64,7 +64,7 @@ jobs:
         agp-version: [ 8.2.2, 8.3.2, 8.4.2, 8.5.2, 8.6.1, 8.7.3, 8.8.2, 8.9.2, 8.10.1, 8.11.1, 8.12.2, 8.13.2, 9.0.0, 9.1.0, 9.2.0-alpha04 ]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
@@ -80,7 +80,7 @@ jobs:
         run: ./gradlew functionalTest
       - name: Upload test reports
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-reports-${{ matrix.agp-version }}
           path: build/reports/tests/functionalTest
@@ -97,7 +97,7 @@ jobs:
       ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_CENTRAL_PASSWORD }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
