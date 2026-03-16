@@ -2,6 +2,7 @@
 
 import dev.detekt.gradle.Detekt
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -42,9 +43,7 @@ gradlePlugin {
 tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
-        freeCompilerArgs.addAll(
-            "-Xjvm-default=all",
-        )
+        jvmDefault.set(JvmDefaultMode.NO_COMPATIBILITY)
     }
 }
 
