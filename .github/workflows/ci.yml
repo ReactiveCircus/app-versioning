@@ -31,6 +31,8 @@ jobs:
           java-version: '25'
       - uses: gradle/actions/setup-gradle@v6
         with:
+          build-scan-terms-of-use-url: 'https://gradle.com/terms-of-service'
+          build-scan-terms-of-use-agree: 'yes'
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
       - name: Assemble
         run: ./gradlew assemble
@@ -49,6 +51,8 @@ jobs:
           java-version: '25'
       - uses: gradle/actions/setup-gradle@v6
         with:
+          build-scan-terms-of-use-url: 'https://gradle.com/terms-of-service'
+          build-scan-terms-of-use-agree: 'yes'
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
       - name: Checks
         run: ./gradlew test detekt validatePlugins apiCheck
@@ -75,6 +79,8 @@ jobs:
           git config --global user.email "action@github.com"
       - uses: gradle/actions/setup-gradle@v6
         with:
+          build-scan-terms-of-use-url: 'https://gradle.com/terms-of-service'
+          build-scan-terms-of-use-agree: 'yes'
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
       - name: Functional tests
         run: ./gradlew functionalTest
@@ -104,6 +110,8 @@ jobs:
           java-version: '25'
       - uses: gradle/actions/setup-gradle@v6
         with:
+          build-scan-terms-of-use-url: 'https://gradle.com/terms-of-service'
+          build-scan-terms-of-use-agree: 'yes'
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
       - name: Deploy snapshot
         run: ./gradlew publish
