@@ -72,8 +72,8 @@ class AppVersioningPlugin : Plugin<Project> {
         description = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the ${variant.name} variant."
         gitRefsDirectory.set(findGitRefsDirectory(extension))
         gitHead.set(findGitHeadFile(extension))
-        rootProjectDirectory.set(project.rootProject.rootDir)
-        rootProjectDisplayName.set(project.rootProject.displayName)
+        rootProjectDirectory.set(rootProject.rootDir)
+        rootProjectDisplayName.set(rootProject.displayName)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
         tagFilter.set(extension.tagFilter)
         kotlinVersionCodeCustomizer.set(extension.kotlinVersionCodeCustomizer)
@@ -126,7 +126,7 @@ class AppVersioningPlugin : Plugin<Project> {
                 gitRootDirectory.asFile.orNull?.resolve(STANDARD_GIT_REFS_DIRECTORY)?.takeIf { it.exists() }
             }
 
-            else -> project.rootProject.file(STANDARD_GIT_REFS_DIRECTORY).takeIf { it.exists() }
+            else -> rootDir.resolve(STANDARD_GIT_REFS_DIRECTORY).takeIf { it.exists() }
         }
     }
 
@@ -140,7 +140,7 @@ class AppVersioningPlugin : Plugin<Project> {
                 gitRootDirectory.asFile.orNull?.resolve(STANDARD_GIT_HEAD_FILE)?.takeIf { it.exists() }
             }
 
-            else -> project.rootProject.file(STANDARD_GIT_HEAD_FILE).takeIf { it.exists() }
+            else -> rootDir.resolve(STANDARD_GIT_HEAD_FILE).takeIf { it.exists() }
         }
     }
 

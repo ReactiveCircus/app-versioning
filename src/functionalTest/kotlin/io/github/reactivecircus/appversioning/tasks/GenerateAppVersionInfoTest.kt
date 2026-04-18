@@ -39,7 +39,7 @@ class GenerateAppVersionInfoTest {
     fun `GenerateAppVersionInfo fails when root Gradle project is not a git root directory and gitRootDirectory provided is not a git root directory`() {
         val extensions = """
             appVersioning {
-                gitRootDirectory.set(rootProject.file("../"))
+                gitRootDirectory.set(rootDir.resolve("../"))
             }
         """.trimIndent()
 
@@ -71,7 +71,7 @@ class GenerateAppVersionInfoTest {
 
         val extensions = """
             appVersioning {
-                gitRootDirectory.set(rootProject.file("../"))
+                gitRootDirectory.set(rootDir.resolve("../"))
             }
         """.trimIndent()
 
