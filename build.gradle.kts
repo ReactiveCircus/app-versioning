@@ -52,7 +52,7 @@ tasks.withType<JavaCompile>().configureEach {
     targetCompatibility = JavaVersion.VERSION_17.toString()
 }
 
-val fixtureClasspath: Configuration by configurations.creating
+val fixtureClasspath = configurations.create("fixtureClasspath")
 tasks.pluginUnderTestMetadata {
     pluginClasspath.from(fixtureClasspath)
 }
@@ -67,7 +67,7 @@ val functionalTestImplementation: Configuration = configurations.getByName("func
 
 gradlePlugin.testSourceSets(functionalTestSourceSet)
 
-val functionalTest by tasks.registering(Test::class) {
+val functionalTest = tasks.register("functionalTest", Test::class) {
     failFast = true
     testLogging {
         events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
@@ -76,11 +76,11 @@ val functionalTest by tasks.registering(Test::class) {
     classpath = functionalTestSourceSet.runtimeClasspath
 }
 
-val check by tasks.getting(Task::class) {
+val check = tasks.getByName("check", Task::class) {
     dependsOn(functionalTest)
 }
 
-val test by tasks.getting(Test::class) {
+val test = tasks.getByName("test", Test::class) {
     maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
     testLogging {
         events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
