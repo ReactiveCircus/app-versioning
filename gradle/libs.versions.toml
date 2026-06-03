@@ -1,10 +1,10 @@
 [versions]
-kotlin = "2.3.20"
+kotlin = "2.4.0"
 binaryCompabilityValidator = "0.18.0"
 agp = "9.2.1"
 detekt = "2.0.0-alpha.3"
 mavenPublish = "0.35.0"
-burst = "2.12.0"
+burst = "2.13.0-beta1"
 toolchainsResolver = "1.0.0"
 
 [libraries]
