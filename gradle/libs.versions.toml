@@ -3,7 +3,7 @@ kotlin = "2.4.0"
 binaryCompabilityValidator = "0.18.0"
 agp = "9.2.1"
 detekt = "2.0.0-alpha.5"
-mavenPublish = "0.35.0"
+mavenPublish = "0.37.0"
 burst = "2.13.0"
 toolchainsResolver = "1.0.0"
 
