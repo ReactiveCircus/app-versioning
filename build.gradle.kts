@@ -1,16 +1,13 @@
-@file:Suppress("UnstableApiUsage")
-
 import dev.detekt.gradle.Detekt
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 
 plugins {
     `java-gradle-plugin`
     alias(libs.plugins.kotlin.gradle.samWithReceiver)
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.binaryCompatibilityValidator)
     alias(libs.plugins.detekt)
     alias(libs.plugins.mavenPublish)
     alias(libs.plugins.burst)
@@ -40,16 +37,18 @@ gradlePlugin {
     }
 }
 
-tasks.withType<KotlinCompile>().configureEach {
+kotlin {
+    @OptIn(ExperimentalAbiValidation::class)
+    abiValidation()
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
         jvmDefault.set(JvmDefaultMode.NO_COMPATIBILITY)
     }
 }
 
-tasks.withType<JavaCompile>().configureEach {
-    sourceCompatibility = JavaVersion.VERSION_17.toString()
-    targetCompatibility = JavaVersion.VERSION_17.toString()
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 val fixtureClasspath = configurations.create("fixtureClasspath")

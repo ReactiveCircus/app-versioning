@@ -1,6 +1,5 @@
 [versions]
 kotlin = "2.4.20"
-binaryCompabilityValidator = "0.18.0"
 agp = "9.4.0"
 detekt = "2.0.0-alpha.6"
 mavenPublish = "0.37.0"
@@ -16,7 +15,6 @@ agp-build-api = { module = "com.android.tools.build:gradle-api", version.ref = "
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-gradle-samWithReceiver = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
-binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binaryCompabilityValidator" }
 detekt = { id = "dev.detekt", version.ref = "detekt" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 burst = { id = "app.cash.burst", version.ref = "burst" }

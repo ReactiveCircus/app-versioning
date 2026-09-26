@@ -103,7 +103,6 @@ public final class io/github/reactivecircus/appversioning/internal/CommitId {
 
 public final class io/github/reactivecircus/appversioning/internal/GitClient {
 	public static final field Companion Lio/github/reactivecircus/appversioning/internal/GitClient$Companion;
-	public synthetic fun <init> (Ljava/io/File;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun checkoutTag (Ljava/lang/String;)V
 	public final fun commit-HhBVPuw (Ljava/lang/String;Z)Ljava/lang/String;
 	public static synthetic fun commit-HhBVPuw$default (Lio/github/reactivecircus/appversioning/internal/GitClient;Ljava/lang/String;ZILjava/lang/Object;)Ljava/lang/String;

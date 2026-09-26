@@ -57,7 +57,7 @@ jobs:
           build-scan-terms-of-use-agree: 'yes'
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
       - name: Checks
-        run: ./gradlew test detekt validatePlugins apiCheck
+        run: ./gradlew test detekt validatePlugins checkKotlinAbi
 
   functional-tests:
     name: Functional tests
