@@ -3,7 +3,7 @@ kotlin = "2.4.20"
 agp = "9.4.0"
 detekt = "2.0.0-alpha.6"
 mavenPublish = "0.37.0"
-burst = "2.13.0"
+burst = "2.14.0"
 toolchainsResolver = "1.0.0"
 
 [libraries]
