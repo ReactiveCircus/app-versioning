@@ -2,11 +2,12 @@ rootProject.name = "app-versioning"
 
 enableFeaturePreview("NO_IMPLICIT_LOOKUP_IN_PARENT_PROJECTS")
 
+@Suppress("UnstableApiUsage")
 pluginManagement {
     repositories {
         gradlePluginPortal {
             content {
-                includeGroupByRegex("org.gradle.*")
+                includeGroupAndSubgroups("org.gradle")
             }
         }
         mavenCentral()
@@ -27,8 +28,13 @@ pluginManagement {
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
     repositories {
+        google {
+            content {
+                includeGroupAndSubgroups("androidx")
+                includeGroupAndSubgroups("com.android")
+            }
+        }
         mavenCentral()
-        google()
     }
 }
 
