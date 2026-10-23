@@ -71,15 +71,15 @@ The plugin offers 2 Gradle tasks for each build variant:
 
 ### Default behavior
 
-Without any configuration, the plugin fetches the latest Git tag in the repository, parses it as a **SemVer** string (`VersionCodeSpec.SemVer`), and computes `versionCode` using [positional notation](https://en.wikipedia.org/wiki/Positional_notation):
+Without any configuration, the plugin fetches the latest Git tag in the repository, parses it as a **SemVer** string, and computes `versionCode` using [positional notation](https://en.wikipedia.org/wiki/Positional_notation):
 
 ```
 versionCode = MAJOR * 10000 + MINOR * 100 + PATCH
 ```
 
-For example, for a tag `1.3.1` (or `v1.3.1`), the generated `versionCode` is `1 * 10000 + 3 * 100 + 1 = 10301`.
+For example, for a tag `1.3.1`, the generated `versionCode` is `1 * 10000 + 3 * 100 + 1 = 10301`.
 
-The default `versionName` (`VersionNameSpec.TagName`) is the name of the latest Git tag.
+The default `versionName` is the name of the latest Git tag.
 
 ```
 > Task :app:generateAppVersionInfoForRelease
@@ -94,11 +94,11 @@ You can customize how `versionCode` and `versionName` are computed by configurin
 ```kt
 appVersioning {
     versionCode.set {
-        // generate an Int with `this: VersionContext` (`tag`, `variant`)
+        // generate an Int
     }
 
     versionName.set {
-        // generate a String with `this: VersionContext` (`tag`, `variant`)
+        // generate a String
     }
 }
 ```
@@ -109,7 +109,7 @@ Inside the lambda receiver (`VersionContext`):
 
 #### SemVer-based version code
 
-By default, `VersionCodeSpec.SemVer` reserves 2 digits for each of the **MAJOR**, **MINOR**, and **PATCH** components in a SemVer tag (accepting an optional `"v"` prefix).
+The default `VersionCodeSpec.SemVer` reserves 2 digits for each of the **MAJOR**, **MINOR**, and **PATCH** components in a SemVer tag (accepting an optional `"v"` prefix).
 
 To allocate 3 digits per component instead (up to 999 per component), strip a custom tag prefix, or add an offset / commit count:
 
