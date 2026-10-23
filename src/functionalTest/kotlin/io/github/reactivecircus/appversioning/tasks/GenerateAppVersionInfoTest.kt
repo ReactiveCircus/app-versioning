@@ -845,12 +845,14 @@ class GenerateAppVersionInfoTest {
         runner.runAndCheckResult(
             "generateAppVersionInfoForRelease"
         ) {
+            assertTrue(output.contains("Configuration cache entry stored."))
             assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
         }
 
         runner.runAndCheckResult(
             "generateAppVersionInfoForRelease"
         ) {
+            assertTrue(output.contains("Configuration cache entry reused."))
             assertEquals(TaskOutcome.UP_TO_DATE, task(":app:generateAppVersionInfoForRelease")?.outcome)
         }
     }
@@ -882,12 +884,14 @@ class GenerateAppVersionInfoTest {
         runner.runAndCheckResult(
             "generateAppVersionInfoForRelease"
         ) {
+            assertTrue(output.contains("Configuration cache entry stored."))
             assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
         }
 
         runner.runAndCheckResult(
             "generateAppVersionInfoForRelease"
         ) {
+            assertTrue(output.contains("Configuration cache entry reused."))
             assertEquals(TaskOutcome.UP_TO_DATE, task(":app:generateAppVersionInfoForRelease")?.outcome)
         }
     }

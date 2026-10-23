@@ -333,4 +333,98 @@ class AppVersioningPluginIntegrationTest(
             assertFalse(apkOutputMetadata.contains("\"versionName\": \"1.0.0\""))
         }
     }
+
+    @Test
+    fun `plugin is compatible with configuration cache and isolated projects in multi-project builds`() {
+        initGitRepo(fixtureDir.root) {
+            val commitId1 = commit(message = "appA release.")
+            tag(name = "1.0.0+appA", message = "1st tag", commitId = commitId1)
+            val commitId2 = commit(message = "appB release.")
+            tag(name = "2.0.0+appB", message = "2nd tag", commitId = commitId2)
+        }
+
+        val extensionAppA = if (buildScriptLanguage == BuildScriptLanguage.Kts) {
+            $$"""
+                appVersioning {
+                    tagFilter.set("[0-9]*.[0-9]*.[0-9]*+appA")
+                    versionCode.set {
+                        tag.toSemVer().toVersionCode() + tag.commitsSinceLatestTag
+                    }
+                    versionName.set {
+                        "appA-${tag.name}"
+                    }
+                }
+            """.trimIndent()
+        } else {
+            $$"""
+                appVersioning {
+                    tagFilter.set("[0-9]*.[0-9]*.[0-9]*+appA")
+                    versionCode {
+                        tag.toSemVer().toVersionCode() + tag.commitsSinceLatestTag
+                    }
+                    versionName {
+                        "appA-${tag.name}"
+                    }
+                }
+            """.trimIndent()
+        }
+
+        val extensionAppB = """
+            appVersioning {
+                tagFilter.set("[0-9]*.[0-9]*.[0-9]*+appB")
+            }
+        """.trimIndent()
+
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(
+                AppProjectTemplate(
+                    projectName = "app-a",
+                    buildScriptLanguage = buildScriptLanguage,
+                    pluginExtension = extensionAppA,
+                ),
+                AppProjectTemplate(
+                    projectName = "app-b",
+                    buildScriptLanguage = buildScriptLanguage,
+                    pluginExtension = extensionAppB,
+                ),
+            )
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease",
+        ) {
+            assertTrue(output.contains("Configuration cache entry stored."))
+            assertEquals(TaskOutcome.SUCCESS, task(":app-a:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals(TaskOutcome.SUCCESS, task(":app-b:generateAppVersionInfoForRelease")?.outcome)
+        }
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease",
+        ) {
+            assertTrue(output.contains("Configuration cache entry reused."))
+            assertEquals(TaskOutcome.UP_TO_DATE, task(":app-a:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals(TaskOutcome.UP_TO_DATE, task(":app-b:generateAppVersionInfoForRelease")?.outcome)
+        }
+
+        runner.runAndCheckResult(
+            "printAppVersionInfoForRelease",
+        ) {
+            assertTrue(output.contains("Configuration cache entry stored."))
+            assertEquals(TaskOutcome.SUCCESS, task(":app-a:printAppVersionInfoForRelease")?.outcome)
+            assertEquals(TaskOutcome.SUCCESS, task(":app-b:printAppVersionInfoForRelease")?.outcome)
+            assertTrue(output.contains("versionCode: 10001"))
+            assertTrue(output.contains("versionName: \"appA-1.0.0+appA\""))
+            assertTrue(output.contains("versionCode: 20000"))
+            assertTrue(output.contains("versionName: \"2.0.0+appB\""))
+        }
+
+        runner.runAndCheckResult(
+            "printAppVersionInfoForRelease",
+        ) {
+            assertTrue(output.contains("Configuration cache entry reused."))
+            assertEquals(TaskOutcome.SUCCESS, task(":app-a:printAppVersionInfoForRelease")?.outcome)
+            assertEquals(TaskOutcome.SUCCESS, task(":app-b:printAppVersionInfoForRelease")?.outcome)
+        }
+    }
 }

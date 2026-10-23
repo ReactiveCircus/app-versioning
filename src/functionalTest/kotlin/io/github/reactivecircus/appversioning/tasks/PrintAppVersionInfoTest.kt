@@ -184,6 +184,7 @@ class PrintAppVersionInfoTest {
         runner.runAndCheckResult(
             "printAppVersionInfoForRelease"
         ) {
+            assertTrue(output.contains("Configuration cache entry stored."))
             assertEquals(TaskOutcome.SUCCESS, task(":app:printAppVersionInfoForRelease")?.outcome)
             assertTrue(
                 output.contains(
@@ -201,6 +202,7 @@ class PrintAppVersionInfoTest {
         runner.runAndCheckResult(
             "printAppVersionInfoForRelease"
         ) {
+            assertTrue(output.contains("Configuration cache entry reused."))
             assertEquals(TaskOutcome.SUCCESS, task(":app:printAppVersionInfoForRelease")?.outcome)
             assertTrue(
                 output.contains(
