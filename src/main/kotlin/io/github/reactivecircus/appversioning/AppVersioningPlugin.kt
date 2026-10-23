@@ -76,10 +76,8 @@ class AppVersioningPlugin : Plugin<Project> {
         rootProjectDisplayName.set(rootProject.displayName)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
         tagFilter.set(extension.tagFilter)
-        kotlinVersionCodeCustomizer.set(extension.kotlinVersionCodeCustomizer)
-        kotlinVersionNameCustomizer.set(extension.kotlinVersionNameCustomizer)
-        groovyVersionCodeCustomizer.set(extension.groovyVersionCodeCustomizer)
-        groovyVersionNameCustomizer.set(extension.groovyVersionNameCustomizer)
+        versionCodeSpec.set(extension.versionCode.map { it.asSerializable() })
+        versionNameSpec.set(extension.versionName.map { it.asSerializable() })
         versionCodeFile.set(
             layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/${variant.name}/$VERSION_CODE_RESULT_FILE")
         )
@@ -147,8 +145,6 @@ class AppVersioningPlugin : Plugin<Project> {
     private fun String.capitalize(): String {
         return replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
-
-    companion object
 }
 
 private const val APP_VERSIONING_TASK_GROUP = "versioning"

@@ -5,7 +5,8 @@ import java.util.concurrent.TimeUnit
 
 class GitClient private constructor(private val projectDir: File) {
     fun listLocalTags(): List<String> {
-        return listOf("git", "tag", "--list").execute(projectDir).lines()
+        val output = listOf("git", "tag", "--list").execute(projectDir)
+        return if (output.isEmpty()) emptyList() else output.lines()
     }
 
     fun fetchRemoteTags() {

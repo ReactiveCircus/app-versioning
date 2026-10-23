@@ -1,9 +1,9 @@
 package io.github.reactivecircus.appversioning
 
 import groovy.lang.Closure
+import groovy.lang.DelegatesTo
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.ProviderFactory
 
 /**
  * Extension for [AppVersioningPlugin].
@@ -52,79 +52,45 @@ open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     val tagFilter = objects.property<String>().convention(null)
 
     /**
-     * Provides a custom rule for generating versionCode by implementing a [GitTag], [ProviderFactory], [VariantInfo] -> Int lambda.
-     * [GitTag] is generated from latest git tag lazily by the plugin during task execution.
-     * [ProviderFactory] can be used for fetching environment variables, Gradle and system properties.
-     * [VariantInfo] can be used to customize version code based on the build variants (product flavors and build types).
+     * Specification for generating `versionCode`.
      *
-     * By default the plugin attempts to generate the versionCode by converting a SemVer compliant tag to an integer
-     * using positional notation: versionCode = MAJOR * 10000 + MINOR * 100 + PATCH
-     *
-     * If your tags don't follow semantic versioning, you don't like the default formula used to convert a SemVer tag to versionCode,
-     * or if you want to fully customize how the versionCode is generated, you can implement this lambda to provide your own versionCode generation rule.
-     *
-     * Note that you can use the `gitTag.toSemVer()` extension (or `SemVer.fromGitTag(gitTag)` if you use groovy) to get a type-safe `SemVer` model
-     * if your custom rule is still based on semantic versioning.
+     * Default is [VersionCodeSpec.SemVer].
      */
-    fun overrideVersionCode(customizer: VersionCodeCustomizer) {
-        kotlinVersionCodeCustomizer.set(customizer)
+    val versionCode: Property<VersionCodeSpec> = objects.property<VersionCodeSpec>().convention(VersionCodeSpec.SemVer)
+
+    /**
+     * Specification for generating `versionName`.
+     *
+     * Default is [VersionNameSpec.TagName].
+     */
+    val versionName: Property<VersionNameSpec> =
+        objects.property<VersionNameSpec>().convention(VersionNameSpec.TagName)
+
+    /**
+     * Configures [versionCode] using a Groovy [Closure] with [VersionContext] as its delegate.
+     */
+    fun versionCode(
+        @DelegatesTo(VersionContext::class, strategy = Closure.DELEGATE_FIRST)
+        closure: Closure<Int>,
+    ) {
+        versionCode.set(closure.toVersionCodeSpec())
     }
 
     /**
-     * Same as `overrideVersionCode(customizer: VersionCodeCustomizer)` above but for groovy support.
+     * Configures [versionName] using a Groovy [Closure] with [VersionContext] as its delegate.
      */
-    fun overrideVersionCode(customizer: Closure<Int>) {
-        groovyVersionCodeCustomizer.set(customizer.dehydrate())
+    fun versionName(
+        @DelegatesTo(VersionContext::class, strategy = Closure.DELEGATE_FIRST)
+        closure: Closure<CharSequence>,
+    ) {
+        versionName.set(closure.toVersionNameSpec())
     }
 
-    /**
-     * Provides a custom rule for generating versionName by implementing a [GitTag], [ProviderFactory], [VariantInfo] -> String lambda.
-     * [GitTag] is generated from latest git tag lazily by the plugin during task execution.
-     * [ProviderFactory] can be used for fetching environment variables, Gradle and system properties.
-     * [VariantInfo] can be used to customize version name based on the build variants (product flavors and build types).
-     *
-     * This is useful if you want to fully customize how the versionName is generated.
-     * If not specified, versionName will be the name of the latest git tag.
-     */
-    fun overrideVersionName(customizer: VersionNameCustomizer) {
-        kotlinVersionNameCustomizer.set(customizer)
-    }
-
-    /**
-     * Same as `overrideVersionName(customizer: VersionNameCustomizer)` above but for groovy support.
-     */
-    fun overrideVersionName(customizer: Closure<String>) {
-        groovyVersionNameCustomizer.set(customizer.dehydrate())
-    }
-
-    /**
-     * A lambda (Kotlin function type) for specifying a custom rule for generating versionCode.
-     */
-    internal val kotlinVersionCodeCustomizer = objects.property<VersionCodeCustomizer>()
-
-    /**
-     * A lambda (Groovy closure) for specifying a custom rule for generating versionCode.
-     */
-    internal val groovyVersionCodeCustomizer = objects.property<Closure<Int>>()
-
-    /**
-     * A lambda (Kotlin function type) for specifying a custom rule for generating versionName.
-     */
-    internal val kotlinVersionNameCustomizer = objects.property<VersionNameCustomizer>()
-
-    /**
-     * A lambda (Groovy closure) for specifying a custom rule for generating versionName.
-     */
-    internal val groovyVersionNameCustomizer = objects.property<Closure<String>>()
-
-    companion object {
-        internal const val DEFAULT_ENABLED = true
-        internal const val DEFAULT_RELEASE_BUILD_ONLY = false
-        internal const val DEFAULT_FETCH_TAGS_WHEN_NONE_EXISTS_LOCALLY = false
+    internal companion object {
+        const val DEFAULT_ENABLED = true
+        const val DEFAULT_RELEASE_BUILD_ONLY = false
+        const val DEFAULT_FETCH_TAGS_WHEN_NONE_EXISTS_LOCALLY = false
     }
 }
 
 private inline fun <reified T : Any> ObjectFactory.property(): Property<T> = property(T::class.java)
-
-internal typealias VersionCodeCustomizer = (GitTag, ProviderFactory, VariantInfo) -> Int
-internal typealias VersionNameCustomizer = (GitTag, ProviderFactory, VariantInfo) -> String
