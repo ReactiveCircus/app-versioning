@@ -799,9 +799,7 @@ class GenerateAppVersionInfoTest {
             appVersioning {
                 versionCode.set(
                     buildNumber.map { buildNum ->
-                        {
-                            tag.toSemVer().toVersionCode() * 100 + buildNum
-                        } as VersionCodeSpec
+                        { tag.toSemVer().toVersionCode() * 100 + buildNum } as VersionCodeSpec
                     }
                 )
                 versionName {

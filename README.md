@@ -6,19 +6,22 @@
 
 A Gradle Plugin for lazily generating Android app's `versionCode` & `versionName` from Git tags.
 
-Android Gradle Plugin 4.0 and 4.1 introduced [new APIs](https://medium.com/androiddevelopers/new-apis-in-the-android-gradle-plugin-f5325742e614) to support **lazily** computing and setting the `versionCode` and `versionName` for an APK or App Bundle. This plugin builds on top of these APIs to support common Git-based app versioning use cases with full Configuration Cache and Isolated Projects support.
+Modern versions of Android Gradle Plugin provide new [Variant APIs](https://medium.com/androiddevelopers/new-apis-in-the-android-gradle-plugin-f5325742e614) that support **lazily** computing the `versionCode` and `versionName` of an APK or App Bundle.
+
+This plugin builds on top of these APIs to support common Git-based app versioning use cases with full Configuration Cache and Isolated Projects support.
 
 ## Android Gradle Plugin version compatibility
 
 The minimum version of Android Gradle Plugin required is **9.0.0**.
 
-Version `1.6.0` of the plugin is the final version that's compatible with AGP **8.x**.
-
-Version `1.4.0` of the plugin is the final version that's compatible with AGP **7.x** and below.
-
-Version `0.4.0` of the plugin is the final version that's compatible with AGP **4.0** and **4.1**.
-
-Version `0.10.0` of the plugin is the final version that's compatible with AGP **4.2**.
+| App Versioning Plugin | Android Gradle Plugin |
+| --------------------- | --------------------- |
+| 2.0.0+                | 9.0.0+                |
+| 1.6.0                 | 8.2.2+                |
+| 1.5.0                 | 8.0.0+                |
+| 1.0.0 - 1.4.0         | 7.0.0+                |
+| 0.5.0 - 0.10.0        | 4.2                   |
+| 0.1.0 - 0.4.0         | 4.0 - 4.1             |
 
 ## Installation
 
@@ -56,6 +59,8 @@ plugins {
 ```
 
 </details>
+
+> Upgrading from 1.x? See the [2.0 Migration Guide](docs/migration-guide.md).
 
 ## Usage
 
