@@ -6,6 +6,8 @@
 
 A Gradle Plugin for lazily generating Android app's `versionCode` & `versionName` from Git tags.
 
+![App Versioning](docs/images/sample.png)
+
 Modern versions of Android Gradle Plugin provide new [Variant APIs](https://medium.com/androiddevelopers/new-apis-in-the-android-gradle-plugin-f5325742e614) that support **lazily** computing the `versionCode` and `versionName` of an APK or App Bundle.
 
 This plugin builds on top of these APIs to support common Git-based app versioning use cases with full Configuration Cache and Isolated Projects support.
@@ -111,14 +113,14 @@ Inside the lambda receiver (`VersionContext`):
 
 The default `VersionCodeSpec.SemVer` reserves 2 digits for each of the **MAJOR**, **MINOR**, and **PATCH** components in a SemVer tag (accepting an optional `"v"` prefix).
 
-To allocate 3 digits per component instead (up to 999 per component), strip a custom tag prefix, or add an offset / commit count:
+To allocate 3 digits per component instead (up to 999 per component) or strip a custom tag prefix:
 
 <details open><summary>Kotlin</summary>
 
 ```kt
 appVersioning {
     versionCode.set {
-        tag.toSemVer(prefix = "android-").toVersionCode(digitsPerComponent = 3) + tag.commitsSinceLatestTag
+        tag.toSemVer(prefix = "android-").toVersionCode(digitsPerComponent = 3)
     }
 }
 ```
@@ -130,7 +132,7 @@ appVersioning {
 ```groovy
 appVersioning {
     versionCode {
-        tag.toSemVer("android-").toVersionCode(3) + tag.commitsSinceLatestTag
+        tag.toSemVer("android-").toVersionCode(3)
     }
 }
 ```
