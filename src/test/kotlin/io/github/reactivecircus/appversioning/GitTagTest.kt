@@ -30,7 +30,7 @@ class GitTagTest {
     }
 
     @Test
-    fun `GitTag#toString() returns rawTagName`() {
+    fun `GitTag#toString() returns GitTag#name`() {
         val gitTag = GitTag("1.0.0-alpha03", 1, "36e7453")
         assertEquals("1.0.0-alpha03", gitTag.toString())
     }

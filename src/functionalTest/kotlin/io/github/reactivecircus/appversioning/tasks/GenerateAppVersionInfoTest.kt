@@ -742,7 +742,7 @@ class GenerateAppVersionInfoTest {
                 }
                 versionName {
                     def suffix = variant.debugBuild ? " (${variant.variantName})" : ""
-                    "Version ${tag.rawTagName}${suffix}"
+                    "Version ${tag.name}${suffix}"
                 }
             }
         """.trimIndent()
@@ -805,7 +805,7 @@ class GenerateAppVersionInfoTest {
                     }
                 )
                 versionName {
-                    "Version ${tag.rawTagName}"
+                    "Version ${tag.name}"
                 }
             }
         """.trimIndent()

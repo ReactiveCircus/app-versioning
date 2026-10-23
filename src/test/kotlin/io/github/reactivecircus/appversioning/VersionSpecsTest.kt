@@ -49,7 +49,7 @@ class VersionSpecsTest {
     }
 
     @Test
-    fun `VersionNameSpec#TagName returns rawTagName`() {
+    fun `VersionNameSpec#TagName returns GitTag#name`() {
         assertEquals("0.0.1", evaluateVersionName("0.0.1"))
         assertEquals("v1.1.0-alpha01", evaluateVersionName("v1.1.0-alpha01"))
         assertEquals("alpha", evaluateVersionName("alpha"))

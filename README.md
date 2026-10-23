@@ -74,7 +74,7 @@ versionCode = MAJOR * 10000 + MINOR * 100 + PATCH
 
 For example, for a tag `1.3.1` (or `v1.3.1`), the generated `versionCode` is `1 * 10000 + 3 * 100 + 1 = 10301`.
 
-The default `versionName` (`VersionNameSpec.TagName`) is the raw name of the latest Git tag.
+The default `versionName` (`VersionNameSpec.TagName`) is the name of the latest Git tag.
 
 ```
 > Task :app:generateAppVersionInfoForRelease
@@ -99,7 +99,7 @@ appVersioning {
 ```
 
 Inside the lambda receiver (`VersionContext`):
-- `tag` (`GitTag`) encapsulates `rawTagName`, `commitsSinceLatestTag`, and `commitHash`.
+- `tag` (`GitTag`) encapsulates `name`, `commitsSinceLatestTag`, and `commitHash`.
 - `variant` (`VariantInfo`) encapsulates `buildType`, `flavorName`, `variantName`, `isDebugBuild`, and `isReleaseBuild`.
 
 #### SemVer-based version code
@@ -132,7 +132,7 @@ appVersioning {
 
 </details>
 
-`tag.toSemVer(prefix = "")` parses `GitTag.rawTagName` (after stripping `prefix` if specified) into a `SemVer` object, and `SemVer.toVersionCode(digitsPerComponent = 2)` converts it to an integer using positional notation. You can also parse arbitrary strings directly via `SemVer.parse(text)` or `SemVer.parseOrNull(text)`.
+`tag.toSemVer(prefix = "")` parses `GitTag#name` (after stripping `prefix` if specified) into a `SemVer` object, and `SemVer#toVersionCode(digitsPerComponent = 2)` converts it to an integer using positional notation. You can also parse arbitrary strings directly via `SemVer.parse(text)` or `SemVer.parseOrNull(text)`.
 
 #### Combining variant info and external providers
 
@@ -156,7 +156,7 @@ appVersioning {
     )
     versionName.set {
         val suffix = if (variant.isDebugBuild) " (${variant.variantName})" else ""
-        "${tag.rawTagName} (${tag.commitHash})$suffix"
+        "${tag.name} (${tag.commitHash})$suffix"
     }
 }
 ```
@@ -181,7 +181,7 @@ appVersioning {
     )
     versionName {
         def suffix = variant.debugBuild ? " (${variant.variantName})" : ""
-        "${tag.rawTagName} (${tag.commitHash})${suffix}"
+        "${tag.name} (${tag.commitHash})${suffix}"
     }
 }
 ```

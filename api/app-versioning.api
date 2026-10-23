@@ -21,7 +21,7 @@ public final class io/github/reactivecircus/appversioning/GitTag {
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getCommitHash ()Ljava/lang/String;
 	public final fun getCommitsSinceLatestTag ()I
-	public final fun getRawTagName ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
 	public fun hashCode ()I
 	public final fun toSemVer ()Lio/github/reactivecircus/appversioning/SemVer;
 	public final fun toSemVer (Ljava/lang/String;)Lio/github/reactivecircus/appversioning/SemVer;
