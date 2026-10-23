@@ -3,8 +3,8 @@
 package io.github.reactivecircus.appversioning.tasks
 
 import io.github.reactivecircus.appversioning.fixtures.AppProjectTemplate
+import io.github.reactivecircus.appversioning.fixtures.initGitRepo
 import io.github.reactivecircus.appversioning.fixtures.withFixtureRunner
-import io.github.reactivecircus.appversioning.internal.GitClient
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Rule
 import org.junit.Test
@@ -18,7 +18,7 @@ class PrintAppVersionInfoTest {
 
     @Test
     fun `PrintAppVersionInfo prints latest generated versionCode and versionName to the console when they are available`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -55,7 +55,7 @@ class PrintAppVersionInfoTest {
 
     @Test
     fun `PrintAppVersionInfo prints warning message to the console when they are not available`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -77,7 +77,7 @@ class PrintAppVersionInfoTest {
 
     @Test
     fun `PrintAppVersionInfo prints latest generated versionCode and versionName (or warning message if not available) to the console for each project with AppVersioningPlugin applied`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             commit(message = "Initial commit.")
             val commitId1 = commit(message = "appA release.")
             tag(name = "0.1.0+appA", message = "1st tag", commitId = commitId1)
@@ -165,7 +165,7 @@ class PrintAppVersionInfoTest {
 
     @Test
     fun `PrintAppVersionInfo is not incremental`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }

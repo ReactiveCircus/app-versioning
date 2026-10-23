@@ -6,8 +6,8 @@ import app.cash.burst.Burst
 import io.github.reactivecircus.appversioning.fixtures.AppProjectTemplate
 import io.github.reactivecircus.appversioning.fixtures.BuildScriptLanguage
 import io.github.reactivecircus.appversioning.fixtures.LibraryProjectTemplate
+import io.github.reactivecircus.appversioning.fixtures.initGitRepo
 import io.github.reactivecircus.appversioning.fixtures.withFixtureRunner
-import io.github.reactivecircus.appversioning.internal.GitClient
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Rule
 import org.junit.Test
@@ -27,7 +27,7 @@ class AppVersioningPluginIntegrationTest(
 
     @Test
     fun `plugin cannot be applied to project without Android App plugin`() {
-        GitClient.initialize(fixtureDir.root)
+        initGitRepo(fixtureDir.root)
 
         withFixtureRunner(
             fixtureDir = fixtureDir,
@@ -46,7 +46,7 @@ class AppVersioningPluginIntegrationTest(
 
     @Test
     fun `plugin tasks are registered for Android App project without product flavors`() {
-        GitClient.initialize(fixtureDir.root)
+        initGitRepo(fixtureDir.root)
 
         withFixtureRunner(
             fixtureDir = fixtureDir,
@@ -81,7 +81,7 @@ class AppVersioningPluginIntegrationTest(
 
     @Test
     fun `plugin tasks are registered for Android App project with product flavors`() {
-        GitClient.initialize(fixtureDir.root)
+        initGitRepo(fixtureDir.root)
 
         val flavors = listOf("mock", "prod")
         withFixtureRunner(
@@ -137,7 +137,7 @@ class AppVersioningPluginIntegrationTest(
 
     @Test
     fun `plugin tasks are not registered for debug builds when releaseBuildOnly is enabled`() {
-        GitClient.initialize(fixtureDir.root)
+        initGitRepo(fixtureDir.root)
 
         val extension = """
             appVersioning {
@@ -173,7 +173,7 @@ class AppVersioningPluginIntegrationTest(
 
     @Test
     fun `plugin tasks are not registered when plugin is disabled`() {
-        GitClient.initialize(fixtureDir.root)
+        initGitRepo(fixtureDir.root)
 
         val extension = """
             appVersioning {
@@ -200,7 +200,7 @@ class AppVersioningPluginIntegrationTest(
 
     @Test
     fun `plugin generates versionCode and versionName for the assembled APK when assemble task is run`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -239,7 +239,7 @@ class AppVersioningPluginIntegrationTest(
 
     @Test
     fun `plugin generates versionCode and versionName for all assembled APKs when splits-APKs and universal APK are enabled`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -288,7 +288,7 @@ class AppVersioningPluginIntegrationTest(
 
     @Test
     fun `plugin (when disabled) does not generate versionCode and versionName from git tag for the assembled APK when assemble task is run`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.0.0", message = "1st tag", commitId = commitId)
         }

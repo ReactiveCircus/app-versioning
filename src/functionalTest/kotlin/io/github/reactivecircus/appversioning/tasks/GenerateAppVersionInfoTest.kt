@@ -4,8 +4,8 @@ package io.github.reactivecircus.appversioning.tasks
 
 import io.github.reactivecircus.appversioning.fixtures.AppProjectTemplate
 import io.github.reactivecircus.appversioning.fixtures.BuildScriptLanguage
+import io.github.reactivecircus.appversioning.fixtures.initGitRepo
 import io.github.reactivecircus.appversioning.fixtures.withFixtureRunner
-import io.github.reactivecircus.appversioning.internal.GitClient
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Rule
 import org.junit.Test
@@ -85,7 +85,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo generates versionCode and versionName when root Gradle project is not a git root directory but gitRootDirectory provided is a git root directory`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -113,7 +113,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo generates versionCode and versionName when bareGitRepoDirectory is provided`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -144,14 +144,14 @@ class GenerateAppVersionInfoTest {
     fun `GenerateAppVersionInfo fetches remote tags when fetchTagsWhenNoneExistsLocally is enabled and no local tags exist`() {
         val remoteFolder = TemporaryFolder().apply { create() }
         try {
-            val remoteGitClient = GitClient.initialize(remoteFolder.root)
-            val commitId = remoteGitClient.commit(message = "1st commit.")
+            val remoteGitRepo = initGitRepo(remoteFolder.root)
+            val commitId = remoteGitRepo.commit(message = "1st commit.")
 
             ProcessBuilder("git", "clone", "--no-tags", remoteFolder.root.absolutePath, fixtureDir.root.absolutePath)
                 .start()
                 .waitFor()
 
-            remoteGitClient.tag(name = "1.2.3", message = "remote tag", commitId = commitId)
+            remoteGitRepo.tag(name = "1.2.3", message = "remote tag", commitId = commitId)
 
             val extension = """
                 appVersioning {
@@ -183,7 +183,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo generates versionCode by converting latest SemVer-compliant git tag to a single integer using positional notation when no custom versionCode spec is provided`() {
-        val gitClient = GitClient.initialize(fixtureDir.root).apply {
+        val gitRepo = initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3-alpha01+build.567", message = "1st tag", commitId = commitId)
         }
@@ -201,8 +201,8 @@ class GenerateAppVersionInfoTest {
             assertEquals("10203", versionCodeFile.readText())
         }
 
-        val commitId2 = gitClient.commit(message = "2nd commit.")
-        gitClient.tag(name = "v3.0.0-SNAPSHOT", message = "2nd tag", commitId = commitId2)
+        val commitId2 = gitRepo.commit(message = "2nd commit.")
+        gitRepo.tag(name = "v3.0.0-SNAPSHOT", message = "2nd tag", commitId = commitId2)
 
         runner.runAndCheckResult(
             "generateAppVersionInfoForRelease"
@@ -213,7 +213,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo fails when latest git tag is not SemVer-compliant and no custom versionCode spec is provided`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2", message = "1st tag", commitId = commitId)
         }
@@ -238,7 +238,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo fails when SemVer-compliant git tag has a component that exceeds the maximum digits allocated (2) and no custom versionCode spec is provided`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.100", message = "1st tag", commitId = commitId)
         }
@@ -265,7 +265,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo generates fallback versionCode and versionName when no git tags exist`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             commit(message = "1st commit.")
         }
 
@@ -297,7 +297,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo generates custom versionCode when custom versionCode spec is provided`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -331,7 +331,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo fails when converting a non-SemVer compliant git tag to SemVer in a custom versionCode spec`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2", message = "1st tag", commitId = commitId)
         }
@@ -357,7 +357,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo generates versionName directly from the latest git tag when no custom versionName spec is provided`() {
-        val gitClient = GitClient.initialize(fixtureDir.root).apply {
+        val gitRepo = initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "0.0.1", message = "1st tag", commitId = commitId)
         }
@@ -381,8 +381,8 @@ class GenerateAppVersionInfoTest {
             assertEquals("0.0.1", versionNameFile.readText())
         }
 
-        val commitId2 = gitClient.commit(message = "2nd commit.")
-        gitClient.tag(name = "v1.1.0-alpha01", message = "2nd tag", commitId = commitId2)
+        val commitId2 = gitRepo.commit(message = "2nd commit.")
+        gitRepo.tag(name = "v1.1.0-alpha01", message = "2nd tag", commitId = commitId2)
 
         runner.runAndCheckResult(
             "generateAppVersionInfoForRelease"
@@ -390,8 +390,8 @@ class GenerateAppVersionInfoTest {
             assertEquals("v1.1.0-alpha01", versionNameFile.readText())
         }
 
-        val commitId3 = gitClient.commit(message = "3rd commit.")
-        gitClient.tag(name = "alpha", message = "3rd tag", commitId = commitId3)
+        val commitId3 = gitRepo.commit(message = "3rd commit.")
+        gitRepo.tag(name = "alpha", message = "3rd tag", commitId = commitId3)
 
         runner.runAndCheckResult(
             "generateAppVersionInfoForRelease"
@@ -402,7 +402,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo generates custom versionName when custom versionName spec is provided`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -429,7 +429,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo can generate custom versionCode based on build variant`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -493,7 +493,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo can generate custom versionName based on build variant`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -557,7 +557,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo generates versionCode and versionName from the latest git tag matching the provided tagFilter pattern when a tagFilter pattern is provided`() {
-        val gitClient = GitClient.initialize(fixtureDir.root).apply {
+        val gitRepo = initGitRepo(fixtureDir.root) {
             commit(message = "Initial commit.")
         }
 
@@ -609,8 +609,8 @@ class GenerateAppVersionInfoTest {
         )
 
         // 1st appA release
-        val commitId = gitClient.commit(message = "appA release.")
-        gitClient.tag(name = "0.1.0+appA", message = "1st tag", commitId = commitId)
+        val commitId = gitRepo.commit(message = "appA release.")
+        gitRepo.tag(name = "0.1.0+appA", message = "1st tag", commitId = commitId)
 
         runner.runAndCheckResult(
             "generateAppVersionInfoForRelease"
@@ -628,12 +628,12 @@ class GenerateAppVersionInfoTest {
             assertEquals("", versionNameFileAppC.readText())
         }
 
-        gitClient.commit(message = "Commit a.")
-        gitClient.commit(message = "Commit b.")
+        gitRepo.commit(message = "Commit a.")
+        gitRepo.commit(message = "Commit b.")
 
         // 1st appB release
-        val commitId2 = gitClient.commit(message = "appB release.")
-        gitClient.tag(name = "1.2.3-rc01+appB", message = "2nd tag", commitId = commitId2)
+        val commitId2 = gitRepo.commit(message = "appB release.")
+        gitRepo.tag(name = "1.2.3-rc01+appB", message = "2nd tag", commitId = commitId2)
 
         runner.runAndCheckResult(
             "generateAppVersionInfoForRelease"
@@ -651,11 +651,11 @@ class GenerateAppVersionInfoTest {
             assertEquals("", versionNameFileAppC.readText())
         }
 
-        gitClient.commit(message = "Commit c.")
+        gitRepo.commit(message = "Commit c.")
 
         // 2nd appB release
-        val commitId3 = gitClient.commit(message = "appB release.")
-        gitClient.tag(name = "1.2.3-rc02+appB", message = "3rd tag", commitId = commitId3)
+        val commitId3 = gitRepo.commit(message = "appB release.")
+        gitRepo.tag(name = "1.2.3-rc02+appB", message = "3rd tag", commitId = commitId3)
 
         runner.runAndCheckResult(
             "generateAppVersionInfoForRelease"
@@ -674,8 +674,8 @@ class GenerateAppVersionInfoTest {
         }
 
         // 1st appC release
-        val commitId4 = gitClient.commit(message = "appC release.")
-        gitClient.tag(name = "10.3.5-alpha03+appC", message = "4th tag", commitId = commitId4)
+        val commitId4 = gitRepo.commit(message = "appC release.")
+        gitRepo.tag(name = "10.3.5-alpha03+appC", message = "4th tag", commitId = commitId4)
 
         runner.runAndCheckResult(
             "generateAppVersionInfoForRelease"
@@ -693,11 +693,11 @@ class GenerateAppVersionInfoTest {
             assertEquals("10.3.5-alpha03+appC", versionNameFileAppC.readText())
         }
 
-        gitClient.commit(message = "Commit d.")
+        gitRepo.commit(message = "Commit d.")
 
         // 2nd appA release
-        val commitId5 = gitClient.commit(message = "appA release.")
-        gitClient.tag(name = "0.2.1+appA", message = "4th tag", commitId = commitId5)
+        val commitId5 = gitRepo.commit(message = "appA release.")
+        gitRepo.tag(name = "0.2.1+appA", message = "4th tag", commitId = commitId5)
 
         runner.runAndCheckResult(
             "generateAppVersionInfoForRelease"
@@ -718,7 +718,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `versionCode and versionName configurations work in groovy`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
             commit(message = "2nd commit.")
@@ -776,7 +776,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `versionCode and versionName configurations with external Provider work in groovy`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
             commit(message = "2nd commit.")
@@ -832,7 +832,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo is incremental without custom versionCode and versionName specs`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -857,7 +857,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo is incremental with custom versionCode and versionName specs`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
             commit(message = "2nd commit.")
@@ -894,7 +894,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo is cacheable without custom versionCode and versionName specs`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -923,7 +923,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo is cacheable with custom versionCode and versionName specs`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
             commit(message = "2nd commit.")
@@ -964,7 +964,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo is incremental for specific build variants`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -990,7 +990,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo is cacheable for specific build variants`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -1020,7 +1020,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo (up-to-date) is re-executed after changing git refs`() {
-        val gitClient = GitClient.initialize(fixtureDir.root).apply {
+        val gitRepo = initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -1042,7 +1042,7 @@ class GenerateAppVersionInfoTest {
             assertEquals(TaskOutcome.UP_TO_DATE, task(":app:generateAppVersionInfoForRelease")?.outcome)
         }
 
-        gitClient.commit(message = "2nd commit.")
+        gitRepo.commit(message = "2nd commit.")
 
         runner.runAndCheckResult(
             "generateAppVersionInfoForRelease"
@@ -1053,11 +1053,11 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo (from cache) is re-executed after changing git refs`() {
-        val gitClient = GitClient.initialize(fixtureDir.root).apply {
+        val gitRepo = initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
-        val commitId2 = gitClient.commit(message = "2nd commit.")
+        val commitId2 = gitRepo.commit(message = "2nd commit.")
 
         val runner = withFixtureRunner(
             fixtureDir = fixtureDir,
@@ -1080,7 +1080,7 @@ class GenerateAppVersionInfoTest {
             assertEquals(TaskOutcome.FROM_CACHE, task(":app:generateAppVersionInfoForRelease")?.outcome)
         }
 
-        gitClient.tag(name = "1.3.0", message = "2nd tag", commitId = commitId2)
+        gitRepo.tag(name = "1.3.0", message = "2nd tag", commitId = commitId2)
 
         runner.runAndCheckResult(
             "clean",
@@ -1093,7 +1093,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo (up-to-date) is re-executed after changing git HEAD`() {
-        val gitClient = GitClient.initialize(fixtureDir.root).apply {
+        val gitRepo = initGitRepo(fixtureDir.root) {
             val commitId1 = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId1)
             val commitId2 = commit(message = "2nd commit.")
@@ -1117,7 +1117,7 @@ class GenerateAppVersionInfoTest {
             assertEquals(TaskOutcome.UP_TO_DATE, task(":app:generateAppVersionInfoForRelease")?.outcome)
         }
 
-        gitClient.checkoutTag(tag = "1.2.3")
+        gitRepo.checkoutTag(tag = "1.2.3")
 
         runner.runAndCheckResult(
             "generateAppVersionInfoForRelease"
@@ -1128,7 +1128,7 @@ class GenerateAppVersionInfoTest {
 
     @Test
     fun `GenerateAppVersionInfo (from cache) is re-executed after changing git HEAD`() {
-        val gitClient = GitClient.initialize(fixtureDir.root).apply {
+        val gitRepo = initGitRepo(fixtureDir.root) {
             val commitId1 = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId1)
             val commitId2 = commit(message = "2nd commit.")
@@ -1156,7 +1156,7 @@ class GenerateAppVersionInfoTest {
             assertEquals(TaskOutcome.FROM_CACHE, task(":app:generateAppVersionInfoForRelease")?.outcome)
         }
 
-        gitClient.checkoutTag(tag = "1.2.3")
+        gitRepo.checkoutTag(tag = "1.2.3")
 
         runner.runAndCheckResult(
             "clean",

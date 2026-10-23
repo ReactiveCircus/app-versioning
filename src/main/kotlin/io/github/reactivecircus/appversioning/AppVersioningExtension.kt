@@ -8,7 +8,6 @@ import org.gradle.api.provider.Property
 /**
  * Extension for [AppVersioningPlugin].
  */
-@Suppress("unused")
 open class AppVersioningExtension internal constructor(objects: ObjectFactory) {
     /**
      * Whether to enable the plugin.

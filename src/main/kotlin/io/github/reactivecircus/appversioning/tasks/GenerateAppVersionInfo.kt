@@ -5,7 +5,7 @@ import io.github.reactivecircus.appversioning.GitTag
 import io.github.reactivecircus.appversioning.VariantInfo
 import io.github.reactivecircus.appversioning.VersionCodeSpec
 import io.github.reactivecircus.appversioning.VersionNameSpec
-import io.github.reactivecircus.appversioning.internal.GitClient
+import io.github.reactivecircus.appversioning.internal.GitOps
 import io.github.reactivecircus.appversioning.toGitTag
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
@@ -71,22 +71,27 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
     abstract val variantInfo: Property<VariantInfo>
 
     @TaskAction
-    fun generate() {
+    internal fun generate() {
         check(gitRefsDirectory.isPresent && gitHead.isPresent) {
             "Android App Versioning Gradle Plugin works with git tags but ${rootProjectDisplayName.get()} is not a git root directory, and a valid gitRootDirectory is not provided."
         }
 
-        val gitClient = GitClient.open(rootProjectDirectory.get().asFile)
+        val rootProjectDir = rootProjectDirectory.get().asFile
+        GitOps.ensureValidGitRepo(rootProjectDir)
 
-        val gitTag: GitTag = gitClient.describeLatestTag(
-            tagFilter.orNull
+        val gitTag: GitTag = GitOps.describeLatestTag(
+            workingDir = rootProjectDir,
+            pattern = tagFilter.orNull,
         )?.toGitTag() ?: if (fetchTagsWhenNoneExistsLocally.get()) {
-            val tagsList = gitClient.listLocalTags()
+            val tagsList = GitOps.listLocalTags(rootProjectDir)
             if (tagsList.isEmpty()) {
                 logger.warn("No git tags found. Fetching tags from remote.")
-                gitClient.fetchRemoteTags()
+                GitOps.fetchRemoteTags(rootProjectDir)
             }
-            gitClient.describeLatestTag(tagFilter.orNull)?.toGitTag()
+            GitOps.describeLatestTag(
+                workingDir = rootProjectDir,
+                pattern = tagFilter.orNull,
+            )?.toGitTag()
         } else {
             null
         } ?: run {

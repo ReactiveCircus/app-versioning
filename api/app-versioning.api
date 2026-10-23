@@ -86,41 +86,8 @@ public final class io/github/reactivecircus/appversioning/VersionNameSpec$Compan
 	public final fun getTagName ()Lio/github/reactivecircus/appversioning/VersionNameSpec;
 }
 
-public final class io/github/reactivecircus/appversioning/internal/CommitId {
-	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/reactivecircus/appversioning/internal/CommitId;
-	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
-	public fun equals (Ljava/lang/Object;)Z
-	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
-	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
-	public final fun getValue ()Ljava/lang/String;
-	public fun hashCode ()I
-	public static fun hashCode-impl (Ljava/lang/String;)I
-	public fun toString ()Ljava/lang/String;
-	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
-	public final synthetic fun unbox-impl ()Ljava/lang/String;
-}
-
-public final class io/github/reactivecircus/appversioning/internal/GitClient {
-	public static final field Companion Lio/github/reactivecircus/appversioning/internal/GitClient$Companion;
-	public final fun checkoutTag (Ljava/lang/String;)V
-	public final fun commit-HhBVPuw (Ljava/lang/String;Z)Ljava/lang/String;
-	public static synthetic fun commit-HhBVPuw$default (Lio/github/reactivecircus/appversioning/internal/GitClient;Ljava/lang/String;ZILjava/lang/Object;)Ljava/lang/String;
-	public final fun describeLatestTag (Ljava/lang/String;)Ljava/lang/String;
-	public static synthetic fun describeLatestTag$default (Lio/github/reactivecircus/appversioning/internal/GitClient;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
-	public final fun fetchRemoteTags ()V
-	public final fun listLocalTags ()Ljava/util/List;
-	public final fun tag-9kPyyPo (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-	public static synthetic fun tag-9kPyyPo$default (Lio/github/reactivecircus/appversioning/internal/GitClient;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
-}
-
-public final class io/github/reactivecircus/appversioning/internal/GitClient$Companion {
-	public final fun initialize (Ljava/io/File;)Lio/github/reactivecircus/appversioning/internal/GitClient;
-	public final fun open (Ljava/io/File;)Lio/github/reactivecircus/appversioning/internal/GitClient;
-}
-
 public abstract class io/github/reactivecircus/appversioning/tasks/GenerateAppVersionInfo : org/gradle/api/DefaultTask {
 	public fun <init> ()V
-	public final fun generate ()V
 	public abstract fun getFetchTagsWhenNoneExistsLocally ()Lorg/gradle/api/provider/Property;
 	public abstract fun getGitHead ()Lorg/gradle/api/file/RegularFileProperty;
 	public abstract fun getGitRefsDirectory ()Lorg/gradle/api/file/DirectoryProperty;
@@ -140,6 +107,5 @@ public abstract class io/github/reactivecircus/appversioning/tasks/PrintAppVersi
 	public abstract fun getProjectName ()Lorg/gradle/api/provider/Property;
 	public abstract fun getVersionCodeFile ()Lorg/gradle/api/file/RegularFileProperty;
 	public abstract fun getVersionNameFile ()Lorg/gradle/api/file/RegularFileProperty;
-	public final fun print ()V
 }
 

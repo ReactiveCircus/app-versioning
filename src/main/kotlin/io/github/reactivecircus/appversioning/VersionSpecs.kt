@@ -99,11 +99,11 @@ private class SerializableClosure<T>(
             .also { it.resolveStrategy = Closure.DELEGATE_FIRST }
             .call(context)
 
-    @Suppress("Unused")
+    @Suppress("unused")
     private fun writeReplace(): Any = SerializableClosure(dehydrated)
 
     companion object {
-        @Suppress("Unused")
+        @Suppress("unused")
         private const val serialVersionUID = 1L
     }
 }

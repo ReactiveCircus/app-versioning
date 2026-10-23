@@ -11,7 +11,7 @@ class VariantInfo internal constructor(
     val isReleaseBuild: Boolean get() = buildType == "release"
 
     internal companion object {
-        @Suppress("Unused")
+        @Suppress("unused")
         private const val serialVersionUID = 1L
     }
 }

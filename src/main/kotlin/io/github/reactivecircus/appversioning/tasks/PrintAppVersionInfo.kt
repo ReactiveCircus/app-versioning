@@ -27,7 +27,7 @@ abstract class PrintAppVersionInfo : DefaultTask() {
     abstract val buildVariantName: Property<String>
 
     @TaskAction
-    fun print() {
+    internal fun print() {
         if (versionCodeFile.isPresent && versionNameFile.isPresent) {
             logger.quiet(
                 """

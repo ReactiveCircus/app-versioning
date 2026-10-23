@@ -1,30 +1,15 @@
-package io.github.reactivecircus.appversioning.internal
+package io.github.reactivecircus.appversioning.fixtures
 
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-class GitClient private constructor(private val projectDir: File) {
-    fun listLocalTags(): List<String> {
-        val output = listOf("git", "tag", "--list").execute(projectDir)
-        return if (output.isEmpty()) emptyList() else output.lines()
-    }
+fun initGitRepo(rootDir: File, action: GitRepo.() -> Unit = {}): GitRepo {
+    return GitRepo(rootDir).apply(action)
+}
 
-    fun fetchRemoteTags() {
-        listOf("git", "fetch", "--tags").execute(projectDir)
-    }
-
-    fun describeLatestTag(pattern: String? = null): String? {
-        val command = buildList {
-            add("git")
-            add("describe")
-            if (pattern != null) {
-                add("--match")
-                add(pattern)
-            }
-            add("--tags")
-            add("--long")
-        }
-        return runCatching { command.execute(projectDir) }.getOrNull()
+class GitRepo(private val rootDir: File) {
+    init {
+        listOf("git", "init").execute(rootDir)
     }
 
     fun commit(message: String, allowEmpty: Boolean = true): CommitId {
@@ -37,10 +22,10 @@ class GitClient private constructor(private val projectDir: File) {
             add("-m")
             add(message)
         }
-        commitCommand.execute(projectDir)
+        commitCommand.execute(rootDir)
 
         val getCommitIdCommand = listOf("git", "rev-parse", "--short", "HEAD")
-        return CommitId(getCommitIdCommand.execute(projectDir))
+        return CommitId(getCommitIdCommand.execute(rootDir))
     }
 
     fun tag(name: String, message: String, commitId: CommitId? = null) {
@@ -55,7 +40,7 @@ class GitClient private constructor(private val projectDir: File) {
             add("-m")
             add(message)
         }
-        command.execute(projectDir)
+        command.execute(rootDir)
     }
 
     fun checkoutTag(tag: String) {
@@ -64,32 +49,13 @@ class GitClient private constructor(private val projectDir: File) {
             add("checkout")
             add(tag)
         }
-        commitCommand.execute(projectDir)
-    }
-
-    companion object {
-        fun initialize(projectDir: File): GitClient {
-            return GitClient(projectDir).apply {
-                listOf("git", "init").execute(projectDir)
-            }
-        }
-
-        fun open(projectDir: File): GitClient {
-            require(projectDir.isInValidGitRepo)
-            return GitClient(projectDir)
-        }
+        commitCommand.execute(rootDir)
     }
 }
 
 @JvmInline
 value class CommitId(val value: String)
 
-private val File.isInValidGitRepo: Boolean
-    get() = runCatching {
-        listOf("git", "rev-parse", "--is-inside-work-tree").execute(this).toBoolean()
-    }.getOrDefault(false)
-
-@Suppress("UseCheckOrError")
 private fun List<String>.execute(workingDir: File, timeoutInSeconds: Long = DEFAULT_COMMAND_TIMEOUT_SECONDS): String {
     val process = ProcessBuilder(this)
         .directory(workingDir)
