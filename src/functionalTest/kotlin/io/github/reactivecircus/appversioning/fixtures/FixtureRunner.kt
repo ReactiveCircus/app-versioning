@@ -10,19 +10,19 @@ fun withFixtureRunner(
     fixtureDir: TemporaryFolder,
     subprojects: List<AndroidProjectTemplate>,
     parentDirectoryName: String? = null,
-    dryRun: Boolean = false
+    dryRun: Boolean = false,
 ) = FixtureRunner(
     fixtureDir = fixtureDir,
     subprojects = subprojects,
     parentDirectoryName = parentDirectoryName,
-    dryRun = dryRun
+    dryRun = dryRun,
 )
 
 class FixtureRunner(
     fixtureDir: TemporaryFolder,
     subprojects: List<AndroidProjectTemplate>,
     parentDirectoryName: String?,
-    private val dryRun: Boolean
+    private val dryRun: Boolean,
 ) {
     private val gradleRoot: File = if (parentDirectoryName.isNullOrBlank()) {
         fixtureDir.root
@@ -37,7 +37,6 @@ class FixtureRunner(
     fun runAndCheckResult(vararg commands: String, action: BuildResult.() -> Unit) {
         val buildResult = runner.withProjectDir(gradleRoot)
             .withArguments(buildArguments(commands.toList()))
-            .withPluginClasspath()
             .withGradleVersion(GradleVersion.current().version)
             .build()
         action(buildResult)
@@ -46,7 +45,6 @@ class FixtureRunner(
     fun runAndExpectFailure(vararg commands: String, action: BuildResult.() -> Unit) {
         val buildResult = runner.withProjectDir(gradleRoot)
             .withArguments(buildArguments(commands.toList()))
-            .withPluginClasspath()
             .withGradleVersion(GradleVersion.current().version)
             .buildAndFail()
         action(buildResult)
@@ -63,7 +61,6 @@ class FixtureRunner(
 }
 
 private val runner = GradleRunner.create()
-    .withPluginClasspath()
     .withDebug(true)
 
 private fun TemporaryFolder.buildFixture(gradleRoot: File, subprojects: List<AndroidProjectTemplate>) {
@@ -71,14 +68,14 @@ private fun TemporaryFolder.buildFixture(gradleRoot: File, subprojects: List<And
     gradleRoot.resolve("settings.gradle.kts").also { it.parentFile.mkdirs() }
         .writeText(
             settingsFileContent(
-                localBuildCacheUri = newFolder("local-cache").toURI().toString(),
+                localBuildCacheUri = root.resolve("local-cache").apply { mkdirs() }.toURI().toString(),
                 subprojects = subprojects
             )
         )
 
     // gradle.properties
     gradleRoot.resolve("gradle.properties").also { it.parentFile.mkdir() }
-        .writeText(gradlePropertiesFileContent(enableConfigurationCache = false))
+        .writeText(gradlePropertiesFileContent(enableConfigurationCache = currentAgpSupportsConfigurationCache()))
 
     // subprojects
     subprojects.forEach { subproject ->

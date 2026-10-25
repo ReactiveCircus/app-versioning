@@ -3,8 +3,10 @@
 package io.github.reactivecircus.appversioning.tasks
 
 import io.github.reactivecircus.appversioning.fixtures.AppProjectTemplate
+import io.github.reactivecircus.appversioning.fixtures.ConfigurationCacheEntryLog
+import io.github.reactivecircus.appversioning.fixtures.assertHasConfigurationCacheEntryLog
+import io.github.reactivecircus.appversioning.fixtures.initGitRepo
 import io.github.reactivecircus.appversioning.fixtures.withFixtureRunner
-import io.github.reactivecircus.appversioning.internal.GitClient
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Rule
 import org.junit.Test
@@ -18,7 +20,7 @@ class PrintAppVersionInfoTest {
 
     @Test
     fun `PrintAppVersionInfo prints latest generated versionCode and versionName to the console when they are available`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -55,7 +57,7 @@ class PrintAppVersionInfoTest {
 
     @Test
     fun `PrintAppVersionInfo prints warning message to the console when they are not available`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -76,56 +78,43 @@ class PrintAppVersionInfoTest {
     }
 
     @Test
-    fun `PrintAppVersionInfo prints latest generate versionCode and versionName (or warning message if not available) to the console for each project with AppVersioningPlugin applied`() {
-        GitClient.initialize(fixtureDir.root).apply {
+    fun `PrintAppVersionInfo prints latest generated versionCode and versionName (or warning message if not available) to the console for each project with AppVersioningPlugin applied`() {
+        initGitRepo(fixtureDir.root) {
             commit(message = "Initial commit.")
-            // appA release
             val commitId1 = commit(message = "appA release.")
             tag(name = "0.1.0+appA", message = "1st tag", commitId = commitId1)
-            // appB release
             val commitId2 = commit(message = "appB release.")
             tag(name = "1.2.3+appB", message = "2nd tag", commitId = commitId2)
-            // appC release
-            val commitId4 = commit(message = "appC release.")
-            tag(name = "10.3.5+appC", message = "4th tag", commitId = commitId4)
+            val commitId3 = commit(message = "appC release.")
+            tag(name = "10.3.5+appC", message = "3rd tag", commitId = commitId3)
         }
-
-        val tagFilterAppA = "[0-9]*.[0-9]*.[0-9]*+appA"
-        val tagFilterAppB = "[0-9]*.[0-9]*.[0-9]*+appB"
-        val tagFilterAppC = "[0-9]*.[0-9]*.[0-9]*+appC"
-
-        val extensionsAppA = """
-            appVersioning {
-                tagFilter.set("$tagFilterAppA")
-            }
-        """.trimIndent()
-
-        val extensionsAppB = """
-            appVersioning {
-                tagFilter.set("$tagFilterAppB")
-            }
-        """.trimIndent()
-
-        val extensionsAppC = """
-            appVersioning {
-                tagFilter.set("$tagFilterAppC")
-            }
-        """.trimIndent()
 
         val runner = withFixtureRunner(
             fixtureDir = fixtureDir,
             subprojects = listOf(
                 AppProjectTemplate(
                     projectName = "app-a",
-                    pluginExtension = extensionsAppA
+                    pluginExtension = """
+                        appVersioning {
+                            tagFilter.set("[0-9]*.[0-9]*.[0-9]*+appA")
+                        }
+                    """.trimIndent()
                 ),
                 AppProjectTemplate(
                     projectName = "app-b",
-                    pluginExtension = extensionsAppB
+                    pluginExtension = """
+                        appVersioning {
+                            tagFilter.set("[0-9]*.[0-9]*.[0-9]*+appB")
+                        }
+                    """.trimIndent()
                 ),
                 AppProjectTemplate(
                     projectName = "app-c",
-                    pluginExtension = extensionsAppC
+                    pluginExtension = """
+                        appVersioning {
+                            tagFilter.set("[0-9]*.[0-9]*.[0-9]*+appC")
+                        }
+                    """.trimIndent()
                 )
             )
         )
@@ -167,7 +156,7 @@ class PrintAppVersionInfoTest {
                 )
             )
 
-            assertEquals(TaskOutcome.SUCCESS, task(":app-a:printAppVersionInfoForRelease")?.outcome)
+            assertEquals(TaskOutcome.SUCCESS, task(":app-c:printAppVersionInfoForRelease")?.outcome)
             assertTrue(
                 output.contains(
                     "No app version info (versionCode and versionName) generated by the Android App Versioning plugin for the \"release\" variant of project \":app-c\" is available."
@@ -178,7 +167,7 @@ class PrintAppVersionInfoTest {
 
     @Test
     fun `PrintAppVersionInfo is not incremental`() {
-        GitClient.initialize(fixtureDir.root).apply {
+        initGitRepo(fixtureDir.root) {
             val commitId = commit(message = "1st commit.")
             tag(name = "1.2.3", message = "1st tag", commitId = commitId)
         }
@@ -197,6 +186,7 @@ class PrintAppVersionInfoTest {
         runner.runAndCheckResult(
             "printAppVersionInfoForRelease"
         ) {
+            assertHasConfigurationCacheEntryLog(ConfigurationCacheEntryLog.Stored)
             assertEquals(TaskOutcome.SUCCESS, task(":app:printAppVersionInfoForRelease")?.outcome)
             assertTrue(
                 output.contains(
@@ -214,6 +204,7 @@ class PrintAppVersionInfoTest {
         runner.runAndCheckResult(
             "printAppVersionInfoForRelease"
         ) {
+            assertHasConfigurationCacheEntryLog(ConfigurationCacheEntryLog.Reused)
             assertEquals(TaskOutcome.SUCCESS, task(":app:printAppVersionInfoForRelease")?.outcome)
             assertTrue(
                 output.contains(

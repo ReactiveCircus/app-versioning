@@ -2,8 +2,15 @@
 
 ## Unreleased
 
+This is the first preview release of **App Versioning 2.0**, featuring redesigned `VersionCodeSpec` and `VersionNameSpec` APIs along with improved `GitTag` and `SemVer` APIs.
+
+Please see the [2.0 Migration Guide](docs/migration-guide.md) for full details on breaking changes and how to upgrade from 1.x.
+
+Note that the APIs are subject to change before the stable `2.0.0` release. Feedback and bug reports are welcome!
+
 ### Changed
-- Minimum Android Gradle Plugin version is now **9.0.0** when using Gradle **9.6.0** and above.
+- New `AppVersioningExtension`, `GitTag`, and `SemVer` APIs.
+- Minimum Android Gradle Plugin version is now **9.0.0**.
 - Compile with AGP 9.4.1.
 - Compile with Kotlin 2.4.21.
 

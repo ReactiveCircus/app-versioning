@@ -1,5 +1,6 @@
 package io.github.reactivecircus.appversioning
 
+import com.android.build.api.AndroidPluginVersion
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.AppPlugin
@@ -18,6 +19,9 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class AppVersioningPlugin : Plugin<Project> {
     override fun apply(project: Project) {
+        check(AndroidPluginVersion.getCurrent() >= MIN_AGP_VERSION) {
+            "Android App Versioning plugin requires Android Gradle Plugin ${MIN_AGP_VERSION.version} or later. Detected Android Gradle Plugin version: ${AndroidPluginVersion.getCurrent().version}."
+        }
         val androidAppPluginApplied = AtomicBoolean(false)
         val pluginDisabled = AtomicBoolean(false)
         val appVersioningExtension = project.extensions.create("appVersioning", AppVersioningExtension::class.java)
@@ -76,10 +80,8 @@ class AppVersioningPlugin : Plugin<Project> {
         rootProjectDisplayName.set(rootProject.displayName)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
         tagFilter.set(extension.tagFilter)
-        kotlinVersionCodeCustomizer.set(extension.kotlinVersionCodeCustomizer)
-        kotlinVersionNameCustomizer.set(extension.kotlinVersionNameCustomizer)
-        groovyVersionCodeCustomizer.set(extension.groovyVersionCodeCustomizer)
-        groovyVersionNameCustomizer.set(extension.groovyVersionNameCustomizer)
+        versionCodeSpec.set(extension.versionCode.map { it.asSerializable() })
+        versionNameSpec.set(extension.versionName.map { it.asSerializable() })
         versionCodeFile.set(
             layout.buildDirectory.file("$APP_VERSIONING_TASK_OUTPUT_DIR/${variant.name}/$VERSION_CODE_RESULT_FILE")
         )
@@ -148,7 +150,9 @@ class AppVersioningPlugin : Plugin<Project> {
         return replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
 
-    companion object
+    private companion object {
+        private val MIN_AGP_VERSION = AndroidPluginVersion(9, 0, 0)
+    }
 }
 
 private const val APP_VERSIONING_TASK_GROUP = "versioning"

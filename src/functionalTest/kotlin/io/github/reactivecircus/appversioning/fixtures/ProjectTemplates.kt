@@ -1,17 +1,30 @@
 package io.github.reactivecircus.appversioning.fixtures
 
+import org.gradle.testkit.runner.internal.PluginUnderTestMetadataReading
+
+private val pluginClasspath: String by lazy {
+    PluginUnderTestMetadataReading.readImplementationClasspath()
+        .joinToString(",\n") { "\"${it.invariantSeparatorsPath}\"" }
+}
+
 fun settingsFileContent(
     localBuildCacheUri: String,
     subprojects: List<AndroidProjectTemplate>
 ) = """
-    dependencyResolutionManagement {
+    pluginManagement {
         repositories {
             mavenCentral()
             google()
         }
     }
 
-    pluginManagement {
+    buildscript {
+        dependencies {
+            classpath(files($pluginClasspath))
+        }
+    }
+
+    dependencyResolutionManagement {
         repositories {
             mavenCentral()
             google()
@@ -30,15 +43,12 @@ fun settingsFileContent(
 """.trimIndent()
 
 fun gradlePropertiesFileContent(enableConfigurationCache: Boolean): String {
-    val configurationCacheProperties = if (enableConfigurationCache) {
-        """
-            org.gradle.isolated-projects=true
-        """.trimIndent()
-    } else {
-        ""
-    }
     return """
-        $configurationCacheProperties
+        org.gradle.parallel=true
+        org.gradle.configureondemand=true
+        org.gradle.caching=true
+        org.gradle.configuration-cache=$enableConfigurationCache
+        org.gradle.isolated-projects=$enableConfigurationCache
     """.trimIndent()
 }
 

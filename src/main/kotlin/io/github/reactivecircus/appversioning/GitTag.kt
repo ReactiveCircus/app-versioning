@@ -1,14 +1,40 @@
 package io.github.reactivecircus.appversioning
 
+import java.util.Objects
+
 /**
  * Type-safe representation of a git tag.
  */
-data class GitTag(
-    val rawTagName: String,
+class GitTag internal constructor(
+    val name: String,
     val commitsSinceLatestTag: Int,
-    val commitHash: String
+    val commitHash: String,
 ) {
-    override fun toString() = rawTagName
+    /**
+     * Parses this tag's [name] into a [SemVer], stripping [prefix] first if non-empty.
+     *
+     * @param prefix expected prefix before the semantic version (default is `""`).
+     * @throws [IllegalArgumentException] when [name] does not start with [prefix] or the remaining string is not a valid [SemVer].
+     */
+    @JvmOverloads
+    fun toSemVer(prefix: String = ""): SemVer {
+        require(name.startsWith(prefix)) {
+            "Tag \"$name\" does not start with expected prefix \"$prefix\"."
+        }
+        return SemVer.parse(name.removePrefix(prefix))
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is GitTag) return false
+        return name == other.name &&
+            commitsSinceLatestTag == other.commitsSinceLatestTag &&
+            commitHash == other.commitHash
+    }
+
+    override fun hashCode(): Int = Objects.hash(name, commitsSinceLatestTag, commitHash)
+
+    override fun toString(): String = name
 }
 
 /**
@@ -18,6 +44,6 @@ internal fun String.toGitTag(): GitTag {
     val result = requireNotNull("(.*)-(\\d+)-g([0-9,a-f]{7,40})\$".toRegex().matchEntire(this)) {
         "$this is not a valid git tag."
     }
-    val (rawTagName, commitsSinceLatestTag, commitHash) = result.destructured
-    return GitTag(rawTagName, commitsSinceLatestTag.toInt(), commitHash)
+    val (name, commitsSinceLatestTag, commitHash) = result.destructured
+    return GitTag(name, commitsSinceLatestTag.toInt(), commitHash)
 }

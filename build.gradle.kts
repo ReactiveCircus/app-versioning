@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.detekt)
     alias(libs.plugins.mavenPublish)
     alias(libs.plugins.burst)
+    alias(libs.plugins.testkit)
 }
 
 group = property("GROUP") as String
@@ -19,6 +20,10 @@ version = property("VERSION_NAME") as String
 mavenPublishing {
     publishToMavenCentral(automaticRelease = true)
     signAllPublications()
+}
+
+gradleTestKitSupport {
+    disablePublication()
 }
 
 samWithReceiver {
@@ -56,34 +61,19 @@ tasks.pluginUnderTestMetadata {
     pluginClasspath.from(fixtureClasspath)
 }
 
-val functionalTestSourceSet: SourceSet = sourceSets.create("functionalTest") {
-    compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
-    runtimeClasspath += output + compileClasspath
+tasks.withType<Test>().configureEach {
+    testLogging {
+        events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+    }
 }
 
-val functionalTestImplementation: Configuration = configurations.getByName("functionalTestImplementation")
-    .extendsFrom(configurations.getByName("testImplementation"))
-
-gradlePlugin.testSourceSets(functionalTestSourceSet)
-
-val functionalTest = tasks.register("functionalTest", Test::class) {
+tasks.functionalTest {
     failFast = true
-    testLogging {
-        events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
-    }
-    testClassesDirs = functionalTestSourceSet.output.classesDirs
-    classpath = functionalTestSourceSet.runtimeClasspath
+    systemProperty("fixtureAgpVersion", fixtureAgpVersion.get())
 }
 
-val check = tasks.getByName("check", Task::class) {
-    dependsOn(functionalTest)
-}
-
-val test = tasks.getByName("test", Test::class) {
+tasks.test {
     maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
-    testLogging {
-        events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
-    }
 }
 
 val fixtureAgpVersion: Provider<String> = providers
@@ -93,12 +83,16 @@ val fixtureAgpVersion: Provider<String> = providers
 
 dependencies {
     compileOnly(libs.agp.build.api)
-    testImplementation(kotlin("test"))
+    testImplementation(kotlin("test-junit"))
+    functionalTestImplementation(kotlin("test-junit"))
+    functionalTestImplementation(libs.burst)
+    functionalTestImplementation(libs.agp.build.api)
     fixtureClasspath(libs.agp.build.gradle.flatMap { dependency ->
         fixtureAgpVersion.map { version ->
             "${dependency.group}:${dependency.name}:$version"
         }
     })
+    detektPlugins(libs.plugin.detektKtlintWrapper)
 }
 
 detekt {
@@ -116,6 +110,3 @@ tasks.withType<Detekt>().configureEach {
         html.outputLocation.set(file("build/reports/detekt/${project.name}.html"))
     }
 }
-
-
-dependencies.add("detektPlugins", libs.plugin.detektKtlintWrapper.get())
