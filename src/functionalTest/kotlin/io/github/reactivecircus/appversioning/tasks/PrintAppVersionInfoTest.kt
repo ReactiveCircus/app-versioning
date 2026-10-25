@@ -3,6 +3,8 @@
 package io.github.reactivecircus.appversioning.tasks
 
 import io.github.reactivecircus.appversioning.fixtures.AppProjectTemplate
+import io.github.reactivecircus.appversioning.fixtures.ConfigurationCacheEntryLog
+import io.github.reactivecircus.appversioning.fixtures.assertHasConfigurationCacheEntryLog
 import io.github.reactivecircus.appversioning.fixtures.initGitRepo
 import io.github.reactivecircus.appversioning.fixtures.withFixtureRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -184,7 +186,7 @@ class PrintAppVersionInfoTest {
         runner.runAndCheckResult(
             "printAppVersionInfoForRelease"
         ) {
-            assertTrue(output.contains("Configuration cache entry stored."))
+            assertHasConfigurationCacheEntryLog(ConfigurationCacheEntryLog.Stored)
             assertEquals(TaskOutcome.SUCCESS, task(":app:printAppVersionInfoForRelease")?.outcome)
             assertTrue(
                 output.contains(
@@ -202,7 +204,7 @@ class PrintAppVersionInfoTest {
         runner.runAndCheckResult(
             "printAppVersionInfoForRelease"
         ) {
-            assertTrue(output.contains("Configuration cache entry reused."))
+            assertHasConfigurationCacheEntryLog(ConfigurationCacheEntryLog.Reused)
             assertEquals(TaskOutcome.SUCCESS, task(":app:printAppVersionInfoForRelease")?.outcome)
             assertTrue(
                 output.contains(

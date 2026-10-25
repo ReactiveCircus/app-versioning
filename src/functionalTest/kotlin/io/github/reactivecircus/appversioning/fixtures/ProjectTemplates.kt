@@ -42,10 +42,15 @@ fun settingsFileContent(
     ${subprojects.map { it.projectName }.joinToString("\n") { "include(\":$it\")" }}
 """.trimIndent()
 
-val gradlePropertiesFileContent = """
-    org.gradle.configuration-cache=true
-    org.gradle.isolated-projects=true
-""".trimIndent()
+fun gradlePropertiesFileContent(enableConfigurationCache: Boolean): String {
+    return """
+        org.gradle.parallel=true
+        org.gradle.configureondemand=true
+        org.gradle.caching=true
+        org.gradle.configuration-cache=$enableConfigurationCache
+        org.gradle.isolated-projects=$enableConfigurationCache
+    """.trimIndent()
+}
 
 enum class BuildScriptLanguage {
     Kts,

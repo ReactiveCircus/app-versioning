@@ -5,7 +5,9 @@ package io.github.reactivecircus.appversioning
 import app.cash.burst.Burst
 import io.github.reactivecircus.appversioning.fixtures.AppProjectTemplate
 import io.github.reactivecircus.appversioning.fixtures.BuildScriptLanguage
+import io.github.reactivecircus.appversioning.fixtures.ConfigurationCacheEntryLog
 import io.github.reactivecircus.appversioning.fixtures.LibraryProjectTemplate
+import io.github.reactivecircus.appversioning.fixtures.assertHasConfigurationCacheEntryLog
 import io.github.reactivecircus.appversioning.fixtures.initGitRepo
 import io.github.reactivecircus.appversioning.fixtures.withFixtureRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -394,7 +396,7 @@ class AppVersioningPluginIntegrationTest(
         runner.runAndCheckResult(
             "generateAppVersionInfoForRelease",
         ) {
-            assertTrue(output.contains("Configuration cache entry stored."))
+            assertHasConfigurationCacheEntryLog(ConfigurationCacheEntryLog.Stored)
             assertEquals(TaskOutcome.SUCCESS, task(":app-a:generateAppVersionInfoForRelease")?.outcome)
             assertEquals(TaskOutcome.SUCCESS, task(":app-b:generateAppVersionInfoForRelease")?.outcome)
         }
@@ -402,7 +404,7 @@ class AppVersioningPluginIntegrationTest(
         runner.runAndCheckResult(
             "generateAppVersionInfoForRelease",
         ) {
-            assertTrue(output.contains("Configuration cache entry reused."))
+            assertHasConfigurationCacheEntryLog(ConfigurationCacheEntryLog.Reused)
             assertEquals(TaskOutcome.UP_TO_DATE, task(":app-a:generateAppVersionInfoForRelease")?.outcome)
             assertEquals(TaskOutcome.UP_TO_DATE, task(":app-b:generateAppVersionInfoForRelease")?.outcome)
         }
@@ -410,7 +412,7 @@ class AppVersioningPluginIntegrationTest(
         runner.runAndCheckResult(
             "printAppVersionInfoForRelease",
         ) {
-            assertTrue(output.contains("Configuration cache entry stored."))
+            assertHasConfigurationCacheEntryLog(ConfigurationCacheEntryLog.Stored)
             assertEquals(TaskOutcome.SUCCESS, task(":app-a:printAppVersionInfoForRelease")?.outcome)
             assertEquals(TaskOutcome.SUCCESS, task(":app-b:printAppVersionInfoForRelease")?.outcome)
             assertTrue(output.contains("versionCode: 10001"))
@@ -422,7 +424,7 @@ class AppVersioningPluginIntegrationTest(
         runner.runAndCheckResult(
             "printAppVersionInfoForRelease",
         ) {
-            assertTrue(output.contains("Configuration cache entry reused."))
+            assertHasConfigurationCacheEntryLog(ConfigurationCacheEntryLog.Reused)
             assertEquals(TaskOutcome.SUCCESS, task(":app-a:printAppVersionInfoForRelease")?.outcome)
             assertEquals(TaskOutcome.SUCCESS, task(":app-b:printAppVersionInfoForRelease")?.outcome)
         }

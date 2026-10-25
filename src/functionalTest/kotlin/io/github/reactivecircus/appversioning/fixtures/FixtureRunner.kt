@@ -75,7 +75,7 @@ private fun TemporaryFolder.buildFixture(gradleRoot: File, subprojects: List<And
 
     // gradle.properties
     gradleRoot.resolve("gradle.properties").also { it.parentFile.mkdir() }
-        .writeText(gradlePropertiesFileContent)
+        .writeText(gradlePropertiesFileContent(enableConfigurationCache = currentAgpSupportsConfigurationCache()))
 
     // subprojects
     subprojects.forEach { subproject ->

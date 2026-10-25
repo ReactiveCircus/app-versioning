@@ -69,6 +69,7 @@ tasks.withType<Test>().configureEach {
 
 tasks.functionalTest {
     failFast = true
+    systemProperty("fixtureAgpVersion", fixtureAgpVersion.get())
 }
 
 tasks.test {
@@ -85,6 +86,7 @@ dependencies {
     testImplementation(kotlin("test-junit"))
     functionalTestImplementation(kotlin("test-junit"))
     functionalTestImplementation(libs.burst)
+    functionalTestImplementation(libs.agp.build.api)
     fixtureClasspath(libs.agp.build.gradle.flatMap { dependency ->
         fixtureAgpVersion.map { version ->
             "${dependency.group}:${dependency.name}:$version"

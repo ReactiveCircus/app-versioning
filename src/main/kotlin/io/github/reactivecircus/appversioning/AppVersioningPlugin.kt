@@ -1,5 +1,6 @@
 package io.github.reactivecircus.appversioning
 
+import com.android.build.api.AndroidPluginVersion
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.AppPlugin
@@ -18,6 +19,9 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class AppVersioningPlugin : Plugin<Project> {
     override fun apply(project: Project) {
+        check(AndroidPluginVersion.getCurrent() >= MIN_AGP_VERSION) {
+            "Android App Versioning plugin requires Android Gradle Plugin ${MIN_AGP_VERSION.version} or later. Detected Android Gradle Plugin version: ${AndroidPluginVersion.getCurrent().version}."
+        }
         val androidAppPluginApplied = AtomicBoolean(false)
         val pluginDisabled = AtomicBoolean(false)
         val appVersioningExtension = project.extensions.create("appVersioning", AppVersioningExtension::class.java)
@@ -144,6 +148,10 @@ class AppVersioningPlugin : Plugin<Project> {
 
     private fun String.capitalize(): String {
         return replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+    }
+
+    private companion object {
+        private val MIN_AGP_VERSION = AndroidPluginVersion(9, 0, 0)
     }
 }
 
