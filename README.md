@@ -81,7 +81,7 @@ versionCode = MAJOR * 10000 + MINOR * 100 + PATCH
 
 For example, for a tag `1.3.1`, the generated `versionCode` is `1 * 10000 + 3 * 100 + 1 = 10301`.
 
-The default `versionName` is the name of the latest Git tag.
+The default `versionName` generated is the name of the latest Git tag.
 
 ```
 > Task :app:generateAppVersionInfoForRelease
@@ -141,9 +141,9 @@ appVersioning {
 
 `tag.toSemVer(prefix = "")` parses `GitTag#name` (after stripping `prefix` if specified) into a `SemVer` object, and `SemVer#toVersionCode(digitsPerComponent = 2)` converts it to an integer using positional notation. You can also parse arbitrary strings directly via `SemVer.parse(text)` or `SemVer.parseOrNull(text)`.
 
-#### Combining variant info and external providers
+#### Using environment variables or Gradle properties
 
-Because `versionCode` and `versionName` are standard Gradle `Property<VersionCodeSpec>` and `Property<VersionNameSpec>` instances, you can map external `Provider`s (such as `providers.environmentVariable(...)` or `providers.gradleProperty(...)`) directly into a spec so Gradle tracks them as task inputs:
+When computing `versionCode` or `versionName`, you can use an environment variable or Gradle property by mapping its `Provider` to the `VersionCodeSpec` or `VersionNameSpec` property:
 
 <details open><summary>Kotlin</summary>
 
@@ -156,15 +156,10 @@ appVersioning {
     versionCode.set(
         buildNumber.map { buildNum ->
             VersionCodeSpec {
-                val offset = if (variant.flavorName == "paid") 1 else 0
-                tag.toSemVer().toVersionCode() + buildNum + offset
+                tag.toSemVer().toVersionCode() + buildNum
             }
         }
     )
-    versionName.set {
-        val suffix = if (variant.isDebugBuild) " (${variant.variantName})" else ""
-        "${tag.name} (${tag.commitHash})$suffix"
-    }
 }
 ```
 
@@ -181,12 +176,49 @@ appVersioning {
     versionCode.set(
         buildNumber.map { buildNum ->
             {
-                def offset = variant.flavorName == "paid" ? 1 : 0
-                tag.toSemVer().toVersionCode() + buildNum + offset
+                tag.toSemVer().toVersionCode() + buildNum
             } as VersionCodeSpec
         }
     )
+}
+```
+
+</details>
+
+#### Custom specs based on build variants
+
+Sometimes you might want to customize `versionCode` or `versionName` based on the build variants (product flavor, build type). To do this, use `variant` (`VariantInfo`) from the `VersionContext` receiver when generating custom `versionCode` or `versionName`:
+
+<details open><summary>Kotlin</summary>
+
+```kt
+appVersioning {
+    versionCode.set {
+        // add 1 to the versionCode for builds with the "paid" product flavor
+        val offset = if (variant.flavorName == "paid") 1 else 0
+        tag.toSemVer().toVersionCode() + offset
+    }
+    versionName.set {
+        // append build variant to the versionName for debug builds
+        val suffix = if (variant.isDebugBuild) " (${variant.variantName})" else ""
+        "${tag.name} (${tag.commitHash})$suffix"
+    }
+}
+```
+
+</details>
+
+<details><summary>Groovy</summary>
+
+```groovy
+appVersioning {
+    versionCode {
+        // add 1 to the versionCode for builds with the "paid" product flavor
+        def offset = variant.flavorName == "paid" ? 1 : 0
+        tag.toSemVer().toVersionCode() + offset
+    }
     versionName {
+        // append build variant to the versionName for debug builds
         def suffix = variant.debugBuild ? " (${variant.variantName})" : ""
         "${tag.name} (${tag.commitHash})${suffix}"
     }
@@ -199,7 +231,23 @@ appVersioning {
 
 By default the plugin uses the latest tag in the current branch for `versionCode` and `versionName` generation.
 
-To use the latest tag matching a specific glob pattern (for example `<maj>.<min>.<patch>[-<pre-release version>]+<app-identifier>` in a monorepo):
+Sometimes it's useful to be able to use the latest tag that follows a specific glob pattern.
+
+For example a codebase might build and publish 3 different apps separately using the following tag pattern:
+
+`<maj>.<min>.<patch>[-<pre-release version>]+<app-identifier>`
+
+where `app-identifier` is the build metadata component in **SemVer**.
+
+Some of the possible tags are:
+
+```
+1.5.8+app-a
+2.29.0-rc01+app-b
+10.87.9-alpha04+app-c
+```
+
+To configure the plugin to generate version info specific to `app-b`:
 
 ```kt
 appVersioning {
