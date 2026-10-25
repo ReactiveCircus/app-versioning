@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+Nothing yet.
+
+## 2.0.0-alpha.1
+
 This is the first preview release of **App Versioning 2.0**, featuring redesigned `VersionCodeSpec` and `VersionNameSpec` APIs along with improved `GitTag` and `SemVer` APIs.
 
 Please see the [2.0 Migration Guide](docs/migration-guide.md) for full details on breaking changes and how to upgrade from 1.x.
