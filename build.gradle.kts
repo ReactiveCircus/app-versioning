@@ -91,7 +91,7 @@ dependencies {
     functionalTestImplementation(kotlin("test-junit"))
     functionalTestImplementation(libs.burst)
     functionalTestImplementation(libs.agp.build.api)
-    detektPlugins(libs.plugin.detektKtlintWrapper)
+    detektPlugins(libs.detektKtlintWrapper)
 }
 
 detekt {

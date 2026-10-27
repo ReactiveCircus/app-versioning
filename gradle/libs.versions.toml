@@ -8,10 +8,8 @@ testkit = "0.21"
 toolchainsResolver = "1.0.0"
 
 [libraries]
-plugin-detektKtlintWrapper = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt"}
-
-agp-build-gradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 agp-build-api = { module = "com.android.tools.build:gradle-api", version.ref = "agp" }
+detektKtlintWrapper = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt" }
 burst = { module = "app.cash.burst:burst", version.ref = "burst" }
 
 [plugins]
