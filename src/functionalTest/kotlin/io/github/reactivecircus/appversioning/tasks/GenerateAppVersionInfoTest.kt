@@ -307,7 +307,6 @@ class GenerateAppVersionInfoTest {
         val versionCodeFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_code.txt")
 
         val extensions = """
-            import io.github.reactivecircus.appversioning.VersionCodeSpec
             val buildNumber = providers.gradleProperty("buildNumber").map(String::toInt).orElse(0)
             appVersioning {
                 versionCode.set(
@@ -322,7 +321,12 @@ class GenerateAppVersionInfoTest {
 
         withFixtureRunner(
             fixtureDir = fixtureDir,
-            subprojects = listOf(AppProjectTemplate(pluginExtension = extensions))
+            subprojects = listOf(
+                AppProjectTemplate(
+                    imports = listOf("io.github.reactivecircus.appversioning.VersionCodeSpec"),
+                    pluginExtension = extensions,
+                )
+            )
         ).runAndCheckResult(
             "generateAppVersionInfoForRelease",
             "-PbuildNumber=78"
@@ -794,8 +798,6 @@ class GenerateAppVersionInfoTest {
         )
 
         val extensions = $$"""
-            import io.github.reactivecircus.appversioning.VersionCodeSpec
-
             def buildNumber = providers.gradleProperty("buildNumber").map { it.toInteger() }.orElse(0)
 
             appVersioning {
@@ -814,6 +816,7 @@ class GenerateAppVersionInfoTest {
             fixtureDir = fixtureDir,
             subprojects = listOf(
                 AppProjectTemplate(
+                    imports = listOf("io.github.reactivecircus.appversioning.VersionCodeSpec"),
                     pluginExtension = extensions,
                     buildScriptLanguage = BuildScriptLanguage.Groovy,
                 )
