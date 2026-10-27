@@ -63,19 +63,27 @@ tasks.withType<Test>().configureEach {
     }
 }
 
-tasks.functionalTest {
-    failFast = true
-    systemProperty("fixtureAgpVersion", fixtureAgpVersion.get())
-}
-
 tasks.test {
     maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
+}
+
+tasks.functionalTest {
+    failFast = true
+    jvmArgumentProviders.add(FunctionalTestArgumentProvider(fixtureAgpVersion))
 }
 
 val fixtureAgpVersion: Provider<String> = providers
     .environmentVariable("AGP_VERSION")
     .orElse(providers.gradleProperty("AGP_VERSION"))
     .orElse(libs.versions.agp)
+
+class FunctionalTestArgumentProvider(
+    @get:Input val agpVersion: Provider<String>
+) : CommandLineArgumentProvider {
+    override fun asArguments(): Iterable<String> {
+        return listOf("-DfixtureAgpVersion=${agpVersion.get()}")
+    }
+}
 
 dependencies {
     compileOnly(libs.agp.build.api)
