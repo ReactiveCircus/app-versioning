@@ -25,9 +25,9 @@ class VersionSpecsTest {
         }
         assertEquals(
             """
-                Could not generate versionCode as "1.2" does not follow semantic versioning.
-                Please either ensure latest git tag follows semantic versioning, or provide a custom spec for generating versionCode using the `versionCode` property.
-            """.trimIndent(),
+                |Could not generate versionCode as "1.2" does not follow semantic versioning.
+                |Please either ensure latest git tag follows semantic versioning, or provide a custom spec for generating versionCode using the `versionCode` property.
+            """.trimMargin(),
             exception.message
         )
     }
@@ -39,11 +39,11 @@ class VersionSpecsTest {
         }
         assertEquals(
             """
-                Could not generate versionCode from "1.2.100" as the SemVer cannot be represented as an Integer.
-                This is usually because MAJOR or MINOR version is greater than 99, as by default maximum of 2 digits is allowed for MINOR and PATCH components of a SemVer tag.
-                Another reason might be that the overall positional notation of the SemVer (MAJOR * 10000 + MINOR * 100 + PATCH) is greater than the maximum value of an integer (2147483647).
-                As a workaround you can provide a custom spec for generating versionCode using the `versionCode` property.
-            """.trimIndent(),
+                |Could not generate versionCode from "1.2.100" as the SemVer cannot be represented as an Integer.
+                |This is usually because MAJOR or MINOR version is greater than 99, as by default maximum of 2 digits is allowed for MINOR and PATCH components of a SemVer tag.
+                |Another reason might be that the overall positional notation of the SemVer (MAJOR * 10000 + MINOR * 100 + PATCH) is greater than the maximum value of an integer (2147483647).
+                |As a workaround you can provide a custom spec for generating versionCode using the `versionCode` property.
+            """.trimMargin(),
             exception.message
         )
     }

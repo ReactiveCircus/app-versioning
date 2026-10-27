@@ -23,6 +23,7 @@ mavenPublishing {
 }
 
 gradleTestKitSupport {
+    withSupportLibrary()
     disablePublication()
 }
 
@@ -56,11 +57,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-val fixtureClasspath = configurations.create("fixtureClasspath")
-tasks.pluginUnderTestMetadata {
-    pluginClasspath.from(fixtureClasspath)
-}
-
 tasks.withType<Test>().configureEach {
     testLogging {
         events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
@@ -87,11 +83,6 @@ dependencies {
     functionalTestImplementation(kotlin("test-junit"))
     functionalTestImplementation(libs.burst)
     functionalTestImplementation(libs.agp.build.api)
-    fixtureClasspath(libs.agp.build.gradle.flatMap { dependency ->
-        fixtureAgpVersion.map { version ->
-            "${dependency.group}:${dependency.name}:$version"
-        }
-    })
     detektPlugins(libs.plugin.detektKtlintWrapper)
 }
 

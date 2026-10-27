@@ -40,10 +40,10 @@ class GenerateAppVersionInfoTest {
     @Test
     fun `GenerateAppVersionInfo fails when root Gradle project is not a git root directory and gitRootDirectory provided is not a git root directory`() {
         val extensions = """
-            appVersioning {
-                gitRootDirectory.set(rootDir.resolve("../"))
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    gitRootDirectory.set(rootDir.resolve("../"))
+            |}
+        """.trimMargin()
 
         withFixtureRunner(
             fixtureDir = fixtureDir,
@@ -64,10 +64,10 @@ class GenerateAppVersionInfoTest {
     @Test
     fun `GenerateAppVersionInfo fails when bareGitRepoDirectory provided is not a bare git repository`() {
         val extensions = """
-            appVersioning {
-                bareGitRepoDirectory.set(rootDir.resolve("../"))
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    bareGitRepoDirectory.set(rootDir.resolve("../"))
+            |}
+        """.trimMargin()
 
         withFixtureRunner(
             fixtureDir = fixtureDir,
@@ -96,10 +96,10 @@ class GenerateAppVersionInfoTest {
         val versionNameFile = File(fixtureDir.root, "android/app/build/outputs/app_versioning/release/version_name.txt")
 
         val extensions = """
-            appVersioning {
-                gitRootDirectory.set(rootDir.resolve("../"))
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    gitRootDirectory.set(rootDir.resolve("../"))
+            |}
+        """.trimMargin()
 
         withFixtureRunner(
             fixtureDir = fixtureDir,
@@ -124,11 +124,11 @@ class GenerateAppVersionInfoTest {
         val versionNameFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt")
 
         val extensions = """
-            appVersioning {
-                gitRootDirectory.set(rootDir.resolve("non-existent"))
-                bareGitRepoDirectory.set(rootDir.resolve(".git"))
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    gitRootDirectory.set(rootDir.resolve("non-existent"))
+            |    bareGitRepoDirectory.set(rootDir.resolve(".git"))
+            |}
+        """.trimMargin()
 
         withFixtureRunner(
             fixtureDir = fixtureDir,
@@ -156,10 +156,10 @@ class GenerateAppVersionInfoTest {
             remoteGitRepo.tag(name = "1.2.3", message = "remote tag", commitId = commitId)
 
             val extension = """
-                appVersioning {
-                    fetchTagsWhenNoneExistsLocally.set(true)
-                }
-            """.trimIndent()
+                |appVersioning {
+                |    fetchTagsWhenNoneExistsLocally.set(true)
+                |}
+            """.trimMargin()
 
             withFixtureRunner(
                 fixtureDir = fixtureDir,
@@ -230,9 +230,9 @@ class GenerateAppVersionInfoTest {
             assertTrue(
                 output.contains(
                     """
-                        Could not generate versionCode as "1.2" does not follow semantic versioning.
-                        Please either ensure latest git tag follows semantic versioning, or provide a custom spec for generating versionCode using the `versionCode` property.
-                    """.trimIndent()
+                        |Could not generate versionCode as "1.2" does not follow semantic versioning.
+                        |Please either ensure latest git tag follows semantic versioning, or provide a custom spec for generating versionCode using the `versionCode` property.
+                    """.trimMargin()
                 )
             )
         }
@@ -255,11 +255,11 @@ class GenerateAppVersionInfoTest {
             assertTrue(
                 output.contains(
                     """
-                        Could not generate versionCode from "1.2.100" as the SemVer cannot be represented as an Integer.
-                        This is usually because MAJOR or MINOR version is greater than 99, as by default maximum of 2 digits is allowed for MINOR and PATCH components of a SemVer tag.
-                        Another reason might be that the overall positional notation of the SemVer (MAJOR * 10000 + MINOR * 100 + PATCH) is greater than the maximum value of an integer (2147483647).
-                        As a workaround you can provide a custom spec for generating versionCode using the `versionCode` property.
-                    """.trimIndent()
+                        |Could not generate versionCode from "1.2.100" as the SemVer cannot be represented as an Integer.
+                        |This is usually because MAJOR or MINOR version is greater than 99, as by default maximum of 2 digits is allowed for MINOR and PATCH components of a SemVer tag.
+                        |Another reason might be that the overall positional notation of the SemVer (MAJOR * 10000 + MINOR * 100 + PATCH) is greater than the maximum value of an integer (2147483647).
+                        |As a workaround you can provide a custom spec for generating versionCode using the `versionCode` property.
+                    """.trimMargin()
                 )
             )
         }
@@ -284,12 +284,12 @@ class GenerateAppVersionInfoTest {
             assertTrue(
                 output.contains(
                     """
-                        No git tags found. Falling back to version code 0 and version name "".
-                        If you want to fallback to the versionCode and versionName set via the DSL or manifest, or stop generating versionCode and versionName from Git tags:
-                        appVersioning {
-                            enabled.set(false)
-                        }
-                    """.trimIndent()
+                        |No git tags found. Falling back to version code 0 and version name "".
+                        |If you want to fallback to the versionCode and versionName set via the DSL or manifest, or stop generating versionCode and versionName from Git tags:
+                        |appVersioning {
+                        |    enabled.set(false)
+                        |}
+                    """.trimMargin()
                 )
             )
             assertEquals("0", versionCodeFile.readText())
@@ -307,22 +307,26 @@ class GenerateAppVersionInfoTest {
         val versionCodeFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_code.txt")
 
         val extensions = """
-            import io.github.reactivecircus.appversioning.VersionCodeSpec
-            val buildNumber = providers.gradleProperty("buildNumber").map(String::toInt).orElse(0)
-            appVersioning {
-                versionCode.set(
-                    buildNumber.map { buildNum ->
-                        VersionCodeSpec {
-                            tag.toSemVer().toVersionCode() * 100 + buildNum
-                        }
-                    }
-                )
-            }
-        """.trimIndent()
+            |val buildNumber = providers.gradleProperty("buildNumber").map(String::toInt).orElse(0)
+            |appVersioning {
+            |    versionCode.set(
+            |        buildNumber.map { buildNum ->
+            |            VersionCodeSpec {
+            |                tag.toSemVer().toVersionCode() * 100 + buildNum
+            |            }
+            |        }
+            |    )
+            |}
+        """.trimMargin()
 
         withFixtureRunner(
             fixtureDir = fixtureDir,
-            subprojects = listOf(AppProjectTemplate(pluginExtension = extensions))
+            subprojects = listOf(
+                AppProjectTemplate(
+                    imports = listOf("io.github.reactivecircus.appversioning.VersionCodeSpec"),
+                    pluginExtension = extensions,
+                )
+            )
         ).runAndCheckResult(
             "generateAppVersionInfoForRelease",
             "-PbuildNumber=78"
@@ -339,12 +343,12 @@ class GenerateAppVersionInfoTest {
         }
 
         val extensions = """
-            appVersioning {
-                versionCode.set {
-                    tag.toSemVer().toVersionCode() * 100
-                }
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    versionCode.set {
+            |        tag.toSemVer().toVersionCode() * 100
+            |    }
+            |}
+        """.trimMargin()
 
         withFixtureRunner(
             fixtureDir = fixtureDir,
@@ -367,10 +371,10 @@ class GenerateAppVersionInfoTest {
         val versionNameFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt")
 
         val extensions = """
-            appVersioning {
-                versionCode.set { 0 }
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    versionCode.set { 0 }
+            |}
+        """.trimMargin()
 
         val runner = withFixtureRunner(
             fixtureDir = fixtureDir,
@@ -412,12 +416,12 @@ class GenerateAppVersionInfoTest {
         val versionNameFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt")
 
         val extensions = $$"""
-            appVersioning {
-                versionName.set {
-                    "Version $tag"
-                }
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    versionName.set {
+            |        "Version $tag"
+            |    }
+            |}
+        """.trimMargin()
 
         withFixtureRunner(
             fixtureDir = fixtureDir,
@@ -454,13 +458,13 @@ class GenerateAppVersionInfoTest {
         )
 
         val extensions = """
-            appVersioning {
-                versionCode.set {
-                    val offset = if (variant.flavorName == "paid") 1 else 0
-                    tag.toSemVer().toVersionCode() * 100 + offset
-                }
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    versionCode.set {
+            |        val offset = if (variant.flavorName == "paid") 1 else 0
+            |        tag.toSemVer().toVersionCode() * 100 + offset
+            |    }
+            |}
+        """.trimMargin()
 
         val flavors = listOf("free", "paid")
         val runner = withFixtureRunner(
@@ -518,13 +522,13 @@ class GenerateAppVersionInfoTest {
         )
 
         val extensions = $$"""
-            appVersioning {
-                versionName.set {
-                    val suffix = if (!variant.isReleaseBuild) " (${variant.variantName})" else ""
-                    "Version $tag$suffix"
-                }
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    versionName.set {
+            |        val suffix = if (!variant.isReleaseBuild) " (${variant.variantName})" else ""
+            |        "Version $tag$suffix"
+            |    }
+            |}
+        """.trimMargin()
 
         val flavors = listOf("free", "paid")
         val runner = withFixtureRunner(
@@ -575,22 +579,22 @@ class GenerateAppVersionInfoTest {
         val tagFilterAppC = "[0-9]*.[0-9]*.[0-9]*+appC"
 
         val extensionsAppA = """
-            appVersioning {
-                tagFilter.set("$tagFilterAppA")
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    tagFilter.set("$tagFilterAppA")
+            |}
+        """.trimMargin()
 
         val extensionsAppB = """
-            appVersioning {
-                tagFilter.set("$tagFilterAppB")
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    tagFilter.set("$tagFilterAppB")
+            |}
+        """.trimMargin()
 
         val extensionsAppC = """
-            appVersioning {
-                tagFilter.set("$tagFilterAppC")
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    tagFilter.set("$tagFilterAppC")
+            |}
+        """.trimMargin()
 
         val runner = withFixtureRunner(
             fixtureDir = fixtureDir,
@@ -738,16 +742,16 @@ class GenerateAppVersionInfoTest {
         )
 
         val extensions = $$"""
-            appVersioning {
-                versionCode {
-                    tag.toSemVer().toVersionCode() + tag.commitsSinceLatestTag
-                }
-                versionName {
-                    def suffix = variant.debugBuild ? " (${variant.variantName})" : ""
-                    "Version ${tag.name}${suffix}"
-                }
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    versionCode {
+            |        tag.toSemVer().toVersionCode() + tag.commitsSinceLatestTag
+            |    }
+            |    versionName {
+            |        def suffix = variant.debugBuild ? " (${variant.variantName})" : ""
+            |        "Version ${tag.name}${suffix}"
+            |    }
+            |}
+        """.trimMargin()
 
         val runner = withFixtureRunner(
             fixtureDir = fixtureDir,
@@ -794,26 +798,25 @@ class GenerateAppVersionInfoTest {
         )
 
         val extensions = $$"""
-            import io.github.reactivecircus.appversioning.VersionCodeSpec
-
-            def buildNumber = providers.gradleProperty("buildNumber").map { it.toInteger() }.orElse(0)
-
-            appVersioning {
-                versionCode.set(
-                    buildNumber.map { buildNum ->
-                        { tag.toSemVer().toVersionCode() * 100 + buildNum } as VersionCodeSpec
-                    }
-                )
-                versionName {
-                    "Version ${tag.name}"
-                }
-            }
-        """.trimIndent()
+            |def buildNumber = providers.gradleProperty("buildNumber").map { it.toInteger() }.orElse(0)
+            |
+            |appVersioning {
+            |    versionCode.set(
+            |        buildNumber.map { buildNum ->
+            |            { tag.toSemVer().toVersionCode() * 100 + buildNum } as VersionCodeSpec
+            |        }
+            |    )
+            |    versionName {
+            |        "Version ${tag.name}"
+            |    }
+            |}
+        """.trimMargin()
 
         val runner = withFixtureRunner(
             fixtureDir = fixtureDir,
             subprojects = listOf(
                 AppProjectTemplate(
+                    imports = listOf("io.github.reactivecircus.appversioning.VersionCodeSpec"),
                     pluginExtension = extensions,
                     buildScriptLanguage = BuildScriptLanguage.Groovy,
                 )
@@ -866,15 +869,15 @@ class GenerateAppVersionInfoTest {
         }
 
         val extensions = $$"""
-            appVersioning {
-                versionCode.set {
-                    tag.toSemVer().toVersionCode() + tag.commitsSinceLatestTag
-                }
-                versionName.set {
-                    "Version $tag"
-                }
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    versionCode.set {
+            |        tag.toSemVer().toVersionCode() + tag.commitsSinceLatestTag
+            |    }
+            |    versionName.set {
+            |        "Version $tag"
+            |    }
+            |}
+        """.trimMargin()
 
         val runner = withFixtureRunner(
             fixtureDir = fixtureDir,
@@ -934,15 +937,15 @@ class GenerateAppVersionInfoTest {
         }
 
         val extensions = $$"""
-            appVersioning {
-                versionCode.set {
-                    tag.toSemVer().toVersionCode() + tag.commitsSinceLatestTag
-                }
-                versionName.set {
-                    "Version $tag"
-                }
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    versionCode.set {
+            |        tag.toSemVer().toVersionCode() + tag.commitsSinceLatestTag
+            |    }
+            |    versionName.set {
+            |        "Version $tag"
+            |    }
+            |}
+        """.trimMargin()
 
         val runner = withFixtureRunner(
             fixtureDir = fixtureDir,

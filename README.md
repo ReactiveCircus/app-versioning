@@ -62,6 +62,7 @@ plugins {
 
 </details>
 
+> [!TIP]
 > Upgrading from 1.x? See the [2.0 Migration Guide](docs/migration-guide.md).
 
 ## Usage

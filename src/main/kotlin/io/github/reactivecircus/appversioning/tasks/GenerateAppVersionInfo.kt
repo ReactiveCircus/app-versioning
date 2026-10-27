@@ -97,12 +97,12 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
         } ?: run {
             logger.warn(
                 """
-                    No git tags found. Falling back to version code $VERSION_CODE_FALLBACK and version name "$VERSION_NAME_FALLBACK".
-                    If you want to fallback to the versionCode and versionName set via the DSL or manifest, or stop generating versionCode and versionName from Git tags:
-                    appVersioning {
-                        enabled.set(false)
-                    }
-                """.trimIndent()
+                    |No git tags found. Falling back to version code $VERSION_CODE_FALLBACK and version name "$VERSION_NAME_FALLBACK".
+                    |If you want to fallback to the versionCode and versionName set via the DSL or manifest, or stop generating versionCode and versionName from Git tags:
+                    |appVersioning {
+                    |    enabled.set(false)
+                    |}
+                """.trimMargin()
             )
             versionCodeFile.get().asFile.writeText(VERSION_CODE_FALLBACK.toString())
             versionNameFile.get().asFile.writeText(VERSION_NAME_FALLBACK)
