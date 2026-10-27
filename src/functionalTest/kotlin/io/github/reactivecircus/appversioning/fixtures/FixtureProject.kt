@@ -33,12 +33,12 @@ internal fun createFixtureProject(
             withSettingsScript {
                 rootProjectName = "app-versioning-fixture"
                 additions = """
-                    buildCache {
-                        local {
-                            directory = "$localBuildCacheUri"
-                        }
-                    }
-                """.trimIndent()
+                    |buildCache {
+                    |    local {
+                    |        directory = "$localBuildCacheUri"
+                    |    }
+                    |}
+                """.trimMargin()
             }
         }
         subprojects.forEach { subproject ->

@@ -34,94 +34,94 @@ sealed class AndroidProjectTemplate {
     private fun kotlinAndroidBlock(): String {
         val flavorConfigs = if (flavors.isNotEmpty()) {
             """
-                flavorDimensions.add("environment")
-                productFlavors {
-                    ${flavors.joinToString("\n") { "register(\"$it\") {}" }}
-                }
-            """.trimIndent()
+                |flavorDimensions.add("environment")
+                |productFlavors {
+                |    ${flavors.joinToString("\n") { "register(\"$it\") {}" }}
+                |}
+            """.trimMargin()
         } else {
             ""
         }
         val abiConfigs = if (this is AppProjectTemplate && splitsApks) {
             """
-                splits {
-                    abi {
-                        isEnable = true
-                        reset()
-                        include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-                        isUniversalApk = $universalApk
-                    }
-                }
-            """.trimIndent()
+                |splits {
+                |    abi {
+                |        isEnable = true
+                |        reset()
+                |        include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+                |        isUniversalApk = $universalApk
+                |    }
+                |}
+            """.trimMargin()
         } else {
             ""
         }
         return """
-            android {
-                namespace = "$DEFAULT_PACKAGE_NAME.${projectName.replace("-", ".")}"
-                compileSdk = 36
-                defaultConfig {
-                    minSdk = 21
-                    ${if (this is AppProjectTemplate) "targetSdk = 36" else ""}
-                }
-                lint.checkReleaseBuilds = false
-
-                $flavorConfigs
-
-                $abiConfigs
-            }
-        """.trimIndent()
+            |android {
+            |    namespace = "$DEFAULT_PACKAGE_NAME.${projectName.replace("-", ".")}"
+            |    compileSdk = 36
+            |    defaultConfig {
+            |        minSdk = 21
+            |        ${if (this is AppProjectTemplate) "targetSdk = 36" else ""}
+            |    }
+            |    lint.checkReleaseBuilds = false
+            |
+            |    $flavorConfigs
+            |
+            |    $abiConfigs
+            |}
+        """.trimMargin()
     }
 
     private fun groovyAndroidBlock(): String {
         val flavorConfigs = if (flavors.isNotEmpty()) {
             """
-                flavorDimensions "environment"
-                productFlavors {
-                    ${flavors.joinToString("\n") { "$it {}" }}
-                }
-            """.trimIndent()
+                |flavorDimensions "environment"
+                |productFlavors {
+                |    ${flavors.joinToString("\n") { "$it {}" }}
+                |}
+            """.trimMargin()
         } else {
             ""
         }
         val abiConfigs = if (this is AppProjectTemplate && splitsApks) {
             """
-                splits {
-                    abi {
-                        enable true
-                        reset()
-                        include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
-                        universalApk $universalApk
-                    }
-                }
-            """.trimIndent()
+                |splits {
+                |    abi {
+                |        enable true
+                |        reset()
+                |        include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+                |        universalApk $universalApk
+                |    }
+                |}
+            """.trimMargin()
         } else {
             ""
         }
         return """
-            android {
-                namespace '$DEFAULT_PACKAGE_NAME.${projectName.replace("-", ".")}'
-                compileSdk 36
-                defaultConfig {
-                    minSdk 21
-                    ${if (this is AppProjectTemplate) "targetSdk 36" else ""}
-                }
-                lint {
-                    checkReleaseBuilds false
-                }
-
-                $flavorConfigs
-
-                $abiConfigs
-            }
-        """.trimIndent()
+            |android {
+            |    namespace '$DEFAULT_PACKAGE_NAME.${projectName.replace("-", ".")}'
+            |    compileSdk 36
+            |    defaultConfig {
+            |        minSdk 21
+            |        ${if (this is AppProjectTemplate) "targetSdk 36" else ""}
+            |    }
+            |    lint {
+            |        checkReleaseBuilds false
+            |    }
+            |
+            |    $flavorConfigs
+            |
+            |    $abiConfigs
+            |}
+        """.trimMargin()
     }
 
     val manifestFileContent: String
         get() = """
-            <?xml version="1.0" encoding="utf-8"?>
-            <manifest />
-        """.trimIndent()
+            |<?xml version="1.0" encoding="utf-8"?>
+            |<manifest />
+        """.trimMargin()
 
     companion object {
         private const val DEFAULT_PACKAGE_NAME = "io.github.reactivecircus.appversioning"

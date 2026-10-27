@@ -142,10 +142,10 @@ class AppVersioningPluginIntegrationTest(
         initGitRepo(fixtureDir.root)
 
         val extension = """
-            appVersioning {
-                releaseBuildOnly.set(true)
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    releaseBuildOnly.set(true)
+            |}
+        """.trimMargin()
         withFixtureRunner(
             fixtureDir = fixtureDir,
             subprojects = listOf(
@@ -178,10 +178,10 @@ class AppVersioningPluginIntegrationTest(
         initGitRepo(fixtureDir.root)
 
         val extension = """
-            appVersioning {
-                enabled.set(false)
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    enabled.set(false)
+            |}
+        """.trimMargin()
         withFixtureRunner(
             fixtureDir = fixtureDir,
             subprojects = listOf(
@@ -296,10 +296,10 @@ class AppVersioningPluginIntegrationTest(
         }
 
         val extension = """
-            appVersioning {
-                enabled.set(false)
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    enabled.set(false)
+            |}
+        """.trimMargin()
         withFixtureRunner(
             fixtureDir = fixtureDir,
             subprojects = listOf(
@@ -347,35 +347,35 @@ class AppVersioningPluginIntegrationTest(
 
         val extensionAppA = if (buildScriptLanguage == BuildScriptLanguage.Kts) {
             $$"""
-                appVersioning {
-                    tagFilter.set("[0-9]*.[0-9]*.[0-9]*+appA")
-                    versionCode.set {
-                        tag.toSemVer().toVersionCode() + tag.commitsSinceLatestTag
-                    }
-                    versionName.set {
-                        "appA-${tag.name}"
-                    }
-                }
-            """.trimIndent()
+                |appVersioning {
+                |    tagFilter.set("[0-9]*.[0-9]*.[0-9]*+appA")
+                |    versionCode.set {
+                |        tag.toSemVer().toVersionCode() + tag.commitsSinceLatestTag
+                |    }
+                |    versionName.set {
+                |        "appA-${tag.name}"
+                |    }
+                |}
+            """.trimMargin()
         } else {
             $$"""
-                appVersioning {
-                    tagFilter.set("[0-9]*.[0-9]*.[0-9]*+appA")
-                    versionCode {
-                        tag.toSemVer().toVersionCode() + tag.commitsSinceLatestTag
-                    }
-                    versionName {
-                        "appA-${tag.name}"
-                    }
-                }
-            """.trimIndent()
+                |appVersioning {
+                |    tagFilter.set("[0-9]*.[0-9]*.[0-9]*+appA")
+                |    versionCode {
+                |        tag.toSemVer().toVersionCode() + tag.commitsSinceLatestTag
+                |    }
+                |    versionName {
+                |        "appA-${tag.name}"
+                |    }
+                |}
+            """.trimMargin()
         }
 
         val extensionAppB = """
-            appVersioning {
-                tagFilter.set("[0-9]*.[0-9]*.[0-9]*+appB")
-            }
-        """.trimIndent()
+            |appVersioning {
+            |    tagFilter.set("[0-9]*.[0-9]*.[0-9]*+appB")
+            |}
+        """.trimMargin()
 
         val runner = withFixtureRunner(
             fixtureDir = fixtureDir,
