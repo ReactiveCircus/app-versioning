@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-Nothing yet.
+### Changed
+- Compile with AGP 9.5.0.
 
 ## 2.0.0-alpha.1
 
