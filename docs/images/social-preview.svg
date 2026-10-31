@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="640" viewBox="0 0 1280 640" fill="none" role="img" aria-label="App Versioning"><defs>
+    <path id="tag" d="M 84 54 H 152 C 168 54 180 61 190 73 L 210 96 C 218 106 218 122 210 132 L 190 155 C 180 167 168 174 152 174 H 84 C 57 174 38 155 38 128 V 100 C 38 73 57 54 84 54 Z" />
+    <linearGradient id="back_side" x1="40" y1="90" x2="200" y2="205" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#9333EA" />
+      <stop offset="100%" stop-color="#3B0764" />
+    </linearGradient>
+    <linearGradient id="back_top" x1="45" y1="55" x2="200" y2="180" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#D8B4FE" />
+      <stop offset="55%" stop-color="#A855F7" />
+      <stop offset="100%" stop-color="#6B21A8" />
+    </linearGradient>
+    <linearGradient id="side" x1="42" y1="90" x2="195" y2="205" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E9D5FF" />
+      <stop offset="55%" stop-color="#A855F7" />
+      <stop offset="100%" stop-color="#6B21A8" />
+    </linearGradient>
+    <linearGradient id="top" x1="55" y1="50" x2="200" y2="185" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="60%" stop-color="#F3E8FF" />
+      <stop offset="100%" stop-color="#D8B4FE" />
+    </linearGradient>
+    <linearGradient id="step2" x1="65" y1="80" x2="148" y2="150" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#93C5FD" />
+      <stop offset="55%" stop-color="#67E8F9" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+    <radialGradient id="dark_core" cx="42%" cy="38%" r="65%">
+      <stop offset="0%" stop-color="#1E4E68" />
+      <stop offset="48%" stop-color="#092234" />
+      <stop offset="100%" stop-color="#030D17" />
+    </radialGradient>
+    <filter id="shadow" x="-25%" y="-25%" width="150%" height="155%">
+      <feDropShadow dx="-3" dy="10" stdDeviation="8" flood-color="#210042" flood-opacity="0.48" />
+    </filter></defs><linearGradient id="bg" x1="0" y1="0" x2="1280" y2="640" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1B0B33"/><stop offset="55%" stop-color="#2E1065"/><stop offset="100%" stop-color="#0F172A"/></linearGradient>
+<radialGradient id="g" cx="326.5" cy="320" r="460" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#A855F7" stop-opacity="0.55"/><stop offset="60%" stop-color="#7C3AED" stop-opacity="0.08"/><stop offset="100%" stop-color="#7C3AED" stop-opacity="0"/></radialGradient>
+<rect width="1280" height="640" fill="url(#bg)"/><rect width="1280" height="640" fill="url(#g)"/><g transform="translate(95.2 127.2) scale(1.5)"><!-- Lower tag -->
+    <g transform="translate(136 139) scale(1.05) rotate(-13) translate(-127 -124)" filter="url(#shadow)">
+      <use href="#tag" xlink:href="#tag" y="16" fill="url(#back_side)" />
+      <use href="#tag" xlink:href="#tag" fill="url(#back_top)" stroke="#E9D5FF" stroke-width="1.5" stroke-opacity="0.55" />
+      <circle cx="182" cy="114" r="12" fill="#3B036B" />
+    </g>
+
+    <!-- Upper tag -->
+    <g transform="translate(127 111) scale(1.05) rotate(-32) translate(-127 -124)" filter="url(#shadow)">
+      <use href="#tag" xlink:href="#tag" y="20" fill="url(#side)" />
+      <use href="#tag" xlink:href="#tag" fill="url(#top)" stroke="#FFFFFF" stroke-width="2" />
+
+      <!-- Eyelet -->
+      <circle cx="182" cy="114" r="17.5" fill="#B88AE6" opacity="0.55" stroke="#FFFFFF" stroke-width="1.6" />
+      <circle cx="182" cy="115" r="12" fill="#4B0782" />
+      <path d="M 170 115 A 12 12 0 0 1 194 115 A 12 9 0 0 0 170 115 Z" fill="#230040" opacity="0.9" />
+
+      <!-- Lens -->
+      <rect x="54" y="72" width="104" height="84" rx="40" fill="#7DD3FC" opacity="0.45" stroke="#FFFFFF" stroke-width="1.3" />
+      <rect x="66" y="83" width="80" height="62" rx="30" fill="url(#step2)" stroke="#ECFEFF" stroke-width="1" stroke-opacity="0.65" />
+      <rect x="78" y="93" width="56" height="42" rx="21" fill="#020810" />
+      <rect x="80" y="95" width="52" height="38" rx="19" fill="url(#dark_core)" stroke="#38BDF8" stroke-width="0.8" stroke-opacity="0.4" />
+      <ellipse cx="100" cy="105" rx="14" ry="4.8" fill="#BAE6FD" opacity="0.28" />
+    </g>
+  </g><text x="508.75" y="292" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif" font-size="92" font-weight="800" letter-spacing="-2" fill="#FFFFFF">App Versioning</text><text x="511.75" y="358" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif" font-size="36" font-weight="500" fill="#D8B4FE">Lazily generate <tspan font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" font-size="33" font-weight="600" fill="#67E8F9">versionCode</tspan> &amp;</text><text x="511.75" y="408" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif" font-size="36" font-weight="500" fill="#D8B4FE"><tspan font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" font-size="33" font-weight="600" fill="#67E8F9">versionName</tspan> from Git tags</text></svg>

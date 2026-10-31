@@ -1,3 +1,9 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/banner-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/images/banner-light.svg">
+  <img alt="App Versioning" src="docs/images/banner-light.svg">
+</picture>
+
 # App Versioning
 
 ![CI](https://github.com/ReactiveCircus/app-versioning/workflows/CI/badge.svg)
@@ -5,8 +11,6 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A Gradle Plugin for lazily generating Android app's `versionCode` & `versionName` from Git tags.
-
-![App Versioning](docs/images/sample.png)
 
 Modern versions of Android Gradle Plugin provide new [Variant APIs](https://medium.com/androiddevelopers/new-apis-in-the-android-gradle-plugin-f5325742e614) that support **lazily** computing the `versionCode` and `versionName` of an APK or App Bundle.
 
