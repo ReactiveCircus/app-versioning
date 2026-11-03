@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Added
+- Support Git worktrees and submodules, where `.git` is a file pointing to the actual git directory.
+
 ### Changed
 - Compile with AGP 9.5.0.
 
