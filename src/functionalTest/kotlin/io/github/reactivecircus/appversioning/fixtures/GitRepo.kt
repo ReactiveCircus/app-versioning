@@ -9,9 +9,6 @@ fun initGitRepo(rootDir: File, action: GitRepo.() -> Unit = {}): GitRepo {
 }
 
 class GitRepo internal constructor(private val rootDir: File) {
-    /**
-     * Creates a linked worktree at [worktreeDir] with a new [branch] checked out.
-     */
     fun addWorktree(worktreeDir: File, branch: String): GitRepo {
         listOf("git", "worktree", "add", "-b", branch, worktreeDir.absolutePath).execute(rootDir)
         return GitRepo(worktreeDir)
