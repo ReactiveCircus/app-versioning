@@ -4,12 +4,14 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 fun initGitRepo(rootDir: File, action: GitRepo.() -> Unit = {}): GitRepo {
+    listOf("git", "init").execute(rootDir)
     return GitRepo(rootDir).apply(action)
 }
 
-class GitRepo(private val rootDir: File) {
-    init {
-        listOf("git", "init").execute(rootDir)
+class GitRepo internal constructor(private val rootDir: File) {
+    fun addWorktree(worktreeDir: File, branch: String): GitRepo {
+        listOf("git", "worktree", "add", "-b", branch, worktreeDir.absolutePath).execute(rootDir)
+        return GitRepo(worktreeDir)
     }
 
     fun commit(message: String, allowEmpty: Boolean = true): CommitId {

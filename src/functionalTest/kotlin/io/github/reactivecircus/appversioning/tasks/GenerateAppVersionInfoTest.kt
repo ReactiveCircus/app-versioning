@@ -143,6 +143,32 @@ class GenerateAppVersionInfoTest {
     }
 
     @Test
+    fun `GenerateAppVersionInfo generates versionCode and versionName when root Gradle project is a linked git worktree`() {
+        initGitRepo(fixtureDir.newFolder("main")) {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+            addWorktree(worktreeDir = fixtureDir.root.resolve("worktree"), branch = "feature")
+        }
+
+        val versionCodeFile =
+            File(fixtureDir.root, "worktree/app/build/outputs/app_versioning/release/version_code.txt")
+        val versionNameFile =
+            File(fixtureDir.root, "worktree/app/build/outputs/app_versioning/release/version_name.txt")
+
+        withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate()),
+            parentDirectoryName = "worktree"
+        ).runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals("10203", versionCodeFile.readText())
+            assertEquals("1.2.3", versionNameFile.readText())
+        }
+    }
+
+    @Test
     fun `GenerateAppVersionInfo fetches remote tags when fetchTagsWhenNoneExistsLocally is enabled and no local tags exist`() {
         val remoteFolder = TemporaryFolder().apply { create() }
         try {
@@ -1171,6 +1197,95 @@ class GenerateAppVersionInfoTest {
             "--build-cache"
         ) {
             assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+        }
+    }
+
+    @Test
+    fun `GenerateAppVersionInfo (up-to-date) is re-executed after changing git refs in a linked git worktree`() {
+        val mainGitRepo = initGitRepo(fixtureDir.newFolder("main")) {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+        }
+        val worktreeGitRepo = mainGitRepo.addWorktree(
+            worktreeDir = fixtureDir.root.resolve("worktree"),
+            branch = "feature"
+        )
+
+        val versionNameFile =
+            File(fixtureDir.root, "worktree/app/build/outputs/app_versioning/release/version_name.txt")
+
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate()),
+            parentDirectoryName = "worktree"
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals("1.2.3", versionNameFile.readText())
+        }
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.UP_TO_DATE, task(":app:generateAppVersionInfoForRelease")?.outcome)
+        }
+
+        val commitId2 = worktreeGitRepo.commit(message = "2nd commit.")
+        worktreeGitRepo.tag(name = "1.3.0", message = "2nd tag", commitId = commitId2)
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals("1.3.0", versionNameFile.readText())
+        }
+    }
+
+    @Test
+    fun `GenerateAppVersionInfo (up-to-date) is re-executed after changing git HEAD in a linked git worktree`() {
+        val mainGitRepo = initGitRepo(fixtureDir.newFolder("main")) {
+            val commitId1 = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId1)
+            val commitId2 = commit(message = "2nd commit.")
+            tag(name = "1.2.4", message = "2nd tag", commitId = commitId2)
+        }
+        val worktreeGitRepo = mainGitRepo.addWorktree(
+            worktreeDir = fixtureDir.root.resolve("worktree"),
+            branch = "feature"
+        )
+
+        val versionNameFile =
+            File(fixtureDir.root, "worktree/app/build/outputs/app_versioning/release/version_name.txt")
+
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate()),
+            parentDirectoryName = "worktree"
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals("1.2.4", versionNameFile.readText())
+        }
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.UP_TO_DATE, task(":app:generateAppVersionInfoForRelease")?.outcome)
+        }
+
+        worktreeGitRepo.checkoutTag(tag = "1.2.3")
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals("1.2.3", versionNameFile.readText())
         }
     }
 }

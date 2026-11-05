@@ -4,13 +4,13 @@ import com.android.build.api.AndroidPluginVersion
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.AppPlugin
+import io.github.reactivecircus.appversioning.internal.GitDirectories
 import io.github.reactivecircus.appversioning.tasks.GenerateAppVersionInfo
 import io.github.reactivecircus.appversioning.tasks.PrintAppVersionInfo
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.language.nativeplatform.internal.BuildType
-import java.io.File
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -74,8 +74,9 @@ class AppVersioningPlugin : Plugin<Project> {
     ) {
         group = APP_VERSIONING_TASK_GROUP
         description = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the ${variant.name} variant."
-        gitRefsDirectory.set(findGitRefsDirectory(extension))
-        gitHead.set(findGitHeadFile(extension))
+        val gitDirectories = findGitDirectories(extension)
+        gitRefsDirectory.set(gitDirectories?.refsDirectory?.takeIf { it.exists() })
+        gitHead.set(gitDirectories?.headFile?.takeIf { it.exists() })
         rootProjectDirectory.set(rootProject.rootDir)
         rootProjectDisplayName.set(rootProject.displayName)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
@@ -118,31 +119,13 @@ class AppVersioningPlugin : Plugin<Project> {
         buildVariantName.set(variantName)
     }
 
-    private fun Project.findGitRefsDirectory(extension: AppVersioningExtension): File? {
+    private fun Project.findGitDirectories(extension: AppVersioningExtension): GitDirectories? {
+        val bareGitRepoDirectory = extension.bareGitRepoDirectory.asFile.orNull
+        val gitRootDirectory = extension.gitRootDirectory.asFile.orNull
         return when {
-            extension.bareGitRepoDirectory.isPresent -> extension.bareGitRepoDirectory.let { bareGitRepoDirectory ->
-                bareGitRepoDirectory.asFile.orNull?.resolve(REFS_DIRECTORY)?.takeIf { it.exists() }
-            }
-
-            extension.gitRootDirectory.isPresent -> extension.gitRootDirectory.let { gitRootDirectory ->
-                gitRootDirectory.asFile.orNull?.resolve(STANDARD_GIT_REFS_DIRECTORY)?.takeIf { it.exists() }
-            }
-
-            else -> rootDir.resolve(STANDARD_GIT_REFS_DIRECTORY).takeIf { it.exists() }
-        }
-    }
-
-    private fun Project.findGitHeadFile(extension: AppVersioningExtension): File? {
-        return when {
-            extension.bareGitRepoDirectory.isPresent -> extension.bareGitRepoDirectory.let { bareGitRepoDirectory ->
-                bareGitRepoDirectory.asFile.orNull?.resolve(HEAD_FILE)?.takeIf { it.exists() }
-            }
-
-            extension.gitRootDirectory.isPresent -> extension.gitRootDirectory.let { gitRootDirectory ->
-                gitRootDirectory.asFile.orNull?.resolve(STANDARD_GIT_HEAD_FILE)?.takeIf { it.exists() }
-            }
-
-            else -> rootDir.resolve(STANDARD_GIT_HEAD_FILE).takeIf { it.exists() }
+            bareGitRepoDirectory != null -> GitDirectories.forGitDirectory(bareGitRepoDirectory)
+            gitRootDirectory != null -> GitDirectories.forWorkTree(gitRootDirectory)
+            else -> GitDirectories.forWorkTree(rootDir)
         }
     }
 
@@ -157,9 +140,5 @@ class AppVersioningPlugin : Plugin<Project> {
 
 private const val APP_VERSIONING_TASK_GROUP = "versioning"
 private const val APP_VERSIONING_TASK_OUTPUT_DIR = "outputs/app_versioning"
-private const val REFS_DIRECTORY = "refs"
-private const val HEAD_FILE = "HEAD"
-private const val STANDARD_GIT_REFS_DIRECTORY = ".git/$REFS_DIRECTORY"
-private const val STANDARD_GIT_HEAD_FILE = ".git/$HEAD_FILE"
 private const val VERSION_CODE_RESULT_FILE = "version_code.txt"
 private const val VERSION_NAME_RESULT_FILE = "version_name.txt"

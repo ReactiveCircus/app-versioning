@@ -313,6 +313,10 @@ appVersioning {
 }
 ```
 
+### Git worktrees and submodules
+
+Linked worktrees (created with `git worktree add`) and submodules are supported without any configuration. In these checkouts `.git` is a file pointing to the actual git directory, which the plugin resolves automatically. This also applies to a `gitRootDirectory` that is a linked worktree or a submodule.
+
 ### Bare git repository
 
 If your `.git` is a symbolic link to a **bare** git repository, specify the directory of the bare git repository explicitly (overrides `gitRootDirectory`):
