@@ -1125,6 +1125,94 @@ class GenerateAppVersionInfoTest {
     }
 
     @Test
+    fun `GenerateAppVersionInfo (up-to-date) is re-executed after deleting a packed git tag`() {
+        val gitRepo = initGitRepo(fixtureDir.root) {
+            val commitId1 = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId1)
+            val commitId2 = commit(message = "2nd commit.")
+            tag(name = "1.3.0", message = "2nd tag", commitId = commitId2)
+            packRefs()
+        }
+
+        val versionNameFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt")
+
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate())
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals("1.3.0", versionNameFile.readText())
+        }
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.UP_TO_DATE, task(":app:generateAppVersionInfoForRelease")?.outcome)
+        }
+
+        // Deleting a packed tag only rewrites the packed-refs file.
+        gitRepo.deleteTag(name = "1.3.0")
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals("1.2.3", versionNameFile.readText())
+        }
+    }
+
+    @Test
+    fun `GenerateAppVersionInfo (from cache) is re-executed after adding a git tag when refs are packed`() {
+        val gitRepo = initGitRepo(fixtureDir.root) {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+        }
+        val commitId2 = gitRepo.commit(message = "2nd commit.")
+        gitRepo.packRefs()
+
+        val versionNameFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt")
+
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate())
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease",
+            "--build-cache"
+        ) {
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals("1.2.3", versionNameFile.readText())
+        }
+
+        runner.runAndCheckResult(
+            "clean",
+            "generateAppVersionInfoForRelease",
+            "--build-cache"
+        ) {
+            assertEquals(TaskOutcome.SUCCESS, task(":app:clean")?.outcome)
+            assertEquals(TaskOutcome.FROM_CACHE, task(":app:generateAppVersionInfoForRelease")?.outcome)
+        }
+
+        // Simulates a fresh clone on CI after the commit is tagged, where all refs are in the packed-refs file.
+        gitRepo.tag(name = "1.3.0", message = "2nd tag", commitId = commitId2)
+        gitRepo.packRefs()
+
+        runner.runAndCheckResult(
+            "clean",
+            "generateAppVersionInfoForRelease",
+            "--build-cache"
+        ) {
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals("1.3.0", versionNameFile.readText())
+        }
+    }
+
+    @Test
     fun `GenerateAppVersionInfo (up-to-date) is re-executed after changing git HEAD`() {
         val gitRepo = initGitRepo(fixtureDir.root) {
             val commitId1 = commit(message = "1st commit.")

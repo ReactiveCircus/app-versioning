@@ -5,6 +5,9 @@
 ### Added
 - Support Git worktrees and submodules, where `.git` is a file pointing to the actual git directory.
 
+### Fixed
+- Re-run `generateAppVersionInfo` when git refs in the `packed-refs` file change, e.g. tags in a fresh clone on CI or tags packed by `git gc`.
+
 ### Changed
 - Compile with AGP 9.5.0.
 - Locate the git `HEAD` file and refs directory lazily at execution time instead of during configuration.

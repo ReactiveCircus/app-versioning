@@ -79,6 +79,7 @@ class AppVersioningPlugin : Plugin<Project> {
         description = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the ${variant.name} variant."
         gitRefsDirectory.fileProvider(gitFileProvider(extension, GitFile.RefsDirectory))
         gitHead.fileProvider(gitFileProvider(extension, GitFile.Head))
+        gitPackedRefs.fileProvider(gitFileProvider(extension, GitFile.PackedRefs))
         rootProjectDirectory.set(rootProject.rootDir)
         rootProjectDisplayName.set(rootProject.displayName)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)

@@ -7,12 +7,15 @@ import java.io.File
  *
  * For a linked worktree (created by `git worktree add`) or a submodule, `.git` is a file pointing to the actual git directory.
  * `HEAD` is per-worktree and lives in that git directory,
- * while the refs (branches and tags) are shared by all worktrees and live in the common git directory.
+ * while the refs (branches and tags) are shared by all worktrees and live in the common git directory,
+ * either as loose files in the refs directory or in the `packed-refs` file.
  */
 internal class GitDirectories private constructor(gitDirectory: File, commonDirectory: File) {
     val headFile: File = gitDirectory.resolve(HEAD_FILE)
 
     val refsDirectory: File = commonDirectory.resolve(REFS_DIRECTORY)
+
+    val packedRefsFile: File = commonDirectory.resolve(PACKED_REFS_FILE)
 
     companion object {
         /**
@@ -58,5 +61,6 @@ internal class GitDirectories private constructor(gitDirectory: File, commonDire
 private const val DOT_GIT = ".git"
 private const val HEAD_FILE = "HEAD"
 private const val REFS_DIRECTORY = "refs"
+private const val PACKED_REFS_FILE = "packed-refs"
 private const val COMMON_DIR_FILE = "commondir"
 private const val GIT_DIR_PREFIX = "gitdir:"
