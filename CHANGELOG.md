@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+Nothing yet.
+
+## 2.0.0-alpha.2
+
 ### Added
 - Support Git worktrees and submodules, where `.git` is a file pointing to the actual git directory.
 - Support Git repositories using the reftable ref storage format.
