@@ -17,6 +17,7 @@ internal abstract class GitFileValueSource : ValueSource<File, GitFileValueSourc
     enum class GitFile {
         Head,
         RefsDirectory,
+        PackedRefs,
     }
 
     override fun obtain(): File? {
@@ -30,6 +31,7 @@ internal abstract class GitFileValueSource : ValueSource<File, GitFileValueSourc
         val file = when (parameters.gitFile.get()) {
             GitFile.Head -> gitDirectories.headFile
             GitFile.RefsDirectory -> gitDirectories.refsDirectory
+            GitFile.PackedRefs -> gitDirectories.packedRefsFile
         }
         return file.takeIf { it.exists() }
     }

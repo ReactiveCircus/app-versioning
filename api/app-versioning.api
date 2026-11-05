@@ -90,6 +90,7 @@ public abstract class io/github/reactivecircus/appversioning/tasks/GenerateAppVe
 	public fun <init> ()V
 	public abstract fun getFetchTagsWhenNoneExistsLocally ()Lorg/gradle/api/provider/Property;
 	public abstract fun getGitHead ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getGitPackedRefs ()Lorg/gradle/api/file/RegularFileProperty;
 	public abstract fun getGitRefsDirectory ()Lorg/gradle/api/file/DirectoryProperty;
 	public abstract fun getRootProjectDirectory ()Lorg/gradle/api/file/DirectoryProperty;
 	public abstract fun getRootProjectDisplayName ()Lorg/gradle/api/provider/Property;

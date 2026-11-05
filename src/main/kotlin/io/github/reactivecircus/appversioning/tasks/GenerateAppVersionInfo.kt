@@ -42,6 +42,12 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
     @get:NormalizeLineEndings
     abstract val gitHead: RegularFileProperty
 
+    @get:Optional
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    @get:NormalizeLineEndings
+    abstract val gitPackedRefs: RegularFileProperty
+
     @get:Internal
     abstract val rootProjectDirectory: DirectoryProperty
 

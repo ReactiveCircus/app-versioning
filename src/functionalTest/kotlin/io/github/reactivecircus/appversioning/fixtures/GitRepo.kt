@@ -45,6 +45,14 @@ class GitRepo internal constructor(private val rootDir: File) {
         command.execute(rootDir)
     }
 
+    fun deleteTag(name: String) {
+        listOf("git", "tag", "-d", name).execute(rootDir)
+    }
+
+    fun packRefs() {
+        listOf("git", "pack-refs", "--all").execute(rootDir)
+    }
+
     fun checkoutTag(tag: String) {
         val commitCommand = buildList {
             add("git")
