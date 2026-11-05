@@ -4,13 +4,16 @@ import com.android.build.api.AndroidPluginVersion
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.AppPlugin
-import io.github.reactivecircus.appversioning.internal.GitDirectories
+import io.github.reactivecircus.appversioning.internal.GitFileValueSource
+import io.github.reactivecircus.appversioning.internal.GitFileValueSource.GitFile
 import io.github.reactivecircus.appversioning.tasks.GenerateAppVersionInfo
 import io.github.reactivecircus.appversioning.tasks.PrintAppVersionInfo
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.language.nativeplatform.internal.BuildType
+import java.io.File
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -74,9 +77,8 @@ class AppVersioningPlugin : Plugin<Project> {
     ) {
         group = APP_VERSIONING_TASK_GROUP
         description = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the ${variant.name} variant."
-        val gitDirectories = findGitDirectories(extension)
-        gitRefsDirectory.set(gitDirectories?.refsDirectory?.takeIf { it.exists() })
-        gitHead.set(gitDirectories?.headFile?.takeIf { it.exists() })
+        gitRefsDirectory.fileProvider(gitFileProvider(extension, GitFile.RefsDirectory))
+        gitHead.fileProvider(gitFileProvider(extension, GitFile.Head))
         rootProjectDirectory.set(rootProject.rootDir)
         rootProjectDisplayName.set(rootProject.displayName)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
@@ -119,14 +121,14 @@ class AppVersioningPlugin : Plugin<Project> {
         buildVariantName.set(variantName)
     }
 
-    private fun Project.findGitDirectories(extension: AppVersioningExtension): GitDirectories? {
-        val bareGitRepoDirectory = extension.bareGitRepoDirectory.asFile.orNull
-        val gitRootDirectory = extension.gitRootDirectory.asFile.orNull
-        return when {
-            bareGitRepoDirectory != null -> GitDirectories.forGitDirectory(bareGitRepoDirectory)
-            gitRootDirectory != null -> GitDirectories.forWorkTree(gitRootDirectory)
-            else -> GitDirectories.forWorkTree(rootDir)
-        }
+    private fun Project.gitFileProvider(
+        extension: AppVersioningExtension,
+        gitFile: GitFile,
+    ): Provider<File> = providers.of(GitFileValueSource::class.java) {
+        parameters.rootDirectory.set(rootDir)
+        parameters.gitRootDirectory.set(extension.gitRootDirectory)
+        parameters.bareGitRepoDirectory.set(extension.bareGitRepoDirectory)
+        parameters.gitFile.set(gitFile)
     }
 
     private fun String.capitalize(): String {
