@@ -1288,4 +1288,35 @@ class GenerateAppVersionInfoTest {
             assertEquals("1.2.3", versionNameFile.readText())
         }
     }
+
+    @Test
+    fun `GenerateAppVersionInfo resolves git directories at execution time`() {
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate())
+        )
+
+        runner.runAndExpectFailure(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertHasConfigurationCacheEntryLog(ConfigurationCacheEntryLog.Stored)
+            assertEquals(TaskOutcome.FAILED, task(":app:generateAppVersionInfoForRelease")?.outcome)
+        }
+
+        // creating a git repo does not invalidate the configuration cache from the 1st build as `.git` is not a configuration cache input
+        initGitRepo(fixtureDir.root) {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+        }
+
+        val versionNameFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt")
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertHasConfigurationCacheEntryLog(ConfigurationCacheEntryLog.Reused)
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals("1.2.3", versionNameFile.readText())
+        }
+    }
 }

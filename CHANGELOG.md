@@ -7,6 +7,7 @@
 
 ### Changed
 - Compile with AGP 9.5.0.
+- Locate the git `HEAD` file and refs directory lazily at execution time instead of during configuration.
 
 ## 2.0.0-alpha.1
 
