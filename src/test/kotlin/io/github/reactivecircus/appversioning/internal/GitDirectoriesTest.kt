@@ -21,6 +21,12 @@ class GitDirectoriesTest {
         assertEquals(workTree.resolve(".git/HEAD"), gitDirectories.headFile)
         assertEquals(workTree.resolve(".git/refs"), gitDirectories.refsDirectory)
         assertEquals(workTree.resolve(".git/packed-refs"), gitDirectories.packedRefsFile)
+        assertEquals(workTree.resolve(".git/reftable"), gitDirectories.reftableDirectory)
+        assertNull(gitDirectories.worktreeReftableDirectory)
+        assertEquals(
+            listOf("HEAD", "refs", "packed-refs", "reftable").map { workTree.resolve(".git/$it") },
+            gitDirectories.refFiles
+        )
     }
 
     @Test
@@ -36,6 +42,18 @@ class GitDirectoriesTest {
         assertEquals(worktreeGitDir.resolve("HEAD"), gitDirectories.headFile)
         assertEquals(mainWorkTree.resolve(".git/refs"), gitDirectories.refsDirectory)
         assertEquals(mainWorkTree.resolve(".git/packed-refs"), gitDirectories.packedRefsFile)
+        assertEquals(mainWorkTree.resolve(".git/reftable"), gitDirectories.reftableDirectory)
+        assertEquals(worktreeGitDir.resolve("reftable"), gitDirectories.worktreeReftableDirectory)
+        assertEquals(
+            listOf(
+                worktreeGitDir.resolve("HEAD"),
+                mainWorkTree.resolve(".git/refs"),
+                mainWorkTree.resolve(".git/packed-refs"),
+                mainWorkTree.resolve(".git/reftable"),
+                worktreeGitDir.resolve("reftable"),
+            ),
+            gitDirectories.refFiles
+        )
     }
 
     @Test
@@ -50,6 +68,8 @@ class GitDirectoriesTest {
         assertEquals(submoduleGitDir.resolve("HEAD"), gitDirectories.headFile)
         assertEquals(submoduleGitDir.resolve("refs"), gitDirectories.refsDirectory)
         assertEquals(submoduleGitDir.resolve("packed-refs"), gitDirectories.packedRefsFile)
+        assertEquals(submoduleGitDir.resolve("reftable"), gitDirectories.reftableDirectory)
+        assertNull(gitDirectories.worktreeReftableDirectory)
     }
 
     @Test
@@ -63,6 +83,8 @@ class GitDirectoriesTest {
         assertEquals(worktreeGitDir.resolve("HEAD"), gitDirectories.headFile)
         assertEquals(commonGitDir.resolve("refs"), gitDirectories.refsDirectory)
         assertEquals(commonGitDir.resolve("packed-refs"), gitDirectories.packedRefsFile)
+        assertEquals(commonGitDir.resolve("reftable"), gitDirectories.reftableDirectory)
+        assertEquals(worktreeGitDir.resolve("reftable"), gitDirectories.worktreeReftableDirectory)
     }
 
     @Test
@@ -74,6 +96,8 @@ class GitDirectoriesTest {
         assertEquals(bareRepo.resolve("HEAD"), gitDirectories.headFile)
         assertEquals(bareRepo.resolve("refs"), gitDirectories.refsDirectory)
         assertEquals(bareRepo.resolve("packed-refs"), gitDirectories.packedRefsFile)
+        assertEquals(bareRepo.resolve("reftable"), gitDirectories.reftableDirectory)
+        assertNull(gitDirectories.worktreeReftableDirectory)
     }
 
     @Test

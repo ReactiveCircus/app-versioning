@@ -3,9 +3,18 @@ package io.github.reactivecircus.appversioning.fixtures
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-fun initGitRepo(rootDir: File, action: GitRepo.() -> Unit = {}): GitRepo {
-    listOf("git", "init").execute(rootDir)
+fun initGitRepo(
+    rootDir: File,
+    refFormat: RefFormat = RefFormat.Files,
+    action: GitRepo.() -> Unit = {},
+): GitRepo {
+    listOf("git", "init", "--ref-format=${refFormat.value}").execute(rootDir)
     return GitRepo(rootDir).apply(action)
+}
+
+enum class RefFormat(val value: String) {
+    Files("files"),
+    Reftable("reftable"),
 }
 
 class GitRepo internal constructor(private val rootDir: File) {

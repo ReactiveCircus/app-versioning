@@ -8,14 +8,14 @@ import io.github.reactivecircus.appversioning.VersionNameSpec
 import io.github.reactivecircus.appversioning.internal.GitOps
 import io.github.reactivecircus.appversioning.toGitTag
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.IgnoreEmptyDirectories
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
@@ -29,24 +29,11 @@ import org.gradle.work.NormalizeLineEndings
  */
 @CacheableTask
 abstract class GenerateAppVersionInfo : DefaultTask() {
-    @get:Optional
-    @get:InputDirectory
+    @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
     @get:IgnoreEmptyDirectories
     @get:NormalizeLineEndings
-    abstract val gitRefsDirectory: DirectoryProperty
-
-    @get:Optional
-    @get:InputFile
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    @get:NormalizeLineEndings
-    abstract val gitHead: RegularFileProperty
-
-    @get:Optional
-    @get:InputFile
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    @get:NormalizeLineEndings
-    abstract val gitPackedRefs: RegularFileProperty
+    abstract val gitRefFiles: ConfigurableFileCollection
 
     @get:Internal
     abstract val rootProjectDirectory: DirectoryProperty
@@ -78,7 +65,7 @@ abstract class GenerateAppVersionInfo : DefaultTask() {
 
     @TaskAction
     internal fun generate() {
-        check(gitRefsDirectory.isPresent && gitHead.isPresent) {
+        check(!gitRefFiles.isEmpty) {
             "Android App Versioning Gradle Plugin works with git tags but ${rootProjectDisplayName.get()} is not a git root directory, and a valid gitRootDirectory is not provided."
         }
 
