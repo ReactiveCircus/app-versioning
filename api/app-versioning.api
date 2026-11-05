@@ -92,6 +92,8 @@ public abstract class io/github/reactivecircus/appversioning/tasks/GenerateAppVe
 	public abstract fun getGitHead ()Lorg/gradle/api/file/RegularFileProperty;
 	public abstract fun getGitPackedRefs ()Lorg/gradle/api/file/RegularFileProperty;
 	public abstract fun getGitRefsDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getGitReftableDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getGitWorktreeReftableDirectory ()Lorg/gradle/api/file/DirectoryProperty;
 	public abstract fun getRootProjectDirectory ()Lorg/gradle/api/file/DirectoryProperty;
 	public abstract fun getRootProjectDisplayName ()Lorg/gradle/api/provider/Property;
 	public abstract fun getTagFilter ()Lorg/gradle/api/provider/Property;

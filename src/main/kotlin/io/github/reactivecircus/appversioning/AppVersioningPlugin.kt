@@ -80,6 +80,8 @@ class AppVersioningPlugin : Plugin<Project> {
         gitRefsDirectory.fileProvider(gitFileProvider(extension, GitFile.RefsDirectory))
         gitHead.fileProvider(gitFileProvider(extension, GitFile.Head))
         gitPackedRefs.fileProvider(gitFileProvider(extension, GitFile.PackedRefs))
+        gitReftableDirectory.fileProvider(gitFileProvider(extension, GitFile.ReftableDirectory))
+        gitWorktreeReftableDirectory.fileProvider(gitFileProvider(extension, GitFile.WorktreeReftableDirectory))
         rootProjectDirectory.set(rootProject.rootDir)
         rootProjectDisplayName.set(rootProject.displayName)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)

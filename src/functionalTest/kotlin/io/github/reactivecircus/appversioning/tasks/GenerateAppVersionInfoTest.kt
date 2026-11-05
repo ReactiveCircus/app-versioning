@@ -5,6 +5,7 @@ package io.github.reactivecircus.appversioning.tasks
 import io.github.reactivecircus.appversioning.fixtures.AppProjectTemplate
 import io.github.reactivecircus.appversioning.fixtures.BuildScriptLanguage
 import io.github.reactivecircus.appversioning.fixtures.ConfigurationCacheEntryLog
+import io.github.reactivecircus.appversioning.fixtures.RefFormat
 import io.github.reactivecircus.appversioning.fixtures.assertHasConfigurationCacheEntryLog
 import io.github.reactivecircus.appversioning.fixtures.initGitRepo
 import io.github.reactivecircus.appversioning.fixtures.withFixtureRunner
@@ -1403,6 +1404,129 @@ class GenerateAppVersionInfoTest {
             "generateAppVersionInfoForRelease"
         ) {
             assertHasConfigurationCacheEntryLog(ConfigurationCacheEntryLog.Reused)
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals("1.2.3", versionNameFile.readText())
+        }
+    }
+
+    @Test
+    fun `GenerateAppVersionInfo (up-to-date) is re-executed after changing git refs in a reftable git repository`() {
+        val gitRepo = initGitRepo(fixtureDir.root, refFormat = RefFormat.Reftable) {
+            val commitId = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId)
+        }
+
+        val versionNameFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt")
+
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate())
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals("1.2.3", versionNameFile.readText())
+        }
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.UP_TO_DATE, task(":app:generateAppVersionInfoForRelease")?.outcome)
+        }
+
+        val commitId2 = gitRepo.commit(message = "2nd commit.")
+        gitRepo.tag(name = "1.3.0", message = "2nd tag", commitId = commitId2)
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals("1.3.0", versionNameFile.readText())
+        }
+    }
+
+    @Test
+    fun `GenerateAppVersionInfo (up-to-date) is re-executed after changing git HEAD in a reftable git repository`() {
+        val gitRepo = initGitRepo(fixtureDir.root, refFormat = RefFormat.Reftable) {
+            val commitId1 = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId1)
+            val commitId2 = commit(message = "2nd commit.")
+            tag(name = "1.2.4", message = "2nd tag", commitId = commitId2)
+        }
+
+        val versionNameFile = File(fixtureDir.root, "app/build/outputs/app_versioning/release/version_name.txt")
+
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate())
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals("1.2.4", versionNameFile.readText())
+        }
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.UP_TO_DATE, task(":app:generateAppVersionInfoForRelease")?.outcome)
+        }
+
+        gitRepo.checkoutTag(tag = "1.2.3")
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals("1.2.3", versionNameFile.readText())
+        }
+    }
+
+    @Test
+    fun `GenerateAppVersionInfo (up-to-date) is re-executed after changing git HEAD in a linked git worktree of a reftable git repository`() {
+        val mainGitRepo = initGitRepo(fixtureDir.newFolder("main"), refFormat = RefFormat.Reftable) {
+            val commitId1 = commit(message = "1st commit.")
+            tag(name = "1.2.3", message = "1st tag", commitId = commitId1)
+            val commitId2 = commit(message = "2nd commit.")
+            tag(name = "1.2.4", message = "2nd tag", commitId = commitId2)
+        }
+        val worktreeGitRepo = mainGitRepo.addWorktree(
+            worktreeDir = fixtureDir.root.resolve("worktree"),
+            branch = "feature"
+        )
+
+        val versionNameFile =
+            File(fixtureDir.root, "worktree/app/build/outputs/app_versioning/release/version_name.txt")
+
+        val runner = withFixtureRunner(
+            fixtureDir = fixtureDir,
+            subprojects = listOf(AppProjectTemplate()),
+            parentDirectoryName = "worktree"
+        )
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
+            assertEquals("1.2.4", versionNameFile.readText())
+        }
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
+            assertEquals(TaskOutcome.UP_TO_DATE, task(":app:generateAppVersionInfoForRelease")?.outcome)
+        }
+
+        // Only changes the per-worktree refs in the reftable directory of the linked worktree.
+        worktreeGitRepo.checkoutTag(tag = "1.2.3")
+
+        runner.runAndCheckResult(
+            "generateAppVersionInfoForRelease"
+        ) {
             assertEquals(TaskOutcome.SUCCESS, task(":app:generateAppVersionInfoForRelease")?.outcome)
             assertEquals("1.2.3", versionNameFile.readText())
         }

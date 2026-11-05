@@ -18,6 +18,8 @@ internal abstract class GitFileValueSource : ValueSource<File, GitFileValueSourc
         Head,
         RefsDirectory,
         PackedRefs,
+        ReftableDirectory,
+        WorktreeReftableDirectory,
     }
 
     override fun obtain(): File? {
@@ -32,7 +34,9 @@ internal abstract class GitFileValueSource : ValueSource<File, GitFileValueSourc
             GitFile.Head -> gitDirectories.headFile
             GitFile.RefsDirectory -> gitDirectories.refsDirectory
             GitFile.PackedRefs -> gitDirectories.packedRefsFile
+            GitFile.ReftableDirectory -> gitDirectories.reftableDirectory
+            GitFile.WorktreeReftableDirectory -> gitDirectories.worktreeReftableDirectory
         }
-        return file.takeIf { it.exists() }
+        return file?.takeIf { it.exists() }
     }
 }
