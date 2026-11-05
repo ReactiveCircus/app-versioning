@@ -29,6 +29,17 @@ internal class GitDirectories private constructor(gitDirectory: File, commonDire
     val worktreeReftableDirectory: File? = gitDirectory.resolve(REFTABLE_DIRECTORY)
         .takeIf { gitDirectory != commonDirectory }
 
+    /**
+     * All locations of the git files that determine the result of `git describe`, some of which might not exist.
+     */
+    val refFiles: List<File> = listOfNotNull(
+        headFile,
+        refsDirectory,
+        packedRefsFile,
+        reftableDirectory,
+        worktreeReftableDirectory,
+    )
+
     companion object {
         /**
          * Resolves the git directories of the working tree at [workTreeDirectory],

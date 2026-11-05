@@ -4,8 +4,7 @@ import com.android.build.api.AndroidPluginVersion
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.AppPlugin
-import io.github.reactivecircus.appversioning.internal.GitFileValueSource
-import io.github.reactivecircus.appversioning.internal.GitFileValueSource.GitFile
+import io.github.reactivecircus.appversioning.internal.GitRefFilesValueSource
 import io.github.reactivecircus.appversioning.tasks.GenerateAppVersionInfo
 import io.github.reactivecircus.appversioning.tasks.PrintAppVersionInfo
 import org.gradle.api.Plugin
@@ -77,11 +76,7 @@ class AppVersioningPlugin : Plugin<Project> {
     ) {
         group = APP_VERSIONING_TASK_GROUP
         description = "${GenerateAppVersionInfo.TASK_DESCRIPTION_PREFIX} for the ${variant.name} variant."
-        gitRefsDirectory.fileProvider(gitFileProvider(extension, GitFile.RefsDirectory))
-        gitHead.fileProvider(gitFileProvider(extension, GitFile.Head))
-        gitPackedRefs.fileProvider(gitFileProvider(extension, GitFile.PackedRefs))
-        gitReftableDirectory.fileProvider(gitFileProvider(extension, GitFile.ReftableDirectory))
-        gitWorktreeReftableDirectory.fileProvider(gitFileProvider(extension, GitFile.WorktreeReftableDirectory))
+        gitRefFiles.from(gitRefFilesProvider(extension))
         rootProjectDirectory.set(rootProject.rootDir)
         rootProjectDisplayName.set(rootProject.displayName)
         fetchTagsWhenNoneExistsLocally.set(extension.fetchTagsWhenNoneExistsLocally)
@@ -124,14 +119,12 @@ class AppVersioningPlugin : Plugin<Project> {
         buildVariantName.set(variantName)
     }
 
-    private fun Project.gitFileProvider(
+    private fun Project.gitRefFilesProvider(
         extension: AppVersioningExtension,
-        gitFile: GitFile,
-    ): Provider<File> = providers.of(GitFileValueSource::class.java) {
+    ): Provider<List<File>> = providers.of(GitRefFilesValueSource::class.java) {
         parameters.rootDirectory.set(rootDir)
         parameters.gitRootDirectory.set(extension.gitRootDirectory)
         parameters.bareGitRepoDirectory.set(extension.bareGitRepoDirectory)
-        parameters.gitFile.set(gitFile)
     }
 
     private fun String.capitalize(): String {
